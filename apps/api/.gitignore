@@ -1,0 +1,20 @@
+node_modules
+# Keep environment variables out of version control
+.env
+.env.test
+/dist
+/node_modules
+src/generated/
+
+# Test coverage reports
+coverage/
+*.lcov
+
+# Architecture documentation
+ARCHITECTURE.md
+CRYPTOGRAPHY_DOCUMENTATION.md
+POSTMAN_TESTING_GUIDE.md
+DEVELOPMENT_CONTINUATION_GUIDE.md
+logs/
+junit.xml
+eslint-reports/

@@ -1,0 +1,27 @@
+import { EnvService } from '@/infra/env/env.service';
+import { Injectable } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { z } from 'zod';
+
+const tokenPayloadSchema = z.object({
+  sub: z.string(),
+  deviceId: z.string(),
+});
+
+export type UserPayload = z.infer<typeof tokenPayloadSchema>;
+
+@Injectable()
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  constructor(config: EnvService) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: config.get('JWT_SECRET'),
+      algorithms: ['HS256'],
+    });
+  }
+
+  async validate(payload: UserPayload) {
+    return tokenPayloadSchema.parse(payload);
+  }
+}

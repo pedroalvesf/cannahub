@@ -1,0 +1,17 @@
+{
+  "name": "@cannahub/shared",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "echo 'shared: no lint configured yet'",
+    "format": "echo 'shared: no format configured yet'"
+  },
+  "dependencies": {
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

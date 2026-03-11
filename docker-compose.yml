@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: cannahub-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: cannahub_user
+      POSTGRES_PASSWORD: cannahub_password
+      POSTGRES_DB: cannahub_db
+    volumes:
+      - cannahub_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cannahub_user -d cannahub_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: cannahub-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - cannahub_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  cannahub_postgres_data:
+  cannahub_redis_data:

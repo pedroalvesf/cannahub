@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-surface text-brand-text antialiased;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 16px;
+    overflow-x: hidden;
+  }
+  .dark body,
+  body.dark-mode {
+    @apply bg-surface-dark text-gray-200;
+  }
+}
