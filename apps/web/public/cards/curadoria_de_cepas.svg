@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="520" viewBox="0 0 420 520">
+    <rect width="100%" height="100%" fill="none"/>
+    <defs>
+      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.10"/>
+      </filter>
+      <style>
+        .title { font-family: Arial, Helvetica, sans-serif; font-weight: 700; fill: #233A34; text-anchor: middle; }
+        .body { font-family: Arial, Helvetica, sans-serif; font-weight: 400; fill: #4F5E57; text-anchor: middle; }
+        .line { stroke: #233A34; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        .fill-mint { fill: #A8C8A4; stroke: #233A34; stroke-width: 5; stroke-linejoin: round; }
+        .fill-skin { fill: #F3D8C6; stroke: #233A34; stroke-width: 5; stroke-linejoin: round; }
+        .fill-blue { fill: #A9B8BD; stroke: #233A34; stroke-width: 5; stroke-linejoin: round; }
+        .fill-beige { fill: #F3EEDF; }
+        .fill-soil { fill: #8A7A67; stroke: #233A34; stroke-width: 5; stroke-linejoin: round; }
+      </style>
+    </defs>
+    
+      <rect x="20" y="20" rx="28" ry="28" width="380" height="480" fill="#FFFFFF" stroke="#E5E1D8" filter="url(#shadow)"/>
+      <rect x="60" y="55" rx="18" ry="18" width="300" height="170" class="fill-beige"/>
+      <path d="M 210 146 Q 230.0 146.0 210.0 68.0 Q 190.0 146.0 210 146 Z" class="fill-mint"/>
+<path d="M 210 146 Q 224.7 156.3 249.0 90.3 Q 195.3 135.7 210 146 Z" class="fill-mint"/>
+<path d="M 210 146 Q 216.8 160.5 262.6 121.5 Q 203.2 131.5 210 146 Z" class="fill-mint"/>
+<path d="M 210 146 Q 203.2 160.5 262.6 170.5 Q 216.8 131.5 210 146 Z" class="fill-mint"/>
+<path d="M 210 146 Q 195.3 156.3 249.0 201.7 Q 224.7 135.7 210 146 Z" class="fill-mint"/>
+<path d="M 210 146 Q 222 191 210 228 Q 198 191 210 146 Z" class="fill-mint"/>
+<line x1="210" y1="146" x2="210" y2="226" class="line"/>
+<line x1="210" y1="146" x2="210.0" y2="83.6" class="line"/>
+<line x1="210" y1="146" x2="241.2" y2="101.4" class="line"/>
+<line x1="210" y1="146" x2="252.1" y2="126.4" class="line"/>
+<line x1="210" y1="146" x2="252.1" y2="165.6" class="line"/>
+<line x1="210" y1="146" x2="241.2" y2="190.6" class="line"/>
+      <text x="210.0" y="295" font-size="30" class="title">Curadoria de Cepas</text>
+
+      <text x="210.0" y="372" font-size="19" class="body">Seleção orientada para</text>
+<text x="210.0" y="400" font-size="19" class="body">necessidades e perfis</text>
+<text x="210.0" y="428" font-size="19" class="body">de tratamento.</text>
+
+    
+    </svg>

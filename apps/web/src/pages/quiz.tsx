@@ -3,113 +3,104 @@ import { Header } from '@/components/layout/header'
 
 export function QuizPage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-brand-cream dark:bg-surface-dark">
       <Header />
 
-      <main className="px-6 pt-16 pb-20 max-w-4xl mx-auto">
+      <main className="px-6 pt-[80px] pb-20 max-w-[1100px] mx-auto">
         {/* Eyebrow */}
-        <p className="text-brand-green-deep font-semibold text-xs uppercase tracking-[0.2em]">
+        <div className="inline-flex items-center gap-2 bg-brand-green-pale text-brand-green-mid text-xs font-semibold px-3.5 py-1.5 rounded-btn mb-6 w-fit uppercase tracking-[0.06em]">
+          <span className="w-1.5 h-1.5 bg-brand-green-light rounded-full" />
           Cannabis Medicinal no Brasil
-        </p>
-
-        {/* Title */}
-        <h1 className="mt-3 text-[2.2rem] md:text-[2.8rem] font-extrabold leading-[1.1] text-brand-green-deep dark:text-white">
-          Conheça a CannHub
-        </h1>
-
-        {/* Illustrations row */}
-        <div className="mt-10 flex justify-center gap-6 md:gap-10">
-          <TriagemIcon>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </TriagemIcon>
-          <TriagemIcon>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          </TriagemIcon>
-          <TriagemIcon>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-          </TriagemIcon>
-          <TriagemIcon>
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-          </TriagemIcon>
         </div>
 
-        {/* Section title */}
-        <h2 className="mt-12 text-lg font-bold text-brand-green-deep dark:text-white">
-          Para quem é o CannHub?
-        </h2>
+        {/* Title */}
+        <h1 className="font-serif text-[clamp(32px,4.5vw,52px)] leading-[1.1] text-brand-green-deep dark:text-white max-w-[600px] mb-3">
+          Conheça a <em className="text-brand-green-mid">CannHub</em>
+        </h1>
 
-        {/* Description blocks */}
-        <div className="mt-6 grid md:grid-cols-2 gap-6">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-card bg-brand-green-deep/10 dark:bg-brand-green-deep/20 flex items-center justify-center shrink-0">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
+        <p className="text-[15px] text-brand-muted dark:text-gray-400 font-light leading-[1.65] mb-12 max-w-[500px]">
+          Atendemos diferentes perfis dentro do ecossistema de cannabis medicinal brasileiro. Identifique o seu para começar.
+        </p>
+
+        {/* 4 profile blocks — grid 2x2 */}
+        <div className="grid md:grid-cols-2 gap-4">
+          {/* Paciente Adulto — white */}
+          <div className="bg-brand-white border border-brand-cream-dark rounded-card p-7 relative overflow-hidden group hover:-translate-y-1 hover:shadow-cta transition-all">
+            <div className="absolute -bottom-8 -right-8 w-[100px] h-[100px] rounded-full bg-brand-green-light/[0.06] pointer-events-none" />
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-[20px] leading-none">✦</span>
+              <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-brand-green-light">Uso próprio</span>
             </div>
-            <div>
-              <h3 className="text-sm font-bold text-brand-green-deep dark:text-white">
-                Pacientes Adulto
-              </h3>
-              <p className="mt-1 text-sm font-normal text-brand-muted dark:text-gray-400 leading-relaxed">
-                Pacientes maiores de idade com cannabis, acolhidos para uso pelo acompanhamento.
-              </p>
-            </div>
+            <h3 className="font-serif text-[19px] leading-[1.25] text-brand-green-deep mb-2">
+              Paciente Adulto
+            </h3>
+            <p className="text-[13.5px] font-light text-brand-muted leading-[1.7]">
+              Pacientes maiores de idade em acompanhamento médico, buscando acesso regulamentado ao tratamento com cannabis medicinal.
+            </p>
           </div>
 
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-card bg-brand-green-deep/10 dark:bg-brand-green-deep/20 flex items-center justify-center shrink-0">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep">
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-              </svg>
+          {/* Responsável Legal — pale */}
+          <div className="bg-brand-green-pale border border-brand-green-light/20 rounded-card p-7 relative overflow-hidden group hover:-translate-y-1 hover:shadow-cta transition-all">
+            <div className="absolute -bottom-8 -right-8 w-[100px] h-[100px] rounded-full bg-brand-green-deep/[0.06] pointer-events-none" />
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-[26px] leading-none">👨‍👩‍👧</span>
+              <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-brand-green-mid">Dependentes</span>
             </div>
-            <div>
-              <h3 className="text-sm font-bold text-brand-green-deep dark:text-white">
-                Médicos e Veterinários
-              </h3>
-              <p className="mt-1 text-sm font-normal text-brand-muted dark:text-gray-400 leading-relaxed">
-                Médicos e veterinários que prescrevem cannabis medicinal, referenciados às clínicas e atendendo.
-              </p>
+            <h3 className="font-serif text-[19px] leading-[1.25] text-brand-green-deep mb-2">
+              Responsável Legal
+            </h3>
+            <p className="text-[13.5px] font-light text-brand-muted leading-[1.7]">
+              Pais ou responsáveis por menores e dependentes em tratamento. Documentação específica com procuração ou autorização.
+            </p>
+          </div>
+
+          {/* Médicos — dark */}
+          <div className="bg-brand-green-deep rounded-card p-7 relative overflow-hidden group hover:-translate-y-1 hover:shadow-cta transition-all">
+            <div className="absolute -bottom-8 -right-8 w-[100px] h-[100px] rounded-full bg-white/[0.04] pointer-events-none" />
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-[26px] leading-none">⚕️</span>
+              <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-brand-green-pale/60">Prescritores</span>
             </div>
+            <h3 className="font-serif text-[19px] leading-[1.25] text-brand-white mb-2">
+              Médicos e Veterinários
+            </h3>
+            <p className="text-[13.5px] font-light text-brand-white/[0.62] leading-[1.7]">
+              Prescritores que indicam e acompanham pacientes nas associações credenciadas. Acesso ao catálogo e perfis de pacientes.
+            </p>
+          </div>
+
+          {/* Iniciantes — white */}
+          <div className="bg-brand-white border border-brand-cream-dark rounded-card p-7 relative overflow-hidden group hover:-translate-y-1 hover:shadow-cta transition-all">
+            <div className="absolute -bottom-8 -right-8 w-[100px] h-[100px] rounded-full bg-brand-green-light/[0.06] pointer-events-none" />
+            <div className="flex items-center gap-3 mb-3">
+              <span className="text-[26px] leading-none">🌱</span>
+              <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-brand-green-light">Primeiro acesso</span>
+            </div>
+            <h3 className="font-serif text-[19px] leading-[1.25] text-brand-green-deep mb-2">
+              Iniciantes
+            </h3>
+            <p className="text-[13.5px] font-light text-brand-muted leading-[1.7]">
+              Interessados em entender o processo e começar com segurança. Orientação completa desde o primeiro passo.
+            </p>
           </div>
         </div>
 
         {/* CTAs */}
-        <div className="mt-10 flex items-center gap-4">
+        <div className="mt-12 flex items-center gap-4">
           <Link
             to="/acolhimento"
-            className="px-7 py-3.5 text-sm font-bold text-white bg-brand-green-deep rounded-btn hover:bg-brand-green-mid transition-colors"
+            className="text-[15px] font-semibold text-brand-white bg-brand-green-deep px-8 py-4 rounded-btn shadow-hero hover:bg-brand-green-mid hover:-translate-y-0.5 hover:shadow-hero-hover transition-all no-underline"
           >
             Iniciar Acolhimento
           </Link>
           <Link
             to="/#como-funciona"
-            className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep transition-colors underline underline-offset-4 decoration-brand-cream-dark dark:decoration-gray-700"
+            className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep transition-colors underline underline-offset-4 decoration-brand-cream-dark dark:decoration-gray-700 no-underline"
           >
             Entenda o processo
           </Link>
         </div>
       </main>
-    </div>
-  )
-}
-
-function TriagemIcon({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="w-20 h-20 md:w-24 md:h-24 rounded-card bg-surface-card dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-800 flex items-center justify-center shadow-soft">
-      {children}
     </div>
   )
 }

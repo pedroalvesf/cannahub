@@ -6,7 +6,8 @@ export function Header() {
   const { isAuthenticated, logout } = useAuthStore()
 
   return (
-    <nav className="fixed top-5 left-1/2 -translate-x-1/2 w-[calc(100%-48px)] max-w-[1100px] bg-brand-white/[0.92] dark:bg-surface-dark/90 backdrop-blur-[12px] border border-brand-green-light/15 dark:border-gray-700/40 rounded-btn px-6 py-3 flex items-center justify-between z-[100] shadow-nav animate-fade-down">
+    <nav className="fixed top-0 left-0 w-full bg-brand-white/[0.92] dark:bg-surface-dark/90 backdrop-blur-[12px] border-b border-brand-green-light/10 dark:border-gray-700/40 px-6 py-3.5 z-[100] shadow-nav animate-fade-down">
+      <div className="max-w-[1100px] mx-auto flex items-center justify-between">
       {/* Logo */}
       <Link to="/" className="flex items-center gap-[9px] no-underline">
         <div className="w-[26px] h-[26px] bg-brand-green-deep rounded-[80%_0_80%_0] rotate-[15deg]" />
@@ -72,6 +73,7 @@ export function Header() {
             </Link>
           </>
         )}
+      </div>
       </div>
     </nav>
   )
