@@ -101,7 +101,7 @@ export function DocumentsPage() {
     <div className="min-h-screen">
       <Header />
 
-      <main className="px-6 pt-10 pb-20 max-w-6xl mx-auto">
+      <main className="px-6 pt-[80px] pb-20 max-w-6xl mx-auto">
         {/* Progress stepper — dots connected by lines */}
         <div className="flex items-center justify-center gap-0 mb-12 max-w-md mx-auto">
           {[0, 1, 2].map((i) => (

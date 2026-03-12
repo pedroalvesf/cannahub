@@ -52,12 +52,14 @@ const sampleStrains: Strain[] = [
   },
 ]
 
+const allTypes = ['Indica', 'Sativa', 'Híbrida']
 const allTerpenes = [...new Set(sampleStrains.flatMap((s) => s.terpenes))].sort()
 const allEffects = [...new Set(sampleStrains.flatMap((s) => s.effects))].sort()
 const allIndications = [...new Set(sampleStrains.flatMap((s) => s.indications))].sort()
 
 export function StrainsPage() {
   const [search, setSearch] = useState('')
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [selectedTerpenes, setSelectedTerpenes] = useState<string[]>([])
   const [selectedEffects, setSelectedEffects] = useState<string[]>([])
   const [selectedIndications, setSelectedIndications] = useState<string[]>([])
@@ -65,12 +67,13 @@ export function StrainsPage() {
   const filtered = useMemo(() => {
     return sampleStrains.filter((s) => {
       if (search && !s.name.toLowerCase().includes(search.toLowerCase())) return false
+      if (selectedTypes.length && !selectedTypes.includes(s.type)) return false
       if (selectedTerpenes.length && !selectedTerpenes.some((t) => s.terpenes.includes(t))) return false
       if (selectedEffects.length && !selectedEffects.some((e) => s.effects.includes(e))) return false
       if (selectedIndications.length && !selectedIndications.some((ind) => s.indications.includes(ind))) return false
       return true
     })
-  }, [search, selectedTerpenes, selectedEffects, selectedIndications])
+  }, [search, selectedTypes, selectedTerpenes, selectedEffects, selectedIndications])
 
   function toggle(arr: string[], value: string, setter: (v: string[]) => void) {
     setter(arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value])
@@ -80,30 +83,43 @@ export function StrainsPage() {
     <div className="min-h-screen">
       <Header />
 
-      <main className="px-6 pt-8 pb-20 max-w-6xl mx-auto">
+      <main className="px-6 pt-[80px] pb-20 max-w-6xl mx-auto">
+        {/* Page header + search */}
+        <div className="mb-8">
+          <h1 className="font-serif text-[clamp(26px,3.5vw,40px)] text-brand-green-deep dark:text-white leading-[1.2] mb-2">
+            Catálogo de Cepas
+          </h1>
+          <p className="text-[15px] text-brand-muted dark:text-gray-400 font-light leading-[1.65] mb-6 max-w-[500px]">
+            Explore cepas com informações técnicas, terpenos e indicações médicas.
+          </p>
+
+          {/* Search bar */}
+          <div className="relative max-w-md">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-4 top-1/2 -translate-y-1/2 text-brand-muted/40 dark:text-gray-600">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar cepa por nome..."
+              className="w-full pl-11 pr-4 py-3 rounded-[14px] border border-brand-cream-dark dark:border-gray-800 bg-brand-white dark:bg-surface-dark-card text-sm text-brand-green-deep dark:text-gray-200 placeholder-brand-muted/40 dark:placeholder-gray-600 focus:outline-none focus:border-brand-green-light transition-colors shadow-soft"
+            />
+          </div>
+        </div>
+
+        {/* Content: sidebar + grid */}
         <div className="flex gap-8">
-          {/* Sidebar */}
+          {/* Sidebar filters */}
           <aside className="hidden md:block w-52 shrink-0">
-            <h2 className="text-sm font-bold text-brand-green-deep dark:text-white">
-              Filtro
-            </h2>
-
-            {/* Search */}
-            <div className="mt-3 relative">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-muted/40 dark:text-gray-600">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Filtro..."
-                className="w-full pl-8 pr-3 py-2 rounded-btn border border-brand-cream-dark dark:border-gray-800 bg-surface-card dark:bg-surface-dark-card text-xs text-brand-green-deep dark:text-gray-200 placeholder-brand-muted/40 dark:placeholder-gray-600 focus:outline-none focus:border-brand-green-deep transition-colors"
-              />
-            </div>
-
-            {/* Filter sections */}
+            <FilterSection
+              title="Tipo"
+              options={allTypes}
+              selected={selectedTypes}
+              onToggle={(v) => toggle(selectedTypes, v, setSelectedTypes)}
+              counts={allTypes.map((t) => sampleStrains.filter((s) => s.type === t).length)}
+            />
             <FilterSection
               title="Terpenos"
               options={allTerpenes}
@@ -162,6 +178,17 @@ function StrainCard({ strain }: { strain: Strain }) {
           <path d="M6 12c2-1.5 4-2 6-2s4 .5 6 2c-2 1.5-4 2-6 2s-4-.5-6-2z" />
         </svg>
 
+        {/* Type badge */}
+        <span className={`absolute top-2 left-2 px-2.5 py-1 rounded-btn text-[10px] font-semibold ${
+          strain.type === 'Sativa'
+            ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+            : strain.type === 'Indica'
+              ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+              : 'bg-brand-green-pale text-brand-green-deep dark:bg-brand-green-deep/30 dark:text-brand-green-light'
+        }`}>
+          {strain.type}
+        </span>
+
         {/* THC / CBD circular indicators */}
         <div className="absolute bottom-2 right-2 flex gap-1.5">
           <CircularIndicator label="THC" value={strain.thc} max={30} color="#6B7280" />
@@ -180,7 +207,7 @@ function StrainCard({ strain }: { strain: Strain }) {
 
         {/* Dominant terpenes */}
         <p className="mt-3 text-[10px] text-brand-muted dark:text-gray-500 uppercase tracking-wider font-medium">
-          Dominant terpenes
+          Terpenos dominantes
         </p>
         <div className="mt-1 flex flex-wrap gap-1">
           {strain.terpenes.map((t) => (
@@ -198,7 +225,7 @@ function StrainCard({ strain }: { strain: Strain }) {
             </span>
           ))}
           <span className="text-[10px] font-medium text-brand-green-mid dark:text-brand-green-light cursor-pointer hover:underline">
-            Indicações medical
+            Ver indicações
           </span>
         </div>
       </div>
@@ -264,7 +291,7 @@ function FilterSection({
   const [expanded, setExpanded] = useState(true)
 
   return (
-    <div className="mt-5">
+    <div className="mb-5">
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center justify-between"

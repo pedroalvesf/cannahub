@@ -9,6 +9,8 @@ import { OnboardingPage } from '@/pages/onboarding'
 import { QuizPage } from '@/pages/quiz'
 import { DocumentsPage } from '@/pages/documents'
 import { StrainsPage } from '@/pages/strains'
+import { ProductsPage } from '@/pages/products'
+import { AssociationsPage } from '@/pages/associations'
 
 const queryClient = new QueryClient()
 
@@ -45,6 +47,18 @@ function AppContent() {
         path="/cepas"
         element={
           <StrainsPage />
+        }
+      />
+      <Route
+        path="/produtos"
+        element={
+          <ProductsPage />
+        }
+      />
+      <Route
+        path="/associacoes"
+        element={
+          <AssociationsPage />
         }
       />
     </Routes>

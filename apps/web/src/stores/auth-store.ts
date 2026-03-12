@@ -1,9 +1,16 @@
 import { create } from 'zustand'
 
+interface User {
+  id: string
+  email: string
+  name?: string
+  status?: 'pending' | 'approved' | 'rejected'
+}
+
 interface AuthState {
   isAuthenticated: boolean
-  user: { id: string; email: string; name?: string } | null
-  login: (accessToken: string, refreshToken: string, user: { id: string; email: string; name?: string }) => void
+  user: User | null
+  login: (accessToken: string, refreshToken: string, user: User) => void
   logout: () => void
   hydrate: () => void
 }

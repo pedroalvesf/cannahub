@@ -21,17 +21,19 @@ A plataforma opera em três lados:
 - **Entidades**: OnboardingSession, SupportTicket, SupportMessage, Doctor
 - **Controllers**: 6 endpoints REST para onboarding
 
-### Frontend (apps/web) — 5 Páginas Implementadas
-Todas as páginas seguem o design system "Rota 1 Lightized" baseado em wireframe aprovado.
+### Frontend (apps/web) — 6 Páginas Implementadas
+Todas as páginas seguem o design system "Rota 1 Lightized" com cards SVG ilustrativos customizados.
 
 **Rotas ativas:**
 | Rota | Página | Descrição |
 |------|--------|-----------|
-| `/` | Home | Landing page completa (hero, perfis, benefícios, CTA strip, LGPD, footer) |
-| `/quiz` | Quiz/Triagem | Página intermediária "Conheça a CannHub" |
+| `/` | Home | Landing completa: hero, "Para quem" (4 cards SVG ilustrativos), "Benefícios" (3 cards SVG), CTA strip, LGPD, footer |
+| `/quiz` | Quiz/Triagem | Página "Conheça a CannHub" com 4 blocos de perfil (2x2 grid) |
 | `/acolhimento` | Acolhimento | Quiz 6 passos com cards, free text, LGPD, resumo |
 | `/documentos` | Validação de Documentos | 4 cards upload horizontais com stepper e aviso de confiança |
-| `/cepas` | Catálogo de Cepas | Sidebar com filtros checkbox + cards com indicadores circulares THC/CBD |
+| `/cepas` | Catálogo de Cepas | Título + busca no topo, sidebar com filtros (tipo/terpenos/efeitos/indicações), cards com badge tipo (Indica/Sativa/Híbrida) e indicadores circulares THC/CBD |
+| `/produtos` | Produtos | Óleos (1%-6% CBD), gummies, cápsulas, tópicos. Sidebar com filtros (tipo/concentração/associação/estoque). **Preço e botão "Solicitar" visíveis apenas para usuários com status `approved`** |
+| `/associacoes` | Associações | 8 associações de exemplo (5 regiões). Cards com barra verde, badge verificada, stats, perfis atendidos, tags de produtos. Filtros: região/produtos/perfil/acesso assistido. **Botão "Solicitar Vínculo" restrito a aprovados** |
 
 ---
 
@@ -63,18 +65,26 @@ Todas as páginas seguem o design system "Rota 1 Lightized" baseado em wireframe
 - `surface` (cream), `surface-card` (white), `surface-dark`, `surface-dark-card`
 
 ### UI Elements
-- **Navbar**: Pill flutuante (`rounded-btn`, `backdrop-blur`, `shadow-nav`, `fixed top-5 left-1/2 -translate-x-1/2`)
+- **Navbar**: Full-width fixa no topo (`fixed top-0 left-0 w-full`, `backdrop-blur`, `shadow-nav`, `border-b`). Conteúdo centralizado via `max-w-[1100px] mx-auto`
 - **Logo**: Folha rotacionada (div com `rounded-[80%_0_80%_0] rotate-[15deg]`) + "CannHub" em serif
-- **Cards**: `rounded-card` (18px), `border border-brand-cream-dark`, hover com lift (`hover:-translate-y-[5px]`) e accent bar verde no topo
+- **Cards de perfil/benefício**: SVG ilustrativos customizados em `public/cards/` (7 arquivos). Usados como `<img>` nos grids. Estilo: traço #233A34, preenchimento mint #A8C8A4, fundo beige #F3EEDF
+- **Cards de produto**: `rounded-card`, gradiente de fundo por tipo, badge de tipo, pill de concentração, indicadores circulares THC/CBD
 - **Botões**: `rounded-btn` (100px pill), sombras com `shadow-hero`
-- **Benefit cards**: 3 variantes (dark green bg, white bg, pale green bg) com numeração 01/02/03
 - **CTA Strip**: Banner dark green com `rounded-banner` (24px)
 - **Sombras**: Leves (`rgba(36, 61, 44, 0.04)` a `0.12`)
 - **Animações**: `animate-fade-up-{1..4}` escalonadas, `animate-fade-down` na nav, `animate-pulse-slow` decorativo
+- **Padding-top**: Páginas com Header usam `pt-[80px]` para não colidir com nav fixa. Home usa `pt-[100px]` (hero com mais respiro)
+
+### Assets
+- `public/cards/` — 7 SVGs ilustrativos: `paciente_adulto`, `responsavel_legal`, `medicos_veterinarios`, `iniciantes`, `seguranca_juridica`, `curadoria_de_cepas`, `acolhimento_real`
 
 ### Ícones
 - SVG inline com `strokeWidth="1.3"` (estilo Feather/Lucide, linhas finas)
-- Emojis nos profile cards (🧑 👨‍👩‍👧 ⚕️ 🌱)
+
+### Controle de acesso no frontend
+- **Auth store** (`stores/auth-store.ts`): campo `user.status` (`pending | approved | rejected`)
+- **Produtos**: preço e botão "Solicitar" só aparecem para `status === 'approved'`. Não aprovados veem cadeado + link para cadastro
+- Regra de negócio: informações comerciais (preços) requerem documentação validada (receita + laudo) por questões legais
 
 ---
 
@@ -218,9 +228,9 @@ cannahub/
 │           │   └── ui/         # ThemeToggle
 │           ├── hooks/          # useOnboarding (React Query)
 │           ├── lib/            # api.ts (axios)
-│           ├── pages/          # home, quiz, onboarding, documents, strains
-│           ├── stores/         # auth-store, theme-store (Zustand)
-│           ├── App.tsx         # Router (5 rotas)
+│           ├── pages/          # home, quiz, onboarding, documents, strains, products, associations
+│           ├── stores/         # auth-store (com user.status), theme-store (Zustand)
+│           ├── App.tsx         # Router (7 rotas)
 │           └── index.css       # Tailwind base
 ├── packages/
 │   └── shared/                 # Tipos, enums, schemas Zod compartilhados
@@ -294,21 +304,26 @@ Pagamento integrado com split via iugu, pedidos e histórico, dashboard de intel
 
 ## Próximos Passos (a partir de onde paramos)
 
-### Frontend
+### Frontend — Prioridade Imediata
+- [x] **Página de Associações** (`/associacoes`) — ✅ Implementada
+- [ ] **Página de Login/Registro** — telas de auth (botão "Entrar" no header não funciona ainda)
+- [ ] **Dashboard do Paciente** — status dos documentos, status de aprovação, vínculos com associações
+- [ ] **Conectar Quiz → Acolhimento** — os cards de perfil no Quiz devem linkar para `/acolhimento` passando o tipo selecionado
+- [ ] **Perfil individual da Associação** — página de detalhe ao clicar em um card
+
+### Frontend — Melhorias
+- [ ] Responsividade mobile da navbar (menu hamburger)
+- [ ] Dark mode refinado
 - [ ] Integrar páginas com API real (hooks useOnboarding já prontos)
-- [ ] Página de login/registro
-- [ ] Seção "Conteúdos" na home (atualmente placeholder)
-- [ ] Responsividade mobile da navbar pill (menu hamburger)
-- [ ] Dark mode refinado para o novo design system
 - [ ] Upload real de documentos (conectar com S3)
-- [ ] Catálogo de cepas com dados reais da API
+- [ ] Catálogo de cepas e produtos com dados reais da API
 
 ### Backend
 - [ ] Módulos auth, users, documents, associations, strains, products, memberships
 - [ ] Painel admin de aprovação de documentos
 - [ ] Sistema de notificações por e-mail (Resend)
 - [ ] Upload S3 com URLs assinadas
-- [ ] Seed de dados (cepas, associações)
+- [ ] Seed de dados (cepas, associações, produtos)
 
 ---
 
