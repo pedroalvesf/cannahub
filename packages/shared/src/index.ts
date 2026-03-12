@@ -17,6 +17,8 @@ export enum DocumentType {
   MEDICAL_REPORT = 'medical_report',
   IDENTITY = 'identity',
   PROOF_OF_RESIDENCE = 'proof_of_residence',
+  LEGAL_GUARDIANSHIP = 'legal_guardianship',
+  PROFESSIONAL_REGISTRATION = 'professional_registration',
 }
 
 export enum DocumentStatus {
@@ -107,4 +109,60 @@ export enum MessageSender {
   PATIENT = 'patient',
   AGENT = 'agent',
   SYSTEM = 'system',
+}
+
+// --- Patient & Association Domain ---
+
+export enum AccountStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+  SUSPENDED = 'suspended',
+}
+
+export enum VerificationStatus {
+  UNVERIFIED = 'unverified',
+  PENDING = 'pending',
+  VERIFIED = 'verified',
+}
+
+export enum RelationshipType {
+  PARENT = 'parent',
+  LEGAL_GUARDIAN = 'legal_guardian',
+  CAREGIVER = 'caregiver',
+  SPOUSE = 'spouse',
+}
+
+export enum ProfessionalType {
+  PRESCRIBER = 'prescriber',
+  VETERINARIAN = 'veterinarian',
+}
+
+export enum AssociationStatus {
+  PENDING_VERIFICATION = 'pending_verification',
+  VERIFIED = 'verified',
+  SUSPENDED = 'suspended',
+}
+
+export enum AssociationMemberRole {
+  OWNER = 'owner',
+  ADMIN = 'admin',
+  STAFF = 'staff',
+}
+
+export enum AssociationMemberStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+}
+
+export enum PatientAssociationStatus {
+  REQUESTED = 'requested',
+  ACTIVE = 'active',
+  REJECTED = 'rejected',
+  CANCELLED = 'cancelled',
+}
+
+export enum PatientType {
+  SELF = 'self',
+  DEPENDENT = 'dependent',
 }

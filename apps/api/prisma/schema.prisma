@@ -14,26 +14,45 @@ datasource db {
 }
 
 model User {
-  id           String         @id @default(uuid())
-  email        String         @unique
-  password     String
-  name         String?
-  isActive     Boolean        @default(true)
-  lastLoginAt  DateTime?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id                 String         @id @default(uuid())
+  email              String         @unique
+  password           String
+  name               String?
+  isActive           Boolean        @default(true)
+  lastLoginAt        DateTime?
+  accountType        String?        // AccountType enum
+  accountStatus      String         @default("pending")  // AccountStatus enum
+  verificationStatus String         @default("unverified") // VerificationStatus enum
+  phone              String?
+  cpf                String?        @unique
+  birthDate          DateTime?
+  city               String?
+  state              String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 
-  RefreshTokens RefreshToken[]
-  AccessTokens  AccessToken[]
-  LoginHistory LoginHistory[]
-  Devices      Device[]
+  RefreshTokens     RefreshToken[]
+  AccessTokens      AccessToken[]
+  LoginHistory      LoginHistory[]
+  Devices           Device[]
 
-  Roles        UserRole[]
-  AuditLogs    AuditLog[]     @relation("UserAuditLogs")
-  PerformedAudits AuditLog[]     @relation("PerformedAudits")
+  Roles             UserRole[]
+  AuditLogs         AuditLog[]     @relation("UserAuditLogs")
+  PerformedAudits   AuditLog[]     @relation("PerformedAudits")
   OnboardingSession OnboardingSession?
 
+  // Patient domain relations
+  Patient              Patient?
+  Dependents           Dependent[]
+  Documents            Document[]          @relation("UserDocuments")
+  ReviewedDocuments    Document[]          @relation("DocumentReviewer")
+  ProfessionalProfile  ProfessionalProfile?
+  AssociationMemberships AssociationMember[]
+  RequestedLinks       PatientAssociationLink[] @relation("LinkRequester")
+  ApprovedLinks        PatientAssociationLink[] @relation("LinkApprover")
+
   @@index([email])
+  @@index([cpf])
 }
 
 model RefreshToken {
@@ -265,4 +284,147 @@ model Doctor {
 
   @@index([state])
   @@index([crm])
+}
+
+// --- Patient Domain ---
+
+model Dependent {
+  id               String    @id @default(uuid())
+  guardianUserId   String
+  name             String
+  birthDate        DateTime?
+  documentNumber   String?
+  relationshipType String    // RelationshipType enum
+  proofDocumentId  String?   // FK to Document (guardianship proof)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  Guardian         User      @relation(fields: [guardianUserId], references: [id], onDelete: Cascade)
+  Patient          Patient?
+  Documents        Document[] @relation("DependentDocuments")
+
+  @@index([guardianUserId])
+}
+
+model Patient {
+  id           String   @id @default(uuid())
+  userId       String?  @unique
+  dependentId  String?  @unique
+  type         String   // PatientType enum: SELF | DEPENDENT
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  User         User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Dependent    Dependent? @relation(fields: [dependentId], references: [id], onDelete: Cascade)
+  AssociationLinks PatientAssociationLink[]
+
+  @@index([userId])
+  @@index([dependentId])
+}
+
+model Document {
+  id              String    @id @default(uuid())
+  userId          String
+  dependentId     String?
+  type            String    // DocumentType enum
+  url             String
+  status          String    @default("pending") // DocumentStatus enum
+  rejectionReason String?
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  User            User      @relation("UserDocuments", fields: [userId], references: [id], onDelete: Cascade)
+  Reviewer        User?     @relation("DocumentReviewer", fields: [reviewedBy], references: [id])
+  Dependent       Dependent? @relation("DependentDocuments", fields: [dependentId], references: [id])
+
+  @@index([userId])
+  @@index([dependentId])
+  @@index([status])
+}
+
+model ProfessionalProfile {
+  id                  String    @id @default(uuid())
+  userId              String    @unique
+  type                String    // ProfessionalType enum
+  registrationNumber  String
+  registrationState   String
+  specialty           String?
+  verifiedAt          DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  User                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([registrationNumber, registrationState])
+  @@index([userId])
+}
+
+// --- Association Domain ---
+
+model Association {
+  id                String    @id @default(uuid())
+  name              String
+  cnpj              String    @unique
+  status            String    @default("pending_verification") // AssociationStatus enum
+  description       String?
+  region            String
+  state             String
+  city              String
+  profileTypes      String[]  // AccountType enums this association serves
+  hasAssistedAccess Boolean   @default(false)
+  contactEmail      String
+  contactPhone      String?
+  website           String?
+  logoUrl           String?
+  claimedAt         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  Members           AssociationMember[]
+  PatientLinks      PatientAssociationLink[]
+
+  @@index([cnpj])
+  @@index([region])
+  @@index([state])
+  @@index([status])
+}
+
+model AssociationMember {
+  id            String   @id @default(uuid())
+  associationId String
+  userId        String
+  role          String   @default("staff") // AssociationMemberRole enum
+  status        String   @default("active") // AssociationMemberStatus enum
+  assignedAt    DateTime @default(now())
+
+  Association   Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  User          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([associationId, userId])
+  @@index([associationId])
+  @@index([userId])
+}
+
+model PatientAssociationLink {
+  id                String    @id @default(uuid())
+  associationId     String
+  patientId         String
+  requestedByUserId String
+  status            String    @default("requested") // PatientAssociationStatus enum
+  approvedByUserId  String?
+  startDate         DateTime?
+  endDate           DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  Association       Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  Patient           Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  RequestedBy       User        @relation("LinkRequester", fields: [requestedByUserId], references: [id])
+  ApprovedBy        User?       @relation("LinkApprover", fields: [approvedByUserId], references: [id])
+
+  @@index([associationId])
+  @@index([patientId])
+  @@index([status])
 }

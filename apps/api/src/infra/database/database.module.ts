@@ -25,6 +25,24 @@ import { PrismaSupportMessagesRepository } from './prisma/repositories/prisma-su
 import { DoctorsRepository } from '@/domain/onboarding/application/repositories/doctors-repository';
 import { PrismaDoctorsRepository } from './prisma/repositories/prisma-doctors-repository';
 
+// Patient
+import { DependentsRepository } from '@/domain/patient/application/repositories/dependents-repository';
+import { PrismaDependentsRepository } from './prisma/repositories/prisma-dependents-repository';
+import { PatientsRepository } from '@/domain/patient/application/repositories/patients-repository';
+import { PrismaPatientsRepository } from './prisma/repositories/prisma-patients-repository';
+import { DocumentsRepository } from '@/domain/patient/application/repositories/documents-repository';
+import { PrismaDocumentsRepository } from './prisma/repositories/prisma-documents-repository';
+import { ProfessionalProfilesRepository } from '@/domain/patient/application/repositories/professional-profiles-repository';
+import { PrismaProfessionalProfilesRepository } from './prisma/repositories/prisma-professional-profiles-repository';
+
+// Association
+import { AssociationsRepository } from '@/domain/association/application/repositories/associations-repository';
+import { PrismaAssociationsRepository } from './prisma/repositories/prisma-associations-repository';
+import { AssociationMembersRepository } from '@/domain/association/application/repositories/association-members-repository';
+import { PrismaAssociationMembersRepository } from './prisma/repositories/prisma-association-members-repository';
+import { PatientAssociationLinksRepository } from '@/domain/association/application/repositories/patient-association-links-repository';
+import { PrismaPatientAssociationLinksRepository } from './prisma/repositories/prisma-patient-association-links-repository';
+
 @Global()
 @Module({
   providers: [
@@ -74,6 +92,36 @@ import { PrismaDoctorsRepository } from './prisma/repositories/prisma-doctors-re
       provide: DoctorsRepository,
       useClass: PrismaDoctorsRepository,
     },
+    // Patient
+    {
+      provide: DependentsRepository,
+      useClass: PrismaDependentsRepository,
+    },
+    {
+      provide: PatientsRepository,
+      useClass: PrismaPatientsRepository,
+    },
+    {
+      provide: DocumentsRepository,
+      useClass: PrismaDocumentsRepository,
+    },
+    {
+      provide: ProfessionalProfilesRepository,
+      useClass: PrismaProfessionalProfilesRepository,
+    },
+    // Association
+    {
+      provide: AssociationsRepository,
+      useClass: PrismaAssociationsRepository,
+    },
+    {
+      provide: AssociationMembersRepository,
+      useClass: PrismaAssociationMembersRepository,
+    },
+    {
+      provide: PatientAssociationLinksRepository,
+      useClass: PrismaPatientAssociationLinksRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -89,6 +137,15 @@ import { PrismaDoctorsRepository } from './prisma/repositories/prisma-doctors-re
     SupportTicketsRepository,
     SupportMessagesRepository,
     DoctorsRepository,
+    // Patient
+    DependentsRepository,
+    PatientsRepository,
+    DocumentsRepository,
+    ProfessionalProfilesRepository,
+    // Association
+    AssociationsRepository,
+    AssociationMembersRepository,
+    PatientAssociationLinksRepository,
   ],
 })
 export class DatabaseModule {}

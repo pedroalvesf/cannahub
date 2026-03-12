@@ -10,6 +10,14 @@ export interface UserProps {
   name?: string;
   isActive?: boolean;
   lastLoginAt?: Date;
+  accountType?: string;
+  accountStatus: string;
+  verificationStatus: string;
+  phone?: string;
+  cpf?: string;
+  birthDate?: Date;
+  city?: string;
+  state?: string;
   roles: RoleList;
   createdAt: Date;
   updatedAt?: Date;
@@ -42,6 +50,78 @@ export class User extends AggregateRoot<UserProps> {
 
   get updatedAt() {
     return this.props.updatedAt;
+  }
+
+  get accountType() {
+    return this.props.accountType;
+  }
+
+  get accountStatus() {
+    return this.props.accountStatus;
+  }
+
+  get verificationStatus() {
+    return this.props.verificationStatus;
+  }
+
+  get phone() {
+    return this.props.phone;
+  }
+
+  get cpf() {
+    return this.props.cpf;
+  }
+
+  get birthDate() {
+    return this.props.birthDate;
+  }
+
+  get city() {
+    return this.props.city;
+  }
+
+  get state() {
+    return this.props.state;
+  }
+
+  set accountType(accountType: string | undefined) {
+    this.props.accountType = accountType;
+    this.touch();
+  }
+
+  set accountStatus(status: string) {
+    this.props.accountStatus = status;
+    this.touch();
+  }
+
+  set verificationStatus(status: string) {
+    this.props.verificationStatus = status;
+    this.touch();
+  }
+
+  set phone(phone: string | undefined) {
+    this.props.phone = phone;
+    this.touch();
+  }
+
+  set cpf(cpf: string | undefined) {
+    this.props.cpf = cpf;
+    this.touch();
+  }
+
+  set birthDate(birthDate: Date | undefined) {
+    this.props.birthDate = birthDate;
+    this.touch();
+  }
+
+  set city(city: string | undefined) {
+    this.props.city = city;
+    this.touch();
+  }
+
+  set state(state: string | undefined) {
+    this.props.state = state;
+    this.touch();
   }
 
   get roles() {
@@ -115,7 +195,7 @@ export class User extends AggregateRoot<UserProps> {
   static create(
     props: Optional<
       UserProps,
-      'createdAt' | 'updatedAt' | 'roles' | 'isActive'
+      'createdAt' | 'updatedAt' | 'roles' | 'isActive' | 'accountStatus' | 'verificationStatus'
     >,
     id?: UniqueEntityID
   ) {
@@ -124,6 +204,8 @@ export class User extends AggregateRoot<UserProps> {
         ...props,
         roles: props.roles ?? new RoleList(),
         isActive: props.isActive ?? true,
+        accountStatus: props.accountStatus ?? 'pending',
+        verificationStatus: props.verificationStatus ?? 'unverified',
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },

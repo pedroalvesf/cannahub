@@ -38,6 +38,13 @@ export class PrismaUsersRepository implements UsersRepository {
     return PrismaUsersMapper.toDomain(userWithRoles);
   }
 
+  async findByCpf(cpf: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { cpf },
+    });
+    return user ? PrismaUsersMapper.toDomain(user) : null;
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: { email },
