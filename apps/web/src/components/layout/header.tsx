@@ -34,13 +34,8 @@ export function Header() {
           </a>
         </li>
         <li>
-          <Link to="/cepas" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
-            Cepas
-          </Link>
-        </li>
-        <li>
-          <Link to="/produtos" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
-            Produtos
+          <Link to="/catalogo" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
+            Catálogo
           </Link>
         </li>
         <li>

@@ -31,8 +31,7 @@ Todas as páginas seguem o design system "Rota 1 Lightized" com cards SVG ilustr
 | `/quiz` | Quiz/Triagem | Página "Conheça a CannHub" com 4 blocos de perfil (2x2 grid) |
 | `/acolhimento` | Acolhimento | Quiz 6 passos com cards, free text, LGPD, resumo |
 | `/documentos` | Validação de Documentos | 4 cards upload horizontais com stepper e aviso de confiança |
-| `/cepas` | Catálogo de Cepas | Título + busca no topo, sidebar com filtros (tipo/terpenos/efeitos/indicações), cards com badge tipo (Indica/Sativa/Híbrida) e indicadores circulares THC/CBD |
-| `/produtos` | Produtos | Óleos (1%-6% CBD), gummies, cápsulas, tópicos. Sidebar com filtros (tipo/concentração/associação/estoque). **Preço e botão "Solicitar" visíveis apenas para usuários com status `approved`** |
+| `/catalogo` | Catálogo | Página unificada com tabs Cepas/Produtos. **Cepas**: sidebar com filtros (tipo/terpenos/efeitos/indicações), cards com badge tipo (Indica/Sativa/Híbrida) e indicadores circulares THC/CBD. **Produtos**: óleos (1%-6% CBD), gummies, cápsulas, tópicos, sidebar com filtros (tipo/concentração/associação/estoque). Preço e botão "Solicitar" visíveis apenas para `status === 'approved'` |
 | `/associacoes` | Associações | 8 associações de exemplo (5 regiões). Cards com barra verde, badge verificada, stats, perfis atendidos, tags de produtos. Filtros: região/produtos/perfil/acesso assistido. **Botão "Solicitar Vínculo" restrito a aprovados** |
 
 ---
@@ -228,9 +227,9 @@ cannahub/
 │           │   └── ui/         # ThemeToggle
 │           ├── hooks/          # useOnboarding (React Query)
 │           ├── lib/            # api.ts (axios)
-│           ├── pages/          # home, quiz, onboarding, documents, strains, products, associations
+│           ├── pages/          # home, quiz, onboarding, documents, catalog, associations
 │           ├── stores/         # auth-store (com user.status), theme-store (Zustand)
-│           ├── App.tsx         # Router (7 rotas)
+│           ├── App.tsx         # Router (6 rotas)
 │           └── index.css       # Tailwind base
 ├── packages/
 │   └── shared/                 # Tipos, enums, schemas Zod compartilhados
