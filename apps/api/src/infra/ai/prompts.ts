@@ -6,7 +6,6 @@ Você DEVE retornar APENAS um JSON válido com os seguintes campos (inclua apena
 
 {
   "condition": "chronic_pain" | "anxiety" | "epilepsy" | "autism" | "parkinsons" | "multiple_sclerosis" | "fibromyalgia" | "nausea" | "adhd" | "ptsd" | "veterinary" | "other",
-  "accountType": "adult_patient" | "legal_guardian" | "prescriber" | "veterinarian" | "caregiver",
   "experience": "never" | "less_than_6m" | "6m_to_1y" | "1y_to_3y" | "more_than_3y",
   "preferredForm": "sublingual_oil" | "vaporization" | "smoking" | "topical" | "capsule" | "edible",
   "hasPrescription": true | false,
@@ -16,7 +15,6 @@ Você DEVE retornar APENAS um JSON válido com os seguintes campos (inclua apena
 Regras:
 - Retorne APENAS o JSON, sem texto adicional
 - Inclua apenas campos que o paciente mencionou explicitamente ou que podem ser claramente inferidos
-- Se o paciente menciona outra pessoa (filho, mãe, pai, pet), infira o accountType adequado
 - Se menciona convulsões, infira epilepsia. Se menciona tremores em idoso, infira parkinsons
 - Linguagem leiga deve ser mapeada para termos técnicos
 - Você NÃO pode dar conselho médico, recomendar dosagem ou diagnosticar

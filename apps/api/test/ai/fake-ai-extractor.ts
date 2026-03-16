@@ -12,8 +12,6 @@ export class FakeAiExtractor implements AiExtractor {
       fields.condition = 'epilepsy';
     if (input.includes('dor')) fields.condition = 'chronic_pain';
     if (input.includes('ansiedade')) fields.condition = 'anxiety';
-    if (input.includes('filho') || input.includes('mãe'))
-      fields.accountType = 'legal_guardian';
     if (input.includes('nunca')) fields.experience = 'never';
 
     return fields;

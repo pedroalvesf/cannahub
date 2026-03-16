@@ -6,7 +6,6 @@ interface OnboardingSummary {
   status: string
   currentStep: number
   condition?: string
-  accountType?: string
   experience?: string
   preferredForm?: string
   hasPrescription?: boolean

@@ -19,19 +19,19 @@ export function Header() {
       {/* Nav links */}
       <ul className="hidden md:flex items-center gap-8 list-none">
         <li>
-          <a href="#como-funciona" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
+          <Link to="/#como-funciona" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
             Como funciona
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#para-quem" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
+          <Link to="/#para-quem" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
             Para quem
-          </a>
+          </Link>
         </li>
         <li>
-          <a href="#seguranca" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
+          <Link to="/#seguranca" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
             Segurança
-          </a>
+          </Link>
         </li>
         <li>
           <Link to="/catalogo" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
@@ -53,10 +53,10 @@ export function Header() {
         {isAuthenticated ? (
           <>
             <Link
-              to="/acolhimento"
+              to="/painel"
               className="text-sm font-medium text-brand-green-deep dark:text-brand-green-light px-4 py-2 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors no-underline"
             >
-              Meu acolhimento
+              Meu painel
             </Link>
             <button
               onClick={logout}
@@ -67,9 +67,12 @@ export function Header() {
           </>
         ) : (
           <>
-            <button className="text-sm font-medium text-brand-green-deep dark:text-gray-300 bg-transparent border-none px-4 py-2 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors cursor-pointer">
+            <Link
+              to="/login"
+              className="text-sm font-medium text-brand-green-deep dark:text-gray-300 bg-transparent px-4 py-2 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors no-underline"
+            >
               Entrar
-            </button>
+            </Link>
             <Link
               to="/quiz"
               className="text-sm font-semibold text-brand-white bg-brand-green-deep px-[22px] py-2.5 rounded-btn hover:bg-brand-green-mid transition-colors hover:-translate-y-px no-underline"

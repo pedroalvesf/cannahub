@@ -36,7 +36,6 @@ export class CompleteOnboardingController {
       status: session.status,
       summary: session.summary,
       condition: session.condition,
-      accountType: session.accountType,
       experience: session.experience,
       preferredForm: session.preferredForm,
       hasPrescription: session.hasPrescription,

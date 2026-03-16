@@ -10,6 +10,9 @@ interface CreateUserUseCaseRequest {
   email: string;
   password: string;
   name: string;
+  accountType?: string;
+  phone?: string;
+  cpf?: string;
 }
 
 type CreateUserUseCaseResponse = Either<
@@ -30,6 +33,9 @@ export class CreateUserUseCase {
     email,
     password,
     name,
+    accountType,
+    phone,
+    cpf,
   }: CreateUserUseCaseRequest): Promise<CreateUserUseCaseResponse> {
     const userExists = await this.userRepository.findByEmail(email);
 
@@ -44,6 +50,9 @@ export class CreateUserUseCase {
         email,
         password: hashedPassword,
         name,
+        accountType,
+        phone,
+        cpf,
       },
       new UniqueEntityID(email)
     );

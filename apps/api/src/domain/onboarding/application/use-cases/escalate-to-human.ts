@@ -41,7 +41,6 @@ export class EscalateToHumanUseCase {
       sessionId: session.id,
       context: {
         condition: session.condition,
-        accountType: session.accountType,
         experience: session.experience,
         preferredForm: session.preferredForm,
         hasPrescription: session.hasPrescription,

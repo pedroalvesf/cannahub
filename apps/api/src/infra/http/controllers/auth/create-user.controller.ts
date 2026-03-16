@@ -13,8 +13,10 @@ import { UserAlreadyExistsError } from '@/domain/auth/application/use-cases/erro
 import { AuthenticateDeviceUseCase } from '@/domain/auth/application/use-cases/authenticate-device';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Device } from '@/domain/auth/enterprise/entities/device';
+import { Public } from '@/infra/auth/public';
 
 @Controller('auth/user')
+@Public()
 export class CreateUserController {
   constructor(
     private createUser: CreateUserUseCase,
@@ -38,11 +40,14 @@ export class CreateUserController {
       );
     }
 
-    const { email, password, name } = body;
+    const { email, password, name, accountType, phone, cpf } = body;
     const result = await this.createUser.execute({
       email,
       password,
       name,
+      accountType,
+      phone,
+      cpf,
     });
 
     if (result.isLeft()) {
@@ -78,9 +83,19 @@ export class CreateUserController {
       throw new BadRequestException(tokens.value.message);
     }
 
+    const createdUser = result.value.user;
+
     return {
       accessToken: tokens.value.accessToken.token,
       refreshToken: tokens.value.refreshToken.token,
+      user: {
+        id: createdUser.id.toString(),
+        email: createdUser.email,
+        name: createdUser.name,
+        accountType: createdUser.accountType,
+        accountStatus: createdUser.accountStatus,
+        verificationStatus: createdUser.verificationStatus,
+      },
     };
   }
 }

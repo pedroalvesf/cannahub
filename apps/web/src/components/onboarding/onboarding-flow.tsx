@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { OptionCard } from './option-card'
 import { StepProgress } from './step-progress'
+import { useOnboardingSummary, useStartOnboarding, useSubmitStep, useCompleteOnboarding } from '@/hooks/use-onboarding'
 
 interface StepConfig {
   question: string
@@ -28,17 +30,6 @@ const steps: StepConfig[] = [
     allowFreeText: true,
     freeTextPlaceholder: 'Ou descreva com suas próprias palavras...',
     columns: 2,
-  },
-  {
-    question: 'Quem vai utilizar o tratamento?',
-    options: [
-      { value: 'adult_patient', label: 'Eu mesmo(a)', description: 'Sou maior de idade' },
-      { value: 'legal_guardian', label: 'Meu filho(a) ou dependente', description: 'Sou responsável legal' },
-      { value: 'caregiver', label: 'Alguém que eu cuido', description: 'Tenho procuração ou autorização' },
-      { value: 'veterinarian', label: 'Meu pet', description: 'Uso veterinário' },
-    ],
-    allowFreeText: true,
-    freeTextPlaceholder: 'Me conte sua situação...',
   },
   {
     question: 'Qual sua experiência com cannabis medicinal?',
@@ -83,7 +74,6 @@ const steps: StepConfig[] = [
 
 const stepKeys = [
   'condition',
-  'accountType',
   'experience',
   'prescription',
   'preferredForm',
@@ -96,19 +86,108 @@ interface OnboardingFlowProps {
 }
 
 export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) {
+  const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [freeText, setFreeText] = useState('')
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isCompleting, setIsCompleting] = useState(false)
+  const [apiError, setApiError] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const initialized = useRef(false)
+
+  const { data: existingSession, isError: summaryError, isLoading: summaryLoading } = useOnboardingSummary()
+  const startOnboarding = useStartOnboarding()
+  const submitStep = useSubmitStep()
+  const completeOnboarding = useCompleteOnboarding()
+
+  // Check existing session and either resume or start new
+  useEffect(() => {
+    if (initialized.current) return
+    if (summaryLoading) return // still loading
+    // If error (e.g. 404 no session) or no data, treat as no session
+
+    initialized.current = true
+
+    // Already completed — redirect to dashboard
+    if (existingSession && (existingSession.status === 'completed' || existingSession.status === 'awaiting_prescription')) {
+      navigate('/painel', { replace: true })
+      return
+    }
+
+    // Session in progress — resume from where user left off
+    if (existingSession && existingSession.status === 'in_progress') {
+      const restored: Record<string, string> = {}
+      if (existingSession.condition) restored.condition = existingSession.condition
+      if (existingSession.experience) restored.experience = existingSession.experience
+      if (existingSession.hasPrescription !== undefined) {
+        restored.prescription = existingSession.hasPrescription ? 'yes' : 'no'
+      }
+      if (existingSession.preferredForm) restored.preferredForm = existingSession.preferredForm
+      if (existingSession.assistedAccess !== undefined) {
+        restored.assistedAccess = existingSession.assistedAccess ? 'yes' : 'no'
+      }
+      setAnswers(restored)
+
+      // Jump to the next unanswered step
+      const resumeStep = Math.min((existingSession.currentStep ?? 1) - 1, steps.length)
+      setCurrentStep(resumeStep)
+      setIsLoading(false)
+      return
+    }
+
+    // No session — start new
+    startOnboarding.mutate(undefined, {
+      onSuccess: () => setIsLoading(false),
+      onError: (err) => {
+        const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+        if (msg?.includes('already') || msg?.includes('exists')) {
+          setIsLoading(false)
+          return
+        }
+        setApiError(msg || 'Erro ao iniciar acolhimento.')
+        setIsLoading(false)
+      },
+    })
+  }, [existingSession, summaryLoading, summaryError]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const step = steps[currentStep]
   const isLastStep = currentStep === steps.length - 1
   const isSummary = currentStep >= steps.length
 
+  function submitStepToApi(stepNumber: number, value: string, isFreeText: boolean) {
+    setIsSubmitting(true)
+    setApiError('')
+
+    const payload: { stepNumber: number; input?: string; selectedOption?: string } = {
+      stepNumber,
+    }
+    if (isFreeText) {
+      payload.input = value
+    } else {
+      payload.selectedOption = value
+    }
+
+    submitStep.mutate(payload, {
+      onSuccess: () => {
+        setIsSubmitting(false)
+      },
+      onError: (err) => {
+        setIsSubmitting(false)
+        const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+        setApiError(msg || 'Erro ao salvar resposta.')
+      },
+    })
+  }
+
   function selectOption(value: string) {
     const key = stepKeys[currentStep] ?? `step${currentStep}`
     const newAnswers = { ...answers, [key]: value }
     setAnswers(newAnswers)
+
+    // Submit to API (stepNumber is 1-indexed)
+    submitStepToApi(currentStep + 1, value, false)
 
     if (isLastStep) {
       goToSummary(newAnswers)
@@ -122,9 +201,13 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
     if (!freeText.trim()) return
 
     const key = stepKeys[currentStep] ?? `step${currentStep}`
-    const newAnswers = { ...answers, [key]: freeText.trim() }
+    const trimmed = freeText.trim()
+    const newAnswers = { ...answers, [key]: trimmed }
     setAnswers(newAnswers)
     setFreeText('')
+
+    // Submit free text to API
+    submitStepToApi(currentStep + 1, trimmed, true)
 
     if (isLastStep) {
       goToSummary(newAnswers)
@@ -159,11 +242,37 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
     }, 200)
   }
 
+  function handleComplete() {
+    setIsCompleting(true)
+    setApiError('')
+
+    completeOnboarding.mutate(undefined, {
+      onSuccess: () => {
+        setIsCompleting(false)
+        onComplete(answers)
+      },
+      onError: (err) => {
+        setIsCompleting(false)
+        const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+        setApiError(msg || 'Erro ao finalizar acolhimento.')
+      },
+    })
+  }
+
   function getLabelFor(stepIndex: number, value: string): string {
     const s = steps[stepIndex]
     if (!s) return value
     const option = s.options.find((o) => o.value === value)
     return option?.label ?? value
+  }
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <p className="text-[14px] text-brand-muted dark:text-gray-500">Carregando...</p>
+      </div>
+    )
   }
 
   // Summary screen
@@ -206,12 +315,19 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
             })}
           </div>
 
+          {apiError && (
+            <div className="mt-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-[13px] rounded-lg px-4 py-3">
+              {apiError}
+            </div>
+          )}
+
           <div className="mt-10 space-y-3">
             <button
-              onClick={() => onComplete(answers)}
-              className="w-full py-3.5 font-bold text-white bg-brand-green-deep rounded-btn hover:bg-brand-green-mid transition-colors"
+              onClick={handleComplete}
+              disabled={isCompleting || isSubmitting}
+              className="w-full py-3.5 font-bold text-white bg-brand-green-deep rounded-btn hover:bg-brand-green-mid transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Confirmar e continuar
+              {isCompleting ? 'Finalizando...' : 'Confirmar e continuar'}
             </button>
             <button
               onClick={() => onEscalate('Paciente solicitou atendimento humano após resumo')}
@@ -251,6 +367,12 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
             </p>
           )}
 
+          {apiError && (
+            <div className="mt-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-[13px] rounded-lg px-4 py-3">
+              {apiError}
+            </div>
+          )}
+
           {/* Options */}
           <div className={`mt-6 grid gap-2.5 ${step.columns === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
             {step.options.map((option) => (
@@ -276,7 +398,7 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
               />
               <button
                 type="submit"
-                disabled={!freeText.trim()}
+                disabled={!freeText.trim() || isSubmitting}
                 className="px-5 py-3 rounded-btn bg-brand-green-deep text-white text-sm font-semibold hover:bg-brand-green-mid transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 Enviar

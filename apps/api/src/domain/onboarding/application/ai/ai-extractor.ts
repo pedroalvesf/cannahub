@@ -1,6 +1,5 @@
 export interface ExtractedFields {
   condition?: string;
-  accountType?: string;
   experience?: string;
   preferredForm?: string;
   hasPrescription?: boolean;

@@ -50,9 +50,25 @@ model User {
   AssociationMemberships AssociationMember[]
   RequestedLinks       PatientAssociationLink[] @relation("LinkRequester")
   ApprovedLinks        PatientAssociationLink[] @relation("LinkApprover")
+  Address              Address?
 
   @@index([email])
   @@index([cpf])
+}
+
+model Address {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  street      String                         // Rua/Av + número
+  complement  String?                        // Apto, bloco, etc.
+  neighborhood String                        // Bairro
+  city        String
+  state       String                         // UF (2 chars)
+  zipCode     String                         // CEP
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model RefreshToken {
@@ -209,8 +225,8 @@ model OnboardingSession {
   currentStep     Int      @default(1)
 
   // Dados estruturados extraídos (pela IA ou cards)
+  // accountType vive no User — não duplicar aqui
   condition       String?  // HealthCondition enum
-  accountType     String?  // AccountType enum
   experience      String?  // ExperienceLevel enum
   preferredForm   String?  // UsageForm enum
   hasPrescription Boolean?

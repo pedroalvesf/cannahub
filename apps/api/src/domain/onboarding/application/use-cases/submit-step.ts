@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { OnboardingSession } from '../../enterprise/entities/onboarding-session';
 import { OnboardingSessionsRepository } from '../repositories/onboarding-sessions-repository';
-import { AiExtractor } from '../ai/ai-extractor';
 import { SessionNotFoundError } from './errors/session-not-found-error';
 import { SessionAlreadyCompletedError } from './errors/session-already-completed-error';
 
@@ -18,11 +17,18 @@ type SubmitStepResponse = Either<
   { session: OnboardingSession; extractedFields?: Record<string, unknown> }
 >;
 
+const STEP_FIELD_MAP: Record<number, string> = {
+  1: 'condition',
+  2: 'experience',
+  3: 'hasPrescription',
+  4: 'preferredForm',
+  5: 'assistedAccess',
+};
+
 @Injectable()
 export class SubmitStepUseCase {
   constructor(
     private onboardingSessionsRepository: OnboardingSessionsRepository,
-    private aiExtractor: AiExtractor,
   ) {}
 
   async execute({
@@ -42,15 +48,18 @@ export class SubmitStepUseCase {
       return left(new SessionAlreadyCompletedError());
     }
 
-    // Se o paciente selecionou uma opção via card, usa direto
-    // Se digitou texto livre, extrai com IA
+    // Mapeia a resposta (card ou texto livre) para campos estruturados
+    // TODO: para texto livre, substituir por aiExtractor.extractFromText() quando ANTHROPIC_API_KEY estiver configurada
     let extractedFields: Record<string, unknown> | undefined;
 
     if (selectedOption) {
       extractedFields = this.mapOptionToFields(stepNumber, selectedOption);
     } else if (input) {
-      const extracted = await this.aiExtractor.extractFromText(input);
-      extractedFields = extracted as Record<string, unknown>;
+      // Sem IA: salva texto direto no campo correspondente ao step
+      const field = STEP_FIELD_MAP[stepNumber];
+      if (field) {
+        extractedFields = { [field]: input };
+      }
     }
 
     session.addRawResponse({
@@ -75,19 +84,9 @@ export class SubmitStepUseCase {
     step: number,
     option: string,
   ): Record<string, unknown> {
-    const stepFieldMap: Record<number, string> = {
-      1: 'condition',
-      2: 'accountType',
-      3: 'experience',
-      4: 'hasPrescription',
-      5: 'preferredForm',
-      6: 'assistedAccess',
-    };
-
-    const field = stepFieldMap[step];
+    const field = STEP_FIELD_MAP[step];
     if (!field) return {};
 
-    // Step 4 retorna boolean
     if (field === 'hasPrescription') {
       const needsDoctor = option === 'no';
       return {

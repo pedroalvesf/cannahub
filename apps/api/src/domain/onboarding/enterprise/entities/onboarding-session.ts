@@ -14,7 +14,6 @@ export interface OnboardingSessionProps {
   status: string;
   currentStep: number;
   condition?: string;
-  accountType?: string;
   experience?: string;
   preferredForm?: string;
   hasPrescription?: boolean;
@@ -44,10 +43,6 @@ export class OnboardingSession extends Entity<OnboardingSessionProps> {
 
   get condition() {
     return this.props.condition;
-  }
-
-  get accountType() {
-    return this.props.accountType;
   }
 
   get experience() {
@@ -105,8 +100,6 @@ export class OnboardingSession extends Entity<OnboardingSessionProps> {
 
   updateFields(fields: Partial<OnboardingSessionProps>) {
     if (fields.condition !== undefined) this.props.condition = fields.condition;
-    if (fields.accountType !== undefined)
-      this.props.accountType = fields.accountType;
     if (fields.experience !== undefined)
       this.props.experience = fields.experience;
     if (fields.preferredForm !== undefined)

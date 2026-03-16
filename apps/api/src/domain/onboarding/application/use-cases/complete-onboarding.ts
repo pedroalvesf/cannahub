@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { OnboardingSession } from '../../enterprise/entities/onboarding-session';
 import { OnboardingSessionsRepository } from '../repositories/onboarding-sessions-repository';
-import { AiExtractor } from '../ai/ai-extractor';
 import { SessionNotFoundError } from './errors/session-not-found-error';
 import { SessionAlreadyCompletedError } from './errors/session-already-completed-error';
 
@@ -15,11 +14,42 @@ type CompleteOnboardingResponse = Either<
   { session: OnboardingSession }
 >;
 
+// Labels para gerar resumo legível
+const CONDITION_LABELS: Record<string, string> = {
+  chronic_pain: 'Dor Crônica',
+  anxiety: 'Ansiedade',
+  epilepsy: 'Epilepsia',
+  autism: 'Autismo / TEA',
+  parkinsons: 'Parkinson',
+  multiple_sclerosis: 'Esclerose Múltipla',
+  fibromyalgia: 'Fibromialgia',
+  nausea: 'Náusea',
+  adhd: 'TDAH',
+  ptsd: 'PTSD',
+  veterinary: 'Uso Veterinário',
+};
+
+const EXPERIENCE_LABELS: Record<string, string> = {
+  never: 'Nunca usou',
+  less_than_6m: 'Menos de 6 meses',
+  '6m_to_1y': '6 meses a 1 ano',
+  '1y_to_3y': '1 a 3 anos',
+  more_than_3y: 'Mais de 3 anos',
+};
+
+const FORM_LABELS: Record<string, string> = {
+  sublingual_oil: 'Óleo sublingual',
+  vaporization: 'Vaporização',
+  smoking: 'Fumo',
+  topical: 'Uso tópico',
+  capsule: 'Cápsula',
+  edible: 'Comestível',
+};
+
 @Injectable()
 export class CompleteOnboardingUseCase {
   constructor(
     private onboardingSessionsRepository: OnboardingSessionsRepository,
-    private aiExtractor: AiExtractor,
   ) {}
 
   async execute({
@@ -36,18 +66,9 @@ export class CompleteOnboardingUseCase {
       return left(new SessionAlreadyCompletedError());
     }
 
-    // Gera resumo com IA baseado nos dados coletados
-    const summaryData = {
-      condition: session.condition,
-      accountType: session.accountType,
-      experience: session.experience,
-      preferredForm: session.preferredForm,
-      hasPrescription: session.hasPrescription,
-      assistedAccess: session.assistedAccess,
-      growingInterest: session.growingInterest,
-    };
-
-    const summary = await this.aiExtractor.generateSummary(summaryData);
+    // Gera resumo estruturado com os dados coletados
+    // TODO: substituir por aiExtractor.generateSummary() quando ANTHROPIC_API_KEY estiver configurada
+    const summary = this.buildSummary(session);
     session.setSummary(summary);
 
     if (session.hasPrescription === false) {
@@ -59,5 +80,41 @@ export class CompleteOnboardingUseCase {
     await this.onboardingSessionsRepository.save(session);
 
     return right({ session });
+  }
+
+  private buildSummary(session: OnboardingSession): string {
+    const parts: string[] = [];
+
+    const condition = session.condition;
+    if (condition) {
+      const label = CONDITION_LABELS[condition] ?? condition;
+      parts.push(`Condição principal: ${label}`);
+    }
+
+    const experience = session.experience;
+    if (experience) {
+      const label = EXPERIENCE_LABELS[experience] ?? experience;
+      parts.push(`Experiência com cannabis: ${label}`);
+    }
+
+    const form = session.preferredForm;
+    if (form) {
+      const label = FORM_LABELS[form] ?? form;
+      parts.push(`Forma de uso preferida: ${label}`);
+    }
+
+    if (session.hasPrescription !== undefined) {
+      parts.push(
+        `Receita médica: ${session.hasPrescription ? 'Sim' : 'Não'}`,
+      );
+    }
+
+    if (session.assistedAccess !== undefined) {
+      parts.push(
+        `Acesso assistido: ${session.assistedAccess ? 'Sim' : 'Não'}`,
+      );
+    }
+
+    return parts.join('. ') + '.';
   }
 }

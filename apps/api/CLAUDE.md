@@ -1,95 +1,160 @@
-# CLAUDE.md
+# CannHub API — Referência Backend
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## What This Is
-
-Auth-min is a NestJS authentication & authorization microservice using Clean Architecture + DDD. It handles JWT auth, RBAC with hierarchical roles, device-based session tracking, and audit logging. Written in TypeScript with Prisma + PostgreSQL.
-
-## Commands
+## Comandos
 
 ```bash
-# Development
-pnpm dev                # Start with hot reload (port 3000)
+pnpm dev                # Dev server (port 3000)
 pnpm build              # Compile TypeScript (nest build --tsc)
-
-# Testing (Vitest + SWC)
-pnpm test               # Unit tests (vitest run --project unit)
-pnpm test:watch         # Unit tests watch mode
-pnpm test:coverage      # Unit tests with coverage
-pnpm test:e2e           # E2E tests (needs postgres on port 8239, see E2E setup below)
-pnpm test:all           # All tests
-
-# Code quality
-pnpm lint:check         # ESLint check
+pnpm test               # Unit tests — 71 passando (vitest run --project unit)
+pnpm test:watch         # Watch mode
+pnpm test:e2e           # E2E (precisa Postgres na porta 8239)
 pnpm lint               # ESLint fix
-pnpm format:check       # Prettier check
 pnpm format             # Prettier fix
-
-# Database
-pnpm prisma:generate    # Generate Prisma client (required before tests/build)
+pnpm prisma:generate    # Gera Prisma client (obrigatório antes de build/test)
 pnpm prisma:migrate     # Run migrations
-docker compose -f docker-compose.test.yml up -d  # Start test DB
+npx prisma db push      # Sync schema direto (dev rápido)
 ```
 
-## Architecture
+## Arquitetura
 
 ```
 src/
-├── core/               # Shared kernel: Entity, Either<L,R>, UniqueEntityID, WatchedList, DomainEvents
-├── domain/auth/
-│   ├── enterprise/entities/    # Domain entities (User, Role, Permission, Device, RefreshToken, etc.)
-│   └── application/
-│       ├── use-cases/          # 16 use cases, each with tests/ subfolder
-│       ├── repositories/       # Abstract repository interfaces
-│       └── cryptography/       # Abstract crypto interfaces (HashGenerator, Encrypter, etc.)
+├── core/                       # Entity, Either<L,R>, UniqueEntityID, WatchedList, DomainEvents
+├── domain/
+│   ├── auth/
+│   │   ├── enterprise/entities/    # User, Role, Permission, Device, RefreshToken
+│   │   └── application/
+│   │       ├── use-cases/          # 16+ use cases com tests/ subfolder
+│   │       ├── repositories/       # Interfaces abstratas
+│   │       └── cryptography/       # HashGenerator, Encrypter, etc.
+│   └── onboarding/
+│       ├── enterprise/entities/    # OnboardingSession, SupportTicket, SupportMessage, Doctor
+│       └── application/
+│           ├── use-cases/          # start, submit-step, complete, get-summary, escalate, extract
+│           ├── repositories/       # OnboardingSessionsRepository, etc.
+│           └── ai/                 # AiExtractor (interface abstrata)
 ├── infra/
-│   ├── auth/           # JWT strategy, guards (Jwt, Roles, Permissions), decorators (@Public, @CurrentUser)
-│   ├── cryptography/   # Bcrypt, JWT, AES implementations
-│   ├── database/prisma/  # Prisma repository implementations + mappers
-│   ├── http/controllers/ # NestJS controllers + DTOs + presenters
-│   ├── env/            # Zod-based env validation
-│   └── logging/        # Winston integration
-└── generated/prisma/   # Auto-generated Prisma client (git-ignored)
+│   ├── auth/                   # JWT strategy, guards, @Public, @CurrentUser
+│   ├── cryptography/           # Bcrypt (bcryptjs), JWT, AES
+│   ├── database/prisma/        # Repos Prisma + mappers
+│   ├── http/controllers/       # Controllers + DTOs
+│   ├── ai/                     # Claude Haiku implementation + prompts
+│   ├── env/                    # Validação Zod de env vars
+│   └── logging/                # Winston
+└── generated/prisma/           # Prisma client (git-ignored)
 
 test/
-├── repositories/       # In-memory repository implementations
-├── factories/          # Entity factories (makeUser, makeRole, makeDevice, etc.)
-├── cryptography/       # Fake implementations (FakeEncrypter, FakeHashComparer)
-├── helpers/            # TestAppHelper, DatabaseHelper, AuthHelper
-├── e2e/                # E2E specs using supertest
-└── setup-e2e.ts        # E2E setup: loads .env.test + runs prisma db push
+├── repositories/       # In-memory implementations
+├── factories/          # makeUser, makeRole, makeDevice, makeOnboardingSession...
+├── cryptography/       # FakeEncrypter, FakeHashComparer
+├── ai/                 # FakeAiExtractor
+└── e2e/                # Supertest specs
 ```
 
-**Dependency flow**: Controllers -> Use Cases -> Repository interfaces <- Prisma implementations
+## Padrões obrigatórios
 
-## Key Patterns
+### Either pattern
+Use cases retornam `Either<ErrorType, { result }>`. Nunca lançam exceções.
+```ts
+const result = await useCase.execute({ ... })
+if (result.isLeft()) {
+  // mapear para HTTP error
+}
+const { user } = result.value as { user: User }
+```
 
-**Either pattern** (`src/core/either.ts`): Use cases return `Either<ErrorType, { result }>` instead of throwing. `left()` = error, `right()` = success. Controllers check `result.isLeft()` and map to HTTP errors.
+### Repository pattern
+Use cases dependem de classes abstratas. NestJS DI resolve para Prisma. Testes usam in-memory.
 
-**Repository pattern**: Use cases depend on abstract classes (e.g., `UsersRepository`). NestJS DI binds them to Prisma implementations in `DatabaseModule`. Tests use in-memory implementations from `test/repositories/`.
+### Mappers (Prisma)
+Cada repo tem mapper com `toDomain()`, `toPrismaCreate()`, `toPrismaUpdate()` separados.
 
-**WatchedList**: Tracks collection mutations (new/removed items) on aggregate roots like User's RoleList. Used for efficient persistence of relation changes.
+### WatchedList
+Rastreia mutações em coleções (ex: RoleList do User). Persiste apenas diffs.
 
-**Mappers** (`infra/database/prisma/mappers/`): Convert between Prisma raw objects and domain entities. Every repository has a corresponding mapper.
+## Auth — regras críticas
 
-## Testing Conventions
+- **JwtAuthGuard NÃO é global** — cada controller precisa `@UseGuards(JwtAuthGuard)` explícito
+- Endpoints públicos usam `@Public()` (importar de `@/infra/auth/public`)
+- Device tracking: login/register exigem headers `x-ipaddress`, `x-operatingsystem`, `x-browser`, `x-type`
+- Hashing usa `bcryptjs` (não `bcrypt` nativo — incompatível com Node 22)
 
-- Unit tests: `src/**/*.spec.ts` — use in-memory repos + fake crypto, no DB needed
-- E2E tests: `test/**/*.e2e-spec.ts` — real PostgreSQL, `setup-e2e.ts` runs `prisma db push` before tests, `DatabaseHelper.cleanup()`/`seed()` resets data between tests
-- Factory functions: `makeUser()`, `makeRole()`, `makeDevice()`, etc. accept `Partial<Props>` overrides
-- Use `vi.fn()` for mocks (Vitest, not Jest)
-- Test config: `vitest.config.ts` with two projects (`unit` and `e2e`)
+## Endpoints
 
-## Path Aliases
+### Auth
+| Método | Rota | Auth | Descrição |
+|--------|------|------|-----------|
+| POST | `/auth/user` | @Public | Registro (retorna tokens + user) |
+| POST | `/login` | @Public | Login (retorna tokens + user) |
+| GET | `/auth/me` | JWT | Dados do user logado |
+| POST | `/auth/refresh` | @Public | Refresh token |
+| DELETE | `/auth/user/:id` | JWT | Deletar conta |
+| POST | `/logout/:userId` | JWT | Revogar devices |
 
-`@/*` -> `src/*`, `@/core/*` -> `src/core/*`, `@/domain/*` -> `src/domain/*`, `@/infra/*` -> `src/infra/*`, `@/test/*` -> `test/*`
+### Onboarding
+| Método | Rota | Auth | Descrição |
+|--------|------|------|-----------|
+| POST | `/onboarding/start` | JWT | Iniciar sessão |
+| PATCH | `/onboarding/step` | JWT | Submeter step (1-5) |
+| POST | `/onboarding/complete` | JWT | Completar |
+| GET | `/onboarding/summary` | JWT | Resumo |
+| POST | `/onboarding/escalate` | JWT | Escalar pra humano |
+| POST | `/onboarding/extract` | JWT | Extrair campos com IA |
 
-## Adding a New Use Case
+### RBAC
+| Método | Rota | Auth | Descrição |
+|--------|------|------|-----------|
+| POST | `/roles` | JWT | Criar role |
+| GET | `/roles` | JWT | Listar roles |
+| POST | `/roles/assign` | JWT | Atribuir role |
+| POST | `/permissions` | JWT | Criar permissão |
+| GET | `/permissions` | JWT | Listar permissões |
 
-1. Create use case in `src/domain/auth/application/use-cases/`
-2. Add error types in `use-cases/errors/` if needed
-3. Write unit test in `use-cases/tests/*.spec.ts` using in-memory repos
-4. Create controller in `src/infra/http/controllers/auth/`
-5. Create DTO in `src/infra/http/controllers/dto/`
-6. Register use case + controller in `src/infra/http/http.module.ts`
+## Onboarding — 5 steps
+
+1. **condition** — Condição de saúde principal
+2. **experience** — Tempo de experiência com cannabis
+3. **hasPrescription** — Tem receita médica?
+4. **preferredForm** — Forma de uso preferida
+5. **assistedAccess** — Precisa de acesso assistido?
+
+`accountType` **NÃO** está no OnboardingSession — vive só no User (coletado no registro).
+
+## Entidades Prisma relevantes
+
+```
+User              → accountType (patient/guardian/prescriber/veterinarian/caregiver)
+OnboardingSession → condition, experience, preferredForm, hasPrescription, assistedAccess, summary
+SupportTicket     → escalação de onboarding para humano
+Document          → tipo, URL S3, status (pending/approved/rejected), motivo rejeição
+Association       → perfil, região, produtos
+Patient/Dependent → domínio de pacientes
+PatientAssociationLink → vínculo paciente-associação
+```
+
+## Testes
+
+- Unit: `src/**/*.spec.ts` — in-memory repos + fake crypto/AI, sem DB
+- E2E: `test/**/*.e2e-spec.ts` — PostgreSQL real, `setup-e2e.ts` executa `prisma db push`
+- Factories: `makeUser()`, `makeOnboardingSession()`, etc. aceitam `Partial<Props>`
+- Framework: Vitest (não Jest) — usar `vi.fn()` para mocks
+
+## Path aliases
+
+`@/*` → `src/*`, `@/test/*` → `test/*`
+
+## Prisma client import
+
+```ts
+import { ... } from '@/generated/prisma/client'
+// NÃO usar '@/generated/prisma'
+```
+
+## Adicionando um novo use case
+
+1. Use case em `src/domain/<module>/application/use-cases/`
+2. Erros em `use-cases/errors/`
+3. Teste unitário em `use-cases/tests/*.spec.ts`
+4. Controller em `src/infra/http/controllers/<module>/`
+5. DTO em `src/infra/http/controllers/dto/`
+6. Registrar use case + controller em `src/infra/http/http.module.ts`

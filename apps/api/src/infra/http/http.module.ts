@@ -11,6 +11,9 @@ import { DeleteUserController } from './controllers/auth/delete-user.controller'
 import { AuthenticateDeviceController } from './controllers/auth/authenticate-device.controller';
 import { RevokeAllDevicesController } from './controllers/auth/revoke-all-devices.controller';
 import { RevokeDeviceSessionController } from './controllers/auth/revoke-device-session.controller';
+import { GetMeController } from './controllers/auth/get-me.controller';
+import { RefreshTokenController } from './controllers/auth/refresh-token.controller';
+import { AddressController } from './controllers/auth/save-address.controller';
 
 // Controllers - Roles
 import { CreateRoleController } from './controllers/auth/create-role.controller';
@@ -36,6 +39,10 @@ import { DeleteUserUseCase } from '@/domain/auth/application/use-cases/delete-us
 import { AuthenticateDeviceUseCase } from '@/domain/auth/application/use-cases/authenticate-device';
 import { RevokeAllDevicesUseCase } from '@/domain/auth/application/use-cases/revoke-all-devices';
 import { RevokeDeviceSessionUseCase } from '@/domain/auth/application/use-cases/revoke-device-session';
+import { GetUserByIdUseCase } from '@/domain/auth/application/use-cases/get-user-by-id';
+import { RefreshAccessTokenUseCase } from '@/domain/auth/application/use-cases/refresh-access-token';
+import { SaveAddressUseCase } from '@/domain/auth/application/use-cases/save-address';
+import { GetAddressUseCase } from '@/domain/auth/application/use-cases/get-address';
 
 // Use Cases - Roles
 import { CreateRoleUseCase } from '@/domain/auth/application/use-cases/create-role';
@@ -65,6 +72,9 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     AuthenticateDeviceController,
     RevokeAllDevicesController,
     RevokeDeviceSessionController,
+    GetMeController,
+    RefreshTokenController,
+    AddressController,
 
     // Role Controllers
     CreateRoleController,
@@ -91,6 +101,10 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     AuthenticateDeviceUseCase,
     RevokeAllDevicesUseCase,
     RevokeDeviceSessionUseCase,
+    GetUserByIdUseCase,
+    RefreshAccessTokenUseCase,
+    SaveAddressUseCase,
+    GetAddressUseCase,
 
     // Role Use Cases
     CreateRoleUseCase,

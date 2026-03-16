@@ -35,6 +35,10 @@ import { PrismaDocumentsRepository } from './prisma/repositories/prisma-document
 import { ProfessionalProfilesRepository } from '@/domain/patient/application/repositories/professional-profiles-repository';
 import { PrismaProfessionalProfilesRepository } from './prisma/repositories/prisma-professional-profiles-repository';
 
+// Address
+import { AddressesRepository } from '@/domain/auth/application/repositories/addresses-repository';
+import { PrismaAddressesRepository } from './prisma/repositories/prisma-addresses-repository';
+
 // Association
 import { AssociationsRepository } from '@/domain/association/application/repositories/associations-repository';
 import { PrismaAssociationsRepository } from './prisma/repositories/prisma-associations-repository';
@@ -122,6 +126,11 @@ import { PrismaPatientAssociationLinksRepository } from './prisma/repositories/p
       provide: PatientAssociationLinksRepository,
       useClass: PrismaPatientAssociationLinksRepository,
     },
+    // Address
+    {
+      provide: AddressesRepository,
+      useClass: PrismaAddressesRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -146,6 +155,8 @@ import { PrismaPatientAssociationLinksRepository } from './prisma/repositories/p
     AssociationsRepository,
     AssociationMembersRepository,
     PatientAssociationLinksRepository,
+    // Address
+    AddressesRepository,
   ],
 })
 export class DatabaseModule {}

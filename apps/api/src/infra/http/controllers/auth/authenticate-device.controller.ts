@@ -87,6 +87,14 @@ export class AuthenticateDeviceController {
     return {
       accessToken: accessToken.token,
       refreshToken: refreshToken.token,
+      user: {
+        id: user.id.toString(),
+        email: user.email,
+        name: user.name,
+        accountType: user.accountType,
+        accountStatus: user.accountStatus,
+        verificationStatus: user.verificationStatus,
+      },
     };
   }
 }

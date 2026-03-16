@@ -1,15 +1,15 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export function OnboardingPage() {
-  function handleComplete(data: Record<string, string>) {
-    console.log('Onboarding completo:', data)
-    alert('Acolhimento concluído! Em breve você será redirecionado.')
+  const navigate = useNavigate()
+
+  function handleComplete(_data: Record<string, string>) {
+    navigate('/painel')
   }
 
-  function handleEscalate(reason: string) {
-    console.log('Escalado para humano:', reason)
+  function handleEscalate(_reason: string) {
     alert('Sua solicitação foi encaminhada para um atendente. Entraremos em contato em breve.')
   }
 

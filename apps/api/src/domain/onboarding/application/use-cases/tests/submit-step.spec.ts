@@ -1,21 +1,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { SubmitStepUseCase } from '../submit-step';
 import { InMemoryOnboardingSessionsRepository } from '@/test/repositories/in-memory-onboarding-sessions-repository';
-import { FakeAiExtractor } from '@/test/ai/fake-ai-extractor';
 import { makeOnboardingSession } from '@/test/factories/make-onboarding-session';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { SessionNotFoundError } from '../errors/session-not-found-error';
 import { SessionAlreadyCompletedError } from '../errors/session-already-completed-error';
 
 let repository: InMemoryOnboardingSessionsRepository;
-let aiExtractor: FakeAiExtractor;
 let sut: SubmitStepUseCase;
 
 describe('SubmitStepUseCase', () => {
   beforeEach(() => {
     repository = new InMemoryOnboardingSessionsRepository();
-    aiExtractor = new FakeAiExtractor();
-    sut = new SubmitStepUseCase(repository, aiExtractor);
+    sut = new SubmitStepUseCase(repository);
   });
 
   it('should save a step with selected option', async () => {
@@ -39,7 +36,7 @@ describe('SubmitStepUseCase', () => {
     }
   });
 
-  it('should extract fields from free text using AI', async () => {
+  it('should save free text directly to the step field', async () => {
     const session = makeOnboardingSession({
       userId: new UniqueEntityID('user-1'),
     });
@@ -54,6 +51,9 @@ describe('SubmitStepUseCase', () => {
     expect(result.isRight()).toBe(true);
     if (result.isRight()) {
       expect(result.value.extractedFields).toBeDefined();
+      expect(result.value.session.condition).toBe(
+        'Meu filho tem epilepsia e nunca usou cannabis',
+      );
       expect(result.value.session.currentStep).toBe(2);
     }
   });

@@ -1,21 +1,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { CompleteOnboardingUseCase } from '../complete-onboarding';
 import { InMemoryOnboardingSessionsRepository } from '@/test/repositories/in-memory-onboarding-sessions-repository';
-import { FakeAiExtractor } from '@/test/ai/fake-ai-extractor';
 import { makeOnboardingSession } from '@/test/factories/make-onboarding-session';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { SessionNotFoundError } from '../errors/session-not-found-error';
 import { SessionAlreadyCompletedError } from '../errors/session-already-completed-error';
 
 let repository: InMemoryOnboardingSessionsRepository;
-let aiExtractor: FakeAiExtractor;
 let sut: CompleteOnboardingUseCase;
 
 describe('CompleteOnboardingUseCase', () => {
   beforeEach(() => {
     repository = new InMemoryOnboardingSessionsRepository();
-    aiExtractor = new FakeAiExtractor();
-    sut = new CompleteOnboardingUseCase(repository, aiExtractor);
+    sut = new CompleteOnboardingUseCase(repository);
   });
 
   it('should complete onboarding and generate summary', async () => {
@@ -32,7 +29,7 @@ describe('CompleteOnboardingUseCase', () => {
     if (result.isRight()) {
       expect(result.value.session.status).toBe('completed');
       expect(result.value.session.summary).toBeDefined();
-      expect(result.value.session.summary).toContain('chronic_pain');
+      expect(result.value.session.summary).toContain('Dor Crônica');
     }
   });
 

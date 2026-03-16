@@ -31,7 +31,6 @@ export class GetOnboardingSummaryController {
       status: session.status,
       currentStep: session.currentStep,
       condition: session.condition,
-      accountType: session.accountType,
       experience: session.experience,
       preferredForm: session.preferredForm,
       hasPrescription: session.hasPrescription,
