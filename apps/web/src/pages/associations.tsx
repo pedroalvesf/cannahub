@@ -2,105 +2,8 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Header } from '@/components/layout/header'
 import { useAuthStore } from '@/stores/auth-store'
-
-interface Association {
-  id: string
-  name: string
-  description: string
-  city: string
-  state: string
-  region: string
-  patientTypes: string[]
-  productTypes: string[]
-  assistedAccess: boolean
-  memberCount: number
-  foundedYear: number
-  verified: boolean
-  image?: string
-}
-
-const sampleAssociations: Association[] = [
-  {
-    id: '1',
-    name: 'Associação Esperança Verde',
-    description: 'Fundada em 2018, a Esperança Verde atende pacientes com dor crônica, epilepsia e TEA. Oferece óleos full spectrum de 1% a 6% CBD e programa de acesso assistido para pacientes de baixa renda.',
-    city: 'São Paulo', state: 'SP', region: 'Sudeste',
-    patientTypes: ['Adulto', 'Responsável Legal', 'Iniciante'],
-    productTypes: ['Óleo', 'Cápsula'],
-    assistedAccess: true,
-    memberCount: 342, foundedYear: 2018, verified: true,
-  },
-  {
-    id: '2',
-    name: 'Associação Flor da Terra',
-    description: 'Referência em curadoria de cepas no Rio de Janeiro. Trabalha com prescritores parceiros e mantém catálogo técnico com laudos de análise para todos os produtos.',
-    city: 'Rio de Janeiro', state: 'RJ', region: 'Sudeste',
-    patientTypes: ['Adulto', 'Médico/Veterinário'],
-    productTypes: ['Óleo', 'Flor', 'Gummy'],
-    assistedAccess: false,
-    memberCount: 218, foundedYear: 2019, verified: true,
-  },
-  {
-    id: '3',
-    name: 'Associação Cura Natural',
-    description: 'Associação focada em acolhimento humanizado. Equipe multidisciplinar com farmacêuticos e psicólogos. Atendimento presencial e remoto para todo o Brasil.',
-    city: 'Belo Horizonte', state: 'MG', region: 'Sudeste',
-    patientTypes: ['Adulto', 'Responsável Legal', 'Iniciante'],
-    productTypes: ['Óleo', 'Tópico', 'Cápsula'],
-    assistedAccess: true,
-    memberCount: 156, foundedYear: 2020, verified: true,
-  },
-  {
-    id: '4',
-    name: 'Associação Raízes do Sul',
-    description: 'Maior associação da região Sul, com foco em pacientes com fibromialgia e esclerose múltipla. Parcerias com universidades para pesquisa clínica.',
-    city: 'Porto Alegre', state: 'RS', region: 'Sul',
-    patientTypes: ['Adulto', 'Médico/Veterinário'],
-    productTypes: ['Óleo', 'Cápsula', 'Gummy'],
-    assistedAccess: false,
-    memberCount: 289, foundedYear: 2017, verified: true,
-  },
-  {
-    id: '5',
-    name: 'Associação Semente do Cerrado',
-    description: 'Primeira associação do Centro-Oeste com programa de acesso assistido. Atende famílias de crianças com epilepsia refratária e TEA.',
-    city: 'Brasília', state: 'DF', region: 'Centro-Oeste',
-    patientTypes: ['Responsável Legal', 'Iniciante'],
-    productTypes: ['Óleo'],
-    assistedAccess: true,
-    memberCount: 94, foundedYear: 2021, verified: true,
-  },
-  {
-    id: '6',
-    name: 'Associação Mangue Verde',
-    description: 'Associação nordestina com rede de prescritores parceiros em 5 estados. Oferece teleconsulta inicial gratuita e orientação completa para novos pacientes.',
-    city: 'Recife', state: 'PE', region: 'Nordeste',
-    patientTypes: ['Adulto', 'Responsável Legal', 'Iniciante'],
-    productTypes: ['Óleo', 'Gummy'],
-    assistedAccess: true,
-    memberCount: 178, foundedYear: 2019, verified: false,
-  },
-  {
-    id: '7',
-    name: 'Associação Verde Vida',
-    description: 'Foco em pacientes veterinários e seus tutores. Trabalha com óleos específicos para uso animal, com acompanhamento de veterinários especializados.',
-    city: 'Curitiba', state: 'PR', region: 'Sul',
-    patientTypes: ['Médico/Veterinário', 'Adulto'],
-    productTypes: ['Óleo', 'Tópico'],
-    assistedAccess: false,
-    memberCount: 67, foundedYear: 2022, verified: true,
-  },
-  {
-    id: '8',
-    name: 'Associação Cannaflora',
-    description: 'Associação com foco em diversidade de produtos. Único fornecedor de gummies e comestíveis na região Norte. Programa educacional para novos pacientes.',
-    city: 'Manaus', state: 'AM', region: 'Norte',
-    patientTypes: ['Adulto', 'Iniciante'],
-    productTypes: ['Óleo', 'Gummy', 'Cápsula', 'Flor'],
-    assistedAccess: true,
-    memberCount: 53, foundedYear: 2023, verified: false,
-  },
-]
+import { sampleAssociations } from '@/data/sample-associations'
+import type { Association } from '@/data/sample-associations'
 
 const allRegions = ['Sudeste', 'Sul', 'Nordeste', 'Centro-Oeste', 'Norte']
 const allProductTypes = [...new Set(sampleAssociations.flatMap((a) => a.productTypes))].sort()
@@ -243,34 +146,36 @@ function AssociationCard({ association }: { association: Association }) {
   return (
     <div className="rounded-card border border-brand-cream-dark dark:border-gray-800 bg-surface-card dark:bg-surface-dark-card overflow-hidden hover:border-brand-green-deep/30 transition-colors shadow-soft">
       {/* Top bar */}
-      <div className="bg-brand-green-deep px-5 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          {/* Avatar */}
-          <div className="w-9 h-9 rounded-full bg-brand-green-mid flex items-center justify-center shrink-0">
-            <span className="font-serif text-sm text-brand-white">
-              {association.name.split(' ').slice(-1)[0]?.[0] ?? 'A'}
-            </span>
+      <Link to={`/associacoes/${association.slug}`} className="block bg-brand-green-deep px-5 py-3 no-underline">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            {/* Avatar */}
+            <div className="w-9 h-9 rounded-full bg-brand-green-mid flex items-center justify-center shrink-0">
+              <span className="font-serif text-sm text-brand-white">
+                {association.name.split(' ').slice(-1)[0]?.[0] ?? 'A'}
+              </span>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-brand-white leading-tight">
+                {association.name}
+              </h3>
+              <p className="text-[11px] text-brand-white/50">
+                {association.city}, {association.state}
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-semibold text-brand-white leading-tight">
-              {association.name}
-            </h3>
-            <p className="text-[11px] text-brand-white/50">
-              {association.city}, {association.state}
-            </p>
+          <div className="flex items-center gap-2">
+            {association.verified && (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-btn bg-brand-white/10 text-[10px] font-medium text-brand-green-pale">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Verificada
+              </span>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {association.verified && (
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-btn bg-brand-white/10 text-[10px] font-medium text-brand-green-pale">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-              Verificada
-            </span>
-          )}
-        </div>
-      </div>
+      </Link>
 
       {/* Body */}
       <div className="p-5">

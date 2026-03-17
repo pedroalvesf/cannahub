@@ -10,6 +10,7 @@ import { QuizPage } from '@/pages/quiz'
 import { DocumentsPage } from '@/pages/documents'
 import { CatalogPage } from '@/pages/catalog'
 import { AssociationsPage } from '@/pages/associations'
+import { AssociationDetailPage } from '@/pages/association-detail'
 import { LoginPage } from '@/pages/login'
 import { RegisterPage } from '@/pages/register'
 import { DashboardPage } from '@/pages/dashboard'
@@ -83,6 +84,12 @@ function AppContent() {
         path="/associacoes"
         element={
           <AssociationsPage />
+        }
+      />
+      <Route
+        path="/associacoes/:slug"
+        element={
+          <AssociationDetailPage />
         }
       />
       <Route path="/login" element={<LoginPage />} />

@@ -241,6 +241,128 @@ function ProfileEditForm({ user, onSave, onCancel, isPending }: {
   )
 }
 
+function NextSteps({ onboardingComplete, hasOnboarding, needsDoctor, hasAddress }: {
+  onboardingComplete: boolean
+  hasOnboarding: boolean
+  needsDoctor: boolean
+  hasAddress: boolean
+}) {
+  const steps: { icon: React.ReactNode; title: string; description: string; action: string; to: string }[] = []
+
+  if (!hasOnboarding) {
+    steps.push({
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+        </svg>
+      ),
+      title: 'Iniciar acolhimento',
+      description: 'Complete seu perfil clínico para que possamos orientar o melhor tratamento.',
+      action: 'Começar',
+      to: '/acolhimento',
+    })
+  } else if (!onboardingComplete) {
+    steps.push({
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+        </svg>
+      ),
+      title: 'Continuar acolhimento',
+      description: 'Seu acolhimento está em andamento. Continue de onde parou.',
+      action: 'Continuar',
+      to: '/acolhimento',
+    })
+  }
+
+  if (needsDoctor) {
+    steps.push({
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 00-3-3.87" />
+          <path d="M16 3.13a4 4 0 010 7.75" />
+        </svg>
+      ),
+      title: 'Encontrar médico prescritor',
+      description: 'Você indicou que não tem receita. A CannHub pode conectar você a prescritores parceiros.',
+      action: 'Em breve',
+      to: '#',
+    })
+  }
+
+  if (!hasAddress) {
+    steps.push({
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
+      ),
+      title: 'Cadastrar endereço',
+      description: 'Necessário para validação do comprovante de residência.',
+      action: 'Adicionar',
+      to: '#endereco',
+    })
+  }
+
+  if (onboardingComplete) {
+    steps.push({
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+        </svg>
+      ),
+      title: 'Enviar documentos',
+      description: 'Receita médica, laudo, identidade e comprovante de residência.',
+      action: 'Enviar',
+      to: '/documentos',
+    })
+  }
+
+  if (steps.length === 0) return null
+
+  return (
+    <div className="mb-8">
+      <p className="text-[12px] font-bold uppercase tracking-[0.06em] text-brand-muted dark:text-gray-500 mb-3">
+        Próximos passos
+      </p>
+      <div className="space-y-2">
+        {steps.map((step, i) => (
+          <Link
+            key={i}
+            to={step.to}
+            className="flex items-center gap-4 bg-brand-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-xl px-5 py-4 hover:border-brand-green-light/50 transition-colors no-underline group"
+          >
+            <div className="w-10 h-10 rounded-full bg-brand-green-pale dark:bg-gray-700 flex items-center justify-center shrink-0 text-brand-green-deep dark:text-brand-green-light group-hover:bg-brand-green-light/20 transition-colors">
+              {step.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[14px] font-medium text-brand-green-deep dark:text-white leading-tight">
+                {step.title}
+              </p>
+              <p className="text-[12px] text-brand-muted dark:text-gray-500 leading-snug mt-0.5">
+                {step.description}
+              </p>
+            </div>
+            {step.to === '#' ? (
+              <span className="text-[11px] font-bold uppercase tracking-wider text-brand-green-light bg-brand-green-pale dark:bg-gray-700 px-2.5 py-1 rounded-btn shrink-0">
+                {step.action}
+              </span>
+            ) : (
+              <span className="text-[13px] font-semibold text-brand-green-mid dark:text-brand-green-light shrink-0 group-hover:underline">
+                {step.action} →
+              </span>
+            )}
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function DashboardPage() {
   const { user } = useAuthStore()
   const navigate = useNavigate()
@@ -335,6 +457,16 @@ export function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Contextual next steps */}
+        {(!onboardingLoading && !addressLoading) && (
+          <NextSteps
+            onboardingComplete={onboardingComplete}
+            hasOnboarding={!!onboarding}
+            needsDoctor={onboarding?.needsDoctor === true}
+            hasAddress={!!address}
+          />
+        )}
 
         {/* Content sections */}
         <div className="space-y-5">
