@@ -25,6 +25,16 @@ import { RemoveRoleController } from './controllers/auth/remove-role.controller'
 import { CreatePermissionController } from './controllers/auth/create-permission.controller';
 import { ListPermissionsController } from './controllers/auth/list-permissions.controller';
 
+// Controllers - Profile
+import { UpdateProfileController } from './controllers/auth/update-profile.controller';
+
+// Controllers - Associations
+import { ListAssociationsController } from './controllers/association/list-associations.controller';
+import { GetAssociationController } from './controllers/association/get-association.controller';
+
+// Controllers - Documents
+import { ListDocumentsController } from './controllers/patient/list-documents.controller';
+
 // Controllers - Onboarding
 import { StartOnboardingController } from './controllers/onboarding/start-onboarding.controller';
 import { SubmitStepController } from './controllers/onboarding/submit-step.controller';
@@ -54,6 +64,17 @@ import { RemoveRoleFromUserUseCase } from '@/domain/auth/application/use-cases/r
 import { CreatePermissionUseCase } from '@/domain/auth/application/use-cases/create-permission';
 import { ListPermissionsUseCase } from '@/domain/auth/application/use-cases/list-permissions';
 import { CheckUserPermissionUseCase } from '@/domain/auth/application/use-cases/check-user-permission';
+
+// Use Cases - Profile
+import { UpdateProfileUseCase } from '@/domain/auth/application/use-cases/update-profile';
+
+// Use Cases - Associations
+import { ListAssociationsUseCase } from '@/domain/association/application/use-cases/list-associations';
+import { GetAssociationByIdUseCase } from '@/domain/association/application/use-cases/get-association-by-id';
+
+// Use Cases - Documents
+import { ListUserDocumentsUseCase } from '@/domain/patient/application/use-cases/list-user-documents';
+import { GetDocumentByIdUseCase } from '@/domain/patient/application/use-cases/get-document-by-id';
 
 // Use Cases - Onboarding
 import { StartOnboardingUseCase } from '@/domain/onboarding/application/use-cases/start-onboarding';
@@ -86,6 +107,16 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     CreatePermissionController,
     ListPermissionsController,
 
+    // Profile Controllers
+    UpdateProfileController,
+
+    // Association Controllers
+    ListAssociationsController,
+    GetAssociationController,
+
+    // Document Controllers
+    ListDocumentsController,
+
     // Onboarding Controllers
     StartOnboardingController,
     SubmitStepController,
@@ -116,6 +147,17 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     CreatePermissionUseCase,
     ListPermissionsUseCase,
     CheckUserPermissionUseCase,
+
+    // Profile Use Cases
+    UpdateProfileUseCase,
+
+    // Association Use Cases
+    ListAssociationsUseCase,
+    GetAssociationByIdUseCase,
+
+    // Document Use Cases
+    ListUserDocumentsUseCase,
+    GetDocumentByIdUseCase,
 
     // Onboarding Use Cases
     StartOnboardingUseCase,

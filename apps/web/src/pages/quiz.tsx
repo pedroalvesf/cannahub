@@ -1,6 +1,57 @@
 import { Link } from 'react-router-dom'
 import { Header } from '@/components/layout/header'
 
+const PROFILES = [
+  {
+    type: 'patient',
+    emoji: '✦',
+    emojiSize: '20px',
+    tag: 'Uso próprio',
+    tagColor: 'text-brand-green-light',
+    title: 'Paciente Adulto',
+    description: 'Pacientes maiores de idade em acompanhamento médico, buscando acesso regulamentado ao tratamento com cannabis medicinal.',
+    bg: 'bg-brand-white border border-brand-cream-dark',
+    titleColor: 'text-brand-green-deep',
+    textColor: 'text-brand-muted',
+  },
+  {
+    type: 'guardian',
+    emoji: '👨‍👩‍👧',
+    emojiSize: '26px',
+    tag: 'Dependentes',
+    tagColor: 'text-brand-green-mid',
+    title: 'Responsável Legal',
+    description: 'Pais ou responsáveis por menores e dependentes em tratamento. Documentação específica com procuração ou autorização.',
+    bg: 'bg-brand-green-pale border border-brand-green-light/20',
+    titleColor: 'text-brand-green-deep',
+    textColor: 'text-brand-muted',
+  },
+  {
+    type: 'prescriber',
+    emoji: '⚕️',
+    emojiSize: '26px',
+    tag: 'Prescritores',
+    tagColor: 'text-brand-green-pale/60',
+    title: 'Médicos e Veterinários',
+    description: 'Prescritores que indicam e acompanham pacientes nas associações credenciadas. Acesso ao catálogo e perfis de pacientes.',
+    bg: 'bg-brand-green-deep',
+    titleColor: 'text-brand-white',
+    textColor: 'text-brand-white/[0.62]',
+  },
+  {
+    type: 'caregiver',
+    emoji: '🌱',
+    emojiSize: '26px',
+    tag: 'Primeiro acesso',
+    tagColor: 'text-brand-green-light',
+    title: 'Iniciantes',
+    description: 'Interessados em entender o processo e começar com segurança. Orientação completa desde o primeiro passo.',
+    bg: 'bg-brand-white border border-brand-cream-dark',
+    titleColor: 'text-brand-green-deep',
+    textColor: 'text-brand-muted',
+  },
+]
+
 export function QuizPage() {
   return (
     <div className="min-h-screen bg-brand-cream dark:bg-surface-dark">
@@ -24,74 +75,34 @@ export function QuizPage() {
 
         {/* 4 profile blocks — grid 2x2 */}
         <div className="grid md:grid-cols-2 gap-4">
-          {/* Paciente Adulto — white */}
-          <div className="bg-brand-white border border-brand-cream-dark rounded-card p-7 relative overflow-hidden group hover:-translate-y-1 hover:shadow-cta transition-all">
-            <div className="absolute -bottom-8 -right-8 w-[100px] h-[100px] rounded-full bg-brand-green-light/[0.06] pointer-events-none" />
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-[20px] leading-none">✦</span>
-              <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-brand-green-light">Uso próprio</span>
-            </div>
-            <h3 className="font-serif text-[19px] leading-[1.25] text-brand-green-deep mb-2">
-              Paciente Adulto
-            </h3>
-            <p className="text-[13.5px] font-light text-brand-muted leading-[1.7]">
-              Pacientes maiores de idade em acompanhamento médico, buscando acesso regulamentado ao tratamento com cannabis medicinal.
-            </p>
-          </div>
-
-          {/* Responsável Legal — pale */}
-          <div className="bg-brand-green-pale border border-brand-green-light/20 rounded-card p-7 relative overflow-hidden group hover:-translate-y-1 hover:shadow-cta transition-all">
-            <div className="absolute -bottom-8 -right-8 w-[100px] h-[100px] rounded-full bg-brand-green-deep/[0.06] pointer-events-none" />
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-[26px] leading-none">👨‍👩‍👧</span>
-              <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-brand-green-mid">Dependentes</span>
-            </div>
-            <h3 className="font-serif text-[19px] leading-[1.25] text-brand-green-deep mb-2">
-              Responsável Legal
-            </h3>
-            <p className="text-[13.5px] font-light text-brand-muted leading-[1.7]">
-              Pais ou responsáveis por menores e dependentes em tratamento. Documentação específica com procuração ou autorização.
-            </p>
-          </div>
-
-          {/* Médicos — dark */}
-          <div className="bg-brand-green-deep rounded-card p-7 relative overflow-hidden group hover:-translate-y-1 hover:shadow-cta transition-all">
-            <div className="absolute -bottom-8 -right-8 w-[100px] h-[100px] rounded-full bg-white/[0.04] pointer-events-none" />
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-[26px] leading-none">⚕️</span>
-              <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-brand-green-pale/60">Prescritores</span>
-            </div>
-            <h3 className="font-serif text-[19px] leading-[1.25] text-brand-white mb-2">
-              Médicos e Veterinários
-            </h3>
-            <p className="text-[13.5px] font-light text-brand-white/[0.62] leading-[1.7]">
-              Prescritores que indicam e acompanham pacientes nas associações credenciadas. Acesso ao catálogo e perfis de pacientes.
-            </p>
-          </div>
-
-          {/* Iniciantes — white */}
-          <div className="bg-brand-white border border-brand-cream-dark rounded-card p-7 relative overflow-hidden group hover:-translate-y-1 hover:shadow-cta transition-all">
-            <div className="absolute -bottom-8 -right-8 w-[100px] h-[100px] rounded-full bg-brand-green-light/[0.06] pointer-events-none" />
-            <div className="flex items-center gap-3 mb-3">
-              <span className="text-[26px] leading-none">🌱</span>
-              <span className="text-[11px] font-bold tracking-[0.08em] uppercase text-brand-green-light">Primeiro acesso</span>
-            </div>
-            <h3 className="font-serif text-[19px] leading-[1.25] text-brand-green-deep mb-2">
-              Iniciantes
-            </h3>
-            <p className="text-[13.5px] font-light text-brand-muted leading-[1.7]">
-              Interessados em entender o processo e começar com segurança. Orientação completa desde o primeiro passo.
-            </p>
-          </div>
+          {PROFILES.map((profile) => (
+            <Link
+              key={profile.type}
+              to={`/cadastro?type=${profile.type}`}
+              className={`${profile.bg} rounded-card p-7 relative overflow-hidden group hover:-translate-y-1 hover:shadow-cta transition-all no-underline block`}
+            >
+              <div className="absolute -bottom-8 -right-8 w-[100px] h-[100px] rounded-full bg-brand-green-light/[0.06] pointer-events-none" />
+              <div className="flex items-center gap-3 mb-3">
+                <span className={`leading-none`} style={{ fontSize: profile.emojiSize }}>{profile.emoji}</span>
+                <span className={`text-[11px] font-bold tracking-[0.08em] uppercase ${profile.tagColor}`}>{profile.tag}</span>
+              </div>
+              <h3 className={`font-serif text-[19px] leading-[1.25] ${profile.titleColor} mb-2`}>
+                {profile.title}
+              </h3>
+              <p className={`text-[13.5px] font-light ${profile.textColor} leading-[1.7]`}>
+                {profile.description}
+              </p>
+            </Link>
+          ))}
         </div>
 
         {/* CTAs */}
         <div className="mt-12 flex items-center gap-4">
           <Link
-            to="/acolhimento"
+            to="/cadastro"
             className="text-[15px] font-semibold text-brand-white bg-brand-green-deep px-8 py-4 rounded-btn shadow-hero hover:bg-brand-green-mid hover:-translate-y-0.5 hover:shadow-hero-hover transition-all no-underline"
           >
-            Iniciar Acolhimento
+            Criar conta
           </Link>
           <Link
             to="/#como-funciona"

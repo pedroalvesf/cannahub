@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/layout/header'
 import { useAuthStore } from '@/stores/auth-store'
 import { useOnboardingSummary } from '@/hooks/use-onboarding'
 import { useAddress, useSaveAddress } from '@/hooks/use-address'
+import { useUpdateProfile } from '@/hooks/use-profile'
 import type { AddressData } from '@/hooks/use-address'
 
 const ACCOUNT_TYPE_LABELS: Record<string, string> = {
@@ -115,6 +116,20 @@ function formatCep(value: string) {
   return `${digits.slice(0, 5)}-${digits.slice(5)}`
 }
 
+function formatPhone(value: string) {
+  const digits = value.replace(/\D/g, '').slice(0, 11)
+  if (digits.length === 0) return ''
+  if (digits.length <= 2) return `(${digits}`
+  if (digits.length <= 3) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3)}`
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3, 7)}-${digits.slice(7)}`
+}
+
+function formatPhoneDisplay(value?: string | null) {
+  if (!value) return null
+  return formatPhone(value)
+}
+
 function AddressForm({ initial, onSave, onCancel }: { initial: AddressData | null; onSave: (data: AddressData) => void; onCancel: () => void }) {
   const [form, setForm] = useState<AddressData>({
     street: initial?.street ?? '',
@@ -177,12 +192,64 @@ function AddressForm({ initial, onSave, onCancel }: { initial: AddressData | nul
   )
 }
 
+function ProfileEditForm({ user, onSave, onCancel, isPending }: {
+  user: { name?: string; phone?: string; cpf?: string }
+  onSave: (data: { name?: string; phone?: string; cpf?: string }) => void
+  onCancel: () => void
+  isPending: boolean
+}) {
+  const [name, setName] = useState(user.name ?? '')
+  const [phone, setPhone] = useState(user.phone ?? '')
+  const [cpf, setCpf] = useState(user.cpf ?? '')
+
+  const inputClass = 'w-full px-3 py-2.5 rounded-lg border border-brand-cream-dark dark:border-gray-600 bg-brand-cream/50 dark:bg-gray-800 text-brand-text dark:text-white text-[13px] outline-none focus:border-brand-green-light focus:ring-1 focus:ring-brand-green-light/30 transition-colors'
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    onSave({
+      name: name || undefined,
+      phone: phone.replace(/\D/g, '') || undefined,
+      cpf: cpf || undefined,
+    })
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <div>
+        <label className="block text-[11px] font-semibold uppercase tracking-[0.06em] text-brand-muted dark:text-gray-400 mb-1">Nome completo</label>
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} placeholder="Seu nome" />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className="block text-[11px] font-semibold uppercase tracking-[0.06em] text-brand-muted dark:text-gray-400 mb-1">CPF</label>
+          <input type="text" value={cpf} onChange={(e) => setCpf(e.target.value)} className={inputClass} placeholder="000.000.000-00" />
+        </div>
+        <div>
+          <label className="block text-[11px] font-semibold uppercase tracking-[0.06em] text-brand-muted dark:text-gray-400 mb-1">Telefone</label>
+          <input type="tel" value={formatPhone(phone)} onChange={(e) => setPhone(e.target.value)} className={inputClass} placeholder="(11) 9 9999-9999" />
+        </div>
+      </div>
+      <div className="flex items-center gap-3 pt-2">
+        <button type="submit" disabled={isPending} className="text-[13px] font-semibold text-brand-white bg-brand-green-deep px-5 py-2.5 rounded-btn hover:bg-brand-green-mid transition-colors disabled:opacity-60">
+          {isPending ? 'Salvando...' : 'Salvar'}
+        </button>
+        <button type="button" onClick={onCancel} className="text-[13px] font-medium text-brand-muted dark:text-gray-500 hover:text-brand-green-deep transition-colors">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  )
+}
+
 export function DashboardPage() {
   const { user } = useAuthStore()
+  const navigate = useNavigate()
   const { data: onboarding, isLoading: onboardingLoading } = useOnboardingSummary()
   const { data: address, isLoading: addressLoading } = useAddress()
   const saveAddressMutation = useSaveAddress()
+  const updateProfileMutation = useUpdateProfile()
   const [editingAddress, setEditingAddress] = useState(false)
+  const [editingProfile, setEditingProfile] = useState(false)
 
   if (!user) return null
 
@@ -193,6 +260,12 @@ export function DashboardPage() {
   function handleSaveAddress(data: AddressData) {
     saveAddressMutation.mutate(data, {
       onSuccess: () => setEditingAddress(false),
+    })
+  }
+
+  function handleSaveProfile(data: { name?: string; phone?: string; cpf?: string }) {
+    updateProfileMutation.mutate(data, {
+      onSuccess: () => setEditingProfile(false),
     })
   }
 
@@ -268,13 +341,24 @@ export function DashboardPage() {
           {/* Personal info */}
           <SectionCard
             title="Dados pessoais"
-            action={<EditButton onClick={() => {}} />}
+            action={!editingProfile ? <EditButton onClick={() => setEditingProfile(true)} /> : null}
           >
-            <InfoRow label="Nome" value={user.name} />
-            <InfoRow label="Email" value={user.email} />
-            <InfoRow label="Tipo de conta" value={accountTypeLabel} />
-            <InfoRow label="CPF" value={user.cpf} />
-            <InfoRow label="Telefone" value={user.phone} />
+            {editingProfile ? (
+              <ProfileEditForm
+                user={{ name: user.name, phone: user.phone, cpf: user.cpf }}
+                onSave={handleSaveProfile}
+                onCancel={() => setEditingProfile(false)}
+                isPending={updateProfileMutation.isPending}
+              />
+            ) : (
+              <>
+                <InfoRow label="Nome" value={user.name} />
+                <InfoRow label="Email" value={user.email} />
+                <InfoRow label="Tipo de conta" value={accountTypeLabel} />
+                <InfoRow label="CPF" value={user.cpf} />
+                <InfoRow label="Telefone" value={formatPhoneDisplay(user.phone)} />
+              </>
+            )}
           </SectionCard>
 
           {/* Address */}
@@ -330,7 +414,7 @@ export function DashboardPage() {
                   Continuar
                 </Link>
               ) : (
-                <EditButton onClick={() => {}} />
+                <EditButton onClick={() => navigate('/acolhimento')} />
               )
             }
           >

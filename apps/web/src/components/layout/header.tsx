@@ -1,9 +1,14 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthStore } from '@/stores/auth-store'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export function Header() {
   const { isAuthenticated, logout } = useAuthStore()
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  const navLinkClass = 'text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline'
+  const mobileNavLinkClass = 'block text-[15px] font-medium text-brand-green-deep dark:text-gray-200 py-2.5 no-underline'
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-brand-white/[0.92] dark:bg-surface-dark/90 backdrop-blur-[12px] border-b border-brand-green-light/10 dark:border-gray-700/40 px-6 py-3.5 z-[100] shadow-nav animate-fade-down">
@@ -16,30 +21,30 @@ export function Header() {
         </span>
       </Link>
 
-      {/* Nav links */}
+      {/* Nav links — desktop */}
       <ul className="hidden md:flex items-center gap-8 list-none">
         <li>
-          <Link to="/#como-funciona" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
+          <Link to="/#como-funciona" className={navLinkClass}>
             Como funciona
           </Link>
         </li>
         <li>
-          <Link to="/#para-quem" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
+          <Link to="/#para-quem" className={navLinkClass}>
             Para quem
           </Link>
         </li>
         <li>
-          <Link to="/#seguranca" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
+          <Link to="/#seguranca" className={navLinkClass}>
             Segurança
           </Link>
         </li>
         <li>
-          <Link to="/catalogo" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
+          <Link to="/catalogo" className={navLinkClass}>
             Catálogo
           </Link>
         </li>
         <li>
-          <Link to="/associacoes" className="text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">
+          <Link to="/associacoes" className={navLinkClass}>
             Associações
           </Link>
         </li>
@@ -48,8 +53,8 @@ export function Header() {
         </li>
       </ul>
 
-      {/* Actions */}
-      <div className="flex items-center gap-2.5">
+      {/* Actions — desktop */}
+      <div className="hidden md:flex items-center gap-2.5">
         {isAuthenticated ? (
           <>
             <Link
@@ -82,7 +87,90 @@ export function Header() {
           </>
         )}
       </div>
+
+      {/* Hamburger — mobile */}
+      <div className="flex md:hidden items-center gap-2">
+        <ThemeToggle />
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="p-2 text-brand-green-deep dark:text-white"
+          aria-label="Menu"
+        >
+          {mobileOpen ? (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          ) : (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          )}
+        </button>
       </div>
+      </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="md:hidden border-t border-brand-cream-dark/50 dark:border-gray-700/40 mt-3 pt-4 pb-2 max-w-[1100px] mx-auto">
+          <div className="space-y-1 mb-4">
+            <Link to="/#como-funciona" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
+              Como funciona
+            </Link>
+            <Link to="/#para-quem" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
+              Para quem
+            </Link>
+            <Link to="/#seguranca" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
+              Segurança
+            </Link>
+            <Link to="/catalogo" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
+              Catálogo
+            </Link>
+            <Link to="/associacoes" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
+              Associações
+            </Link>
+          </div>
+
+          <div className="border-t border-brand-cream-dark/30 dark:border-gray-700/30 pt-4 flex flex-col gap-2">
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/painel"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-[15px] font-medium text-brand-green-deep dark:text-brand-green-light py-2 no-underline"
+                >
+                  Meu painel
+                </Link>
+                <button
+                  onClick={() => { logout(); setMobileOpen(false) }}
+                  className="text-[15px] font-medium text-brand-muted dark:text-gray-400 py-2 text-left"
+                >
+                  Sair
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-[15px] font-medium text-brand-green-deep dark:text-gray-300 py-2 no-underline"
+                >
+                  Entrar
+                </Link>
+                <Link
+                  to="/quiz"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-center text-[15px] font-semibold text-brand-white bg-brand-green-deep px-6 py-3 rounded-btn hover:bg-brand-green-mid transition-colors no-underline"
+                >
+                  Começar
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   )
 }

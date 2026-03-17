@@ -45,8 +45,10 @@ export function RegisterPage() {
   const redirectTo = searchParams.get('redirect') || '/acolhimento'
   const registerMutation = useRegister()
 
-  const [step, setStep] = useState(1)
-  const [accountType, setAccountType] = useState('')
+  const initialType = searchParams.get('type') ?? ''
+  const validType = ACCOUNT_TYPES.some((t) => t.value === initialType)
+  const [step, setStep] = useState(validType ? 2 : 1)
+  const [accountType, setAccountType] = useState(validType ? initialType : '')
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
