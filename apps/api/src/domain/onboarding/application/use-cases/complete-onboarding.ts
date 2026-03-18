@@ -46,6 +46,14 @@ const FORM_LABELS: Record<string, string> = {
   edible: 'Comestível',
 };
 
+const ACCESS_LABELS: Record<string, string> = {
+  regulated_association: 'Associação regulamentada',
+  anvisa_import: 'Importação via Anvisa',
+  informal: 'Acesso informal',
+  self_cultivation: 'Autocultivo',
+  not_accessing: 'Ainda não acessa',
+};
+
 @Injectable()
 export class CompleteOnboardingUseCase {
   constructor(
@@ -113,6 +121,12 @@ export class CompleteOnboardingUseCase {
       parts.push(
         `Acesso assistido: ${session.assistedAccess ? 'Sim' : 'Não'}`,
       );
+    }
+
+    const accessMethod = session.currentAccessMethod;
+    if (accessMethod) {
+      const label = ACCESS_LABELS[accessMethod] ?? accessMethod;
+      parts.push(`Forma de acesso atual: ${label}`);
     }
 
     return parts.join('. ') + '.';

@@ -22,6 +22,7 @@ export class PrismaOnboardingSessionMapper {
         needsDoctor: raw.needsDoctor ?? undefined,
         assistedAccess: raw.assistedAccess ?? undefined,
         growingInterest: raw.growingInterest ?? undefined,
+        currentAccessMethod: raw.currentAccessMethod ?? undefined,
         rawResponses:
           (raw.rawResponses as unknown as OnboardingStepResponse[]) ?? [],
         summary: raw.summary ?? undefined,
@@ -49,6 +50,7 @@ export class PrismaOnboardingSessionMapper {
       needsDoctor: session.needsDoctor ?? null,
       assistedAccess: session.assistedAccess ?? null,
       growingInterest: session.growingInterest ?? null,
+      currentAccessMethod: session.currentAccessMethod ?? null,
       rawResponses:
         session.rawResponses as unknown as Prisma.InputJsonValue,
       summary: session.summary ?? null,
@@ -70,6 +72,7 @@ export class PrismaOnboardingSessionMapper {
       needsDoctor: session.needsDoctor ?? null,
       assistedAccess: session.assistedAccess ?? null,
       growingInterest: session.growingInterest ?? null,
+      currentAccessMethod: session.currentAccessMethod ?? null,
       rawResponses:
         session.rawResponses as unknown as Prisma.InputJsonValue,
       summary: session.summary ?? null,

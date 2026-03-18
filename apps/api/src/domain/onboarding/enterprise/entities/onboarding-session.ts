@@ -20,6 +20,7 @@ export interface OnboardingSessionProps {
   needsDoctor?: boolean;
   assistedAccess?: boolean;
   growingInterest?: boolean;
+  currentAccessMethod?: string;
   rawResponses: OnboardingStepResponse[];
   summary?: string;
   escalatedAt?: Date;
@@ -69,6 +70,10 @@ export class OnboardingSession extends Entity<OnboardingSessionProps> {
     return this.props.growingInterest;
   }
 
+  get currentAccessMethod() {
+    return this.props.currentAccessMethod;
+  }
+
   get rawResponses() {
     return this.props.rawResponses;
   }
@@ -112,6 +117,8 @@ export class OnboardingSession extends Entity<OnboardingSessionProps> {
       this.props.assistedAccess = fields.assistedAccess;
     if (fields.growingInterest !== undefined)
       this.props.growingInterest = fields.growingInterest;
+    if (fields.currentAccessMethod !== undefined)
+      this.props.currentAccessMethod = fields.currentAccessMethod;
     this.touch();
   }
 

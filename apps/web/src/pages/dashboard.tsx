@@ -46,6 +46,14 @@ const FORM_LABELS: Record<string, string> = {
   edible: 'Comestível',
 }
 
+const ACCESS_METHOD_LABELS: Record<string, string> = {
+  regulated_association: 'Associação regulamentada',
+  anvisa_import: 'Importação via Anvisa',
+  informal: 'Acesso informal',
+  self_cultivation: 'Autocultivo',
+  not_accessing: 'Ainda não acessa',
+}
+
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   pending: { label: 'Pendente', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800' },
   approved: { label: 'Aprovado', color: 'text-emerald-700 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800' },
@@ -577,6 +585,24 @@ export function DashboardPage() {
                   label="Acesso assistido"
                   value={onboarding.assistedAccess === true ? 'Sim, preciso de ajuda' : onboarding.assistedAccess === false ? 'Consigo arcar' : undefined}
                 />
+                {onboarding.currentAccessMethod && (
+                  <InfoRow
+                    label="Forma de acesso atual"
+                    value={ACCESS_METHOD_LABELS[onboarding.currentAccessMethod] ?? onboarding.currentAccessMethod}
+                  />
+                )}
+                {onboarding.currentAccessMethod === 'informal' && (
+                  <div className="mt-3 flex items-start gap-2.5 p-3 rounded-lg bg-brand-green-pale/30 dark:bg-brand-green-deep/10 border border-brand-green-pale dark:border-brand-green-deep/30">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep shrink-0 mt-0.5">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 16v-4" />
+                      <path d="M12 8h.01" />
+                    </svg>
+                    <p className="text-[12px] text-brand-green-deep dark:text-brand-green-light">
+                      A CannHub pode te ajudar a regularizar seu acesso à cannabis medicinal. Continue seu cadastro para receber orientação.
+                    </p>
+                  </div>
+                )}
                 {onboarding.needsDoctor && (
                   <div className="mt-3 flex items-start gap-2.5 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-amber-600 shrink-0 mt-0.5">

@@ -37,6 +37,7 @@ export class GetOnboardingSummaryController {
       needsDoctor: session.needsDoctor,
       assistedAccess: session.assistedAccess,
       growingInterest: session.growingInterest,
+      currentAccessMethod: session.currentAccessMethod,
       summary: session.summary,
     };
   }

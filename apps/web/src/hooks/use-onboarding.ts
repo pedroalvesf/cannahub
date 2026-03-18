@@ -12,6 +12,7 @@ interface OnboardingSummary {
   needsDoctor?: boolean
   assistedAccess?: boolean
   growingInterest?: boolean
+  currentAccessMethod?: string
   summary?: string
 }
 

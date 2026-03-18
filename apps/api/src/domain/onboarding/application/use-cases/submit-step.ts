@@ -23,6 +23,7 @@ const STEP_FIELD_MAP: Record<number, string> = {
   3: 'hasPrescription',
   4: 'preferredForm',
   5: 'assistedAccess',
+  6: 'currentAccessMethod',
 };
 
 @Injectable()

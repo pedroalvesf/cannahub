@@ -231,8 +231,9 @@ model OnboardingSession {
   preferredForm   String?  // UsageForm enum
   hasPrescription Boolean?
   needsDoctor     Boolean?
-  assistedAccess  Boolean?
-  growingInterest Boolean?
+  assistedAccess       Boolean?
+  growingInterest      Boolean?
+  currentAccessMethod  String?   // regulated_association | anvisa_import | informal | self_cultivation | not_accessing
 
   // Respostas brutas do paciente (texto livre)
   rawResponses    Json     @default("[]")

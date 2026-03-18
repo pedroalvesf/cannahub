@@ -11,10 +11,15 @@ interface StepConfig {
   allowFreeText?: boolean
   freeTextPlaceholder?: string
   columns?: 1 | 2
+  key: string
+  backendStepNumber: number
+  infoBox?: { title: string; text: string }
 }
 
-const steps: StepConfig[] = [
+const BASE_STEPS: StepConfig[] = [
   {
+    key: 'condition',
+    backendStepNumber: 1,
     question: 'Para começarmos, qual é o seu ponto de partida?',
     subtitle: 'Selecione a condição que mais afeta sua qualidade de vida.',
     options: [
@@ -32,6 +37,8 @@ const steps: StepConfig[] = [
     columns: 2,
   },
   {
+    key: 'experience',
+    backendStepNumber: 2,
     question: 'Qual sua experiência com cannabis medicinal?',
     options: [
       { value: 'never', label: 'Nunca usei', description: 'Primeira vez buscando esse tratamento' },
@@ -42,6 +49,25 @@ const steps: StepConfig[] = [
     ],
   },
   {
+    key: 'currentAccessMethod',
+    backendStepNumber: 6,
+    question: 'Como você acessa cannabis atualmente?',
+    subtitle: 'Não se preocupe — essa informação é confidencial e nos ajuda a orientar você da melhor forma.',
+    options: [
+      { value: 'regulated_association', label: 'Associação regulamentada', description: 'Já sou membro de uma associação' },
+      { value: 'anvisa_import', label: 'Importação via Anvisa', description: 'Importo com autorização da Anvisa' },
+      { value: 'informal', label: 'Acesso informal', description: 'Consigo por conta própria, sem documentação' },
+      { value: 'self_cultivation', label: 'Autocultivo', description: 'Cultivo para uso pessoal' },
+      { value: 'not_accessing', label: 'Ainda não acesso', description: 'Quero começar o tratamento' },
+    ],
+    infoBox: {
+      title: 'Estamos aqui para ajudar',
+      text: 'Independente da sua situação atual, a CannHub pode te orientar para regularizar seu acesso à cannabis medicinal de forma segura e legal.',
+    },
+  },
+  {
+    key: 'prescription',
+    backendStepNumber: 3,
     question: 'Você possui receita médica?',
     subtitle: 'A receita é necessária para acessar o medicamento. Sem ela, podemos indicar um médico.',
     options: [
@@ -51,6 +77,8 @@ const steps: StepConfig[] = [
     ],
   },
   {
+    key: 'preferredForm',
+    backendStepNumber: 4,
     question: 'Como prefere usar o medicamento?',
     subtitle: 'Se não souber, sem problema — podemos orientar depois.',
     options: [
@@ -63,6 +91,8 @@ const steps: StepConfig[] = [
     columns: 2,
   },
   {
+    key: 'assistedAccess',
+    backendStepNumber: 5,
     question: 'Precisa de acesso assistido?',
     subtitle: 'Algumas associações oferecem custo reduzido ou doação para quem tem dificuldade financeira.',
     options: [
@@ -72,13 +102,14 @@ const steps: StepConfig[] = [
   },
 ]
 
-const stepKeys = [
-  'condition',
-  'experience',
-  'prescription',
-  'preferredForm',
-  'assistedAccess',
-]
+function getVisibleSteps(answers: Record<string, string>): StepConfig[] {
+  return BASE_STEPS.filter((step) => {
+    if (step.key === 'currentAccessMethod') {
+      return answers.experience !== undefined && answers.experience !== 'never'
+    }
+    return true
+  })
+}
 
 interface OnboardingFlowProps {
   onComplete: (data: Record<string, string>) => void
@@ -121,6 +152,7 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
       const restored: Record<string, string> = {}
       if (existingSession.condition) restored.condition = existingSession.condition
       if (existingSession.experience) restored.experience = existingSession.experience
+      if (existingSession.currentAccessMethod) restored.currentAccessMethod = existingSession.currentAccessMethod
       if (existingSession.hasPrescription !== undefined) {
         restored.prescription = existingSession.hasPrescription ? 'yes' : 'no'
       }
@@ -130,8 +162,10 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
       }
       setAnswers(restored)
 
-      // Jump to the next unanswered step
-      const resumeStep = Math.min((existingSession.currentStep ?? 1) - 1, steps.length)
+      // Jump to the next unanswered step based on visible steps
+      const restoredVisibleSteps = getVisibleSteps(restored)
+      const firstUnansweredIndex = restoredVisibleSteps.findIndex((s) => !restored[s.key])
+      const resumeStep = firstUnansweredIndex === -1 ? restoredVisibleSteps.length : firstUnansweredIndex
       setCurrentStep(resumeStep)
       setIsLoading(false)
       return
@@ -152,9 +186,9 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
     })
   }, [existingSession, summaryLoading, summaryError]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const step = steps[currentStep]
-  const isLastStep = currentStep === steps.length - 1
-  const isSummary = currentStep >= steps.length
+  const visibleSteps = getVisibleSteps(answers)
+  const step = visibleSteps[currentStep]
+  const isSummary = currentStep >= visibleSteps.length
 
   function submitStepToApi(stepNumber: number, value: string, isFreeText: boolean) {
     setIsSubmitting(true)
@@ -182,14 +216,20 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
   }
 
   function selectOption(value: string) {
-    const key = stepKeys[currentStep] ?? `step${currentStep}`
+    const currentStepConfig = visibleSteps[currentStep]
+    if (!currentStepConfig) return
+    const key = currentStepConfig.key
     const newAnswers = { ...answers, [key]: value }
     setAnswers(newAnswers)
 
-    // Submit to API (stepNumber is 1-indexed)
-    submitStepToApi(currentStep + 1, value, false)
+    // Submit to API using the backend step number
+    submitStepToApi(currentStepConfig.backendStepNumber, value, false)
 
-    if (isLastStep) {
+    // Recalculate visible steps with the new answers
+    const nextVisibleSteps = getVisibleSteps(newAnswers)
+    const isNowLastStep = currentStep === nextVisibleSteps.length - 1
+
+    if (isNowLastStep) {
       goToSummary(newAnswers)
     } else {
       goNext()
@@ -200,16 +240,21 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
     e.preventDefault()
     if (!freeText.trim()) return
 
-    const key = stepKeys[currentStep] ?? `step${currentStep}`
+    const currentStepConfig = visibleSteps[currentStep]
+    if (!currentStepConfig) return
+    const key = currentStepConfig.key
     const trimmed = freeText.trim()
     const newAnswers = { ...answers, [key]: trimmed }
     setAnswers(newAnswers)
     setFreeText('')
 
     // Submit free text to API
-    submitStepToApi(currentStep + 1, trimmed, true)
+    submitStepToApi(currentStepConfig.backendStepNumber, trimmed, true)
 
-    if (isLastStep) {
+    const nextVisibleSteps = getVisibleSteps(newAnswers)
+    const isNowLastStep = currentStep === nextVisibleSteps.length - 1
+
+    if (isNowLastStep) {
       goToSummary(newAnswers)
     } else {
       goNext()
@@ -235,9 +280,10 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
 
   function goToSummary(finalAnswers: Record<string, string>) {
     setAnswers(finalAnswers)
+    const finalVisibleSteps = getVisibleSteps(finalAnswers)
     setIsTransitioning(true)
     setTimeout(() => {
-      setCurrentStep(steps.length)
+      setCurrentStep(finalVisibleSteps.length)
       setIsTransitioning(false)
     }, 200)
   }
@@ -259,10 +305,8 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
     })
   }
 
-  function getLabelFor(stepIndex: number, value: string): string {
-    const s = steps[stepIndex]
-    if (!s) return value
-    const option = s.options.find((o) => o.value === value)
+  function getLabelFor(stepConfig: StepConfig, value: string): string {
+    const option = stepConfig.options.find((o) => o.value === value)
     return option?.label ?? value
   }
 
@@ -291,17 +335,17 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
           </p>
 
           <div className="mt-8 space-y-1">
-            {stepKeys.map((key, i) => {
-              const value = answers[key]
+            {visibleSteps.map((stepConfig, i) => {
+              const value = answers[stepConfig.key]
               if (!value) return null
               return (
-                <div key={key} className="flex items-center justify-between py-3.5 border-b border-brand-cream-dark/50 dark:border-gray-800">
+                <div key={stepConfig.key} className="flex items-center justify-between py-3.5 border-b border-brand-cream-dark/50 dark:border-gray-800">
                   <div>
                     <p className="text-[11px] text-brand-muted dark:text-gray-500 uppercase tracking-wider">
-                      {steps[i]?.question.replace('?', '').substring(0, 35)}...
+                      {stepConfig.question.replace('?', '').substring(0, 35)}...
                     </p>
                     <p className="mt-0.5 text-sm font-medium text-brand-green-deep dark:text-gray-200">
-                      {getLabelFor(i, value)}
+                      {getLabelFor(stepConfig, value)}
                     </p>
                   </div>
                   <button
@@ -347,7 +391,7 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
     <div className="flex-1 flex flex-col">
       {/* Progress */}
       <div className="px-6 pt-6 pb-4 max-w-xl mx-auto w-full">
-        <StepProgress current={currentStep} total={steps.length} />
+        <StepProgress current={currentStep} total={visibleSteps.length} />
       </div>
 
       {/* Step content */}
@@ -380,11 +424,26 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
                 key={option.value}
                 label={option.label}
                 description={option.description}
-                selected={answers[stepKeys[currentStep] ?? ''] === option.value}
+                selected={answers[step.key] === option.value}
                 onClick={() => selectOption(option.value)}
               />
             ))}
           </div>
+
+          {/* Info box (e.g. for informal access step) */}
+          {step.infoBox && (
+            <div className="mt-4 flex items-start gap-2.5 p-3.5 rounded-card bg-brand-green-pale/30 dark:bg-brand-green-deep/10 border border-brand-green-pale dark:border-brand-green-deep/30">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep shrink-0 mt-0.5">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v-4" />
+                <path d="M12 8h.01" />
+              </svg>
+              <div>
+                <p className="text-[13px] font-semibold text-brand-green-deep dark:text-brand-green-light">{step.infoBox.title}</p>
+                <p className="mt-0.5 text-xs text-brand-muted dark:text-gray-500 leading-relaxed">{step.infoBox.text}</p>
+              </div>
+            </div>
+          )}
 
           {/* Free text */}
           {step.allowFreeText && (
