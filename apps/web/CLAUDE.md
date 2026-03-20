@@ -18,9 +18,12 @@ src/
 │   ├── layout/header.tsx       # Navbar fixa (full-width, backdrop-blur)
 │   ├── onboarding/             # OptionCard, StepProgress, OnboardingFlow
 │   └── ui/theme-toggle.tsx     # Cycle light/dark/system
+├── data/
+│   └── sample-associations.ts  # 9 associações com slugs, about, contato (shared entre pages)
 ├── hooks/
 │   ├── use-auth.ts             # useLogin(), useRegister() (React Query mutations)
-│   └── use-onboarding.ts       # useOnboardingSummary(), useStartOnboarding(), useSubmitStep(), etc.
+│   ├── use-onboarding.ts       # useOnboardingSummary(), useStartOnboarding(), useSubmitStep(), etc.
+│   └── use-profile.ts          # useUpdateProfile() mutation
 ├── lib/api.ts                  # Axios com interceptors (Bearer, device headers, refresh token)
 ├── pages/                      # 9 páginas (ver rotas abaixo)
 └── stores/
@@ -36,11 +39,12 @@ src/
 | `/quiz` | QuizPage | Não | Triagem (4 perfis 2x2) |
 | `/cadastro` | RegisterPage | Não | Registro 2 steps (tipo de conta + dados) |
 | `/login` | LoginPage | Não | Email + senha |
-| `/acolhimento` | OnboardingPage | Sim | 5 steps clínicos |
+| `/acolhimento` | OnboardingPage | Sim | 5-6 steps clínicos (step condicional: acesso atual) |
 | `/documentos` | DocumentsPage | Sim | Upload 4 documentos |
 | `/painel` | DashboardPage | Sim | Dashboard do paciente |
 | `/catalogo` | CatalogPage | Não | Cepas + produtos (preço restrito) |
-| `/associacoes` | AssociationsPage | Não | 8 associações (vínculo restrito) |
+| `/associacoes` | AssociationsPage | Não | 9 associações (vínculo restrito) |
+| `/associacoes/:slug` | AssociationDetailPage | Não | Detalhe com CTA contextual (4 estados auth) |
 
 ## API client (`lib/api.ts`)
 
@@ -125,8 +129,21 @@ white:      #FDFCF9    → Cards, superfícies elevadas
 ## Fluxo do paciente no frontend
 
 ```
-/cadastro (tipo + dados) → /acolhimento (5 steps clínicos) → /documentos (upload) → /painel (visão geral)
+/quiz (triagem) → /cadastro (tipo via URL param + dados) → /acolhimento (5-6 steps) → /documentos (upload) → /painel (visão geral)
 ```
+
+## Onboarding — steps dinâmicos
+
+O frontend usa `getVisibleSteps(answers)` para montar a lista de steps visíveis. Cada step tem `key` e `backendStepNumber` desacoplados:
+
+| Frontend order | key | backendStepNumber | Condicional? |
+|---|---|---|---|
+| 1 | condition | 1 | Não |
+| 2 | experience | 2 | Não |
+| 3 | currentAccessMethod | 6 | Sim (só quando experience !== 'never') |
+| 4 | prescription | 3 | Não |
+| 5 | preferredForm | 4 | Não |
+| 6 | assistedAccess | 5 | Não |
 
 ## TypeScript
 

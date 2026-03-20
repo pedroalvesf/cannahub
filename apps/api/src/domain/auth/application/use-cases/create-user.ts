@@ -4,7 +4,7 @@ import { User } from '../../enterprise/entities/user';
 import { UsersRepository } from '@/domain/auth/application/repositories/users-repository';
 import { HashGenerator } from '../cryptography/hash-generator';
 import { UserAlreadyExistsError } from './errors/user-already-exists-error';
-import { UniqueEntityID } from '@/core/entities/unique-entity-id';
+import { CpfAlreadyInUseError } from './errors/cpf-already-in-use-error';
 
 interface CreateUserUseCaseRequest {
   email: string;
@@ -16,7 +16,7 @@ interface CreateUserUseCaseRequest {
 }
 
 type CreateUserUseCaseResponse = Either<
-  UserAlreadyExistsError,
+  UserAlreadyExistsError | CpfAlreadyInUseError,
   {
     user: User;
   }
@@ -43,19 +43,24 @@ export class CreateUserUseCase {
       return left(new UserAlreadyExistsError());
     }
 
+    if (cpf) {
+      const cpfExists = await this.userRepository.findByCpf(cpf);
+
+      if (cpfExists) {
+        return left(new CpfAlreadyInUseError());
+      }
+    }
+
     const hashedPassword = await this.hashGenerator.hash(password);
 
-    const user = User.create(
-      {
-        email,
-        password: hashedPassword,
-        name,
-        accountType,
-        phone,
-        cpf,
-      },
-      new UniqueEntityID(email)
-    );
+    const user = User.create({
+      email,
+      password: hashedPassword,
+      name,
+      accountType,
+      phone,
+      cpf,
+    });
 
     await this.userRepository.create(user);
 

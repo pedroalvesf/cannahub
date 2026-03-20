@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { api } from '@/lib/api'
+import { queryClient } from '@/lib/query-client'
 
 interface User {
   id: string
@@ -29,6 +30,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     localStorage.setItem('accessToken', accessToken)
     localStorage.setItem('refreshToken', refreshToken)
     localStorage.setItem('user', JSON.stringify(user))
+    queryClient.clear()
     set({ isAuthenticated: true, user })
   },
 
@@ -36,6 +38,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('user')
+    queryClient.clear()
     set({ isAuthenticated: false, user: null })
   },
 

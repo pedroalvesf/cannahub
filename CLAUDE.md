@@ -58,10 +58,12 @@ PORT=3000
 
 ```
 Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documentos)  →  Painel (/painel)
-  tipo de conta            perfil clínico (5 steps)       upload 4 docs                 visão consolidada
+  tipo de conta            perfil clínico (5-6 steps)     upload 4 docs                 visão consolidada
   + dados básicos          condição, experiência,         receita, laudo,               status cadastro,
-  + login automático       receita, forma de uso,         RG/CNH, comprovante           perfil clínico,
-                           acesso assistido                                             docs, associações
+  + login automático       [acesso atual*], receita,      RG/CNH, comprovante           perfil clínico,
+                           forma de uso, assistido                                      docs, associações
+
+* Step condicional: "Como você acessa cannabis atualmente?" — aparece só quando experiência !== 'never'
 ```
 
 ## Rotas do frontend (9 páginas)
@@ -72,11 +74,12 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 | `/quiz` | Triagem (4 perfis) | Não |
 | `/cadastro` | Registro (2 steps: tipo + dados) | Não |
 | `/login` | Login | Não |
-| `/acolhimento` | Onboarding (5 steps) | Sim |
+| `/acolhimento` | Onboarding (5-6 steps, condicional) | Sim |
 | `/documentos` | Upload de documentos | Sim |
 | `/painel` | Dashboard do paciente | Sim |
 | `/catalogo` | Catálogo (cepas + produtos) | Não (preço restrito) |
 | `/associacoes` | Associações credenciadas | Não (vínculo restrito) |
+| `/associacoes/:slug` | Detalhe da associação | Não (CTA contextual) |
 
 ## Endpoints da API
 
@@ -99,17 +102,24 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 
 ### Onboarding
 - `POST /onboarding/start` — iniciar sessão
-- `PATCH /onboarding/step` — submeter step
+- `PATCH /onboarding/step` — submeter step (1-6, step 6 = currentAccessMethod condicional)
 - `POST /onboarding/complete` — completar
-- `GET /onboarding/summary` — resumo
+- `GET /onboarding/summary` — resumo (inclui currentAccessMethod)
 - `POST /onboarding/escalate` — escalar pra humano
 - `POST /onboarding/extract` — extrair campos com IA
+
+### Outros
+- `PUT /auth/profile` — atualizar perfil (name, phone, cpf) (JWT)
+- `GET /associations` — listar associações (@Public, filtros: region, state, hasAssistedAccess)
+- `GET /associations/:id` — detalhe associação (@Public)
+- `GET /documents` — listar documentos do user (JWT)
 
 ## Entidades principais (Prisma)
 
 ```
 User → accountType vive aqui (patient/guardian/prescriber/veterinarian/caregiver)
-OnboardingSession → perfil clínico (condition, experience, preferredForm, hasPrescription, assistedAccess)
+OnboardingSession → perfil clínico (condition, experience, currentAccessMethod, preferredForm, hasPrescription, assistedAccess)
+                     currentAccessMethod é condicional (só quando experience !== 'never')
                      NÃO tem accountType (removido, vive só no User)
 Document → tipo, URL S3, status, motivo rejeição
 Association → perfil, região, produtos, acesso assistido
@@ -160,14 +170,17 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 ## Próximos passos
 
 ### Frontend
-- [ ] Perfil individual da Associação (detalhe ao clicar)
-- [ ] Conectar Quiz → Acolhimento (passar tipo)
-- [ ] Responsividade mobile (menu hamburger)
+- [x] Perfil individual da Associação (detalhe ao clicar) — `/associacoes/:slug`
+- [x] Conectar Quiz → Cadastro (passar tipo via URL param)
+- [x] Responsividade mobile (menu hamburger)
+- [x] CTAs contextuais (serviços CannHub nas páginas de associação + home)
+- [x] Step condicional no onboarding (acesso informal → regularização)
 - [ ] Upload real de documentos (S3)
 - [ ] Integrar catálogo com API real
 
 ### Backend
-- [ ] Módulos documents, associations, strains, products, memberships
+- [x] Controllers: associations (list, get by id), documents (list), update profile
+- [ ] Módulos completos: strains, products, memberships
 - [ ] Painel admin de aprovação de documentos
 - [ ] Notificações por e-mail (Resend)
 - [ ] Upload S3 com URLs assinadas

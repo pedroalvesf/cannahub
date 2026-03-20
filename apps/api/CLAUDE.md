@@ -95,11 +95,27 @@ Rastreia mutações em coleções (ex: RoleList do User). Persiste apenas diffs.
 | Método | Rota | Auth | Descrição |
 |--------|------|------|-----------|
 | POST | `/onboarding/start` | JWT | Iniciar sessão |
-| PATCH | `/onboarding/step` | JWT | Submeter step (1-5) |
+| PATCH | `/onboarding/step` | JWT | Submeter step (1-6) |
 | POST | `/onboarding/complete` | JWT | Completar |
 | GET | `/onboarding/summary` | JWT | Resumo |
 | POST | `/onboarding/escalate` | JWT | Escalar pra humano |
 | POST | `/onboarding/extract` | JWT | Extrair campos com IA |
+
+### Profile
+| Método | Rota | Auth | Descrição |
+|--------|------|------|-----------|
+| PUT | `/auth/profile` | JWT | Atualizar perfil (name, phone, cpf) |
+
+### Associations
+| Método | Rota | Auth | Descrição |
+|--------|------|------|-----------|
+| GET | `/associations` | @Public | Listar (filtros: region, state, hasAssistedAccess) |
+| GET | `/associations/:id` | @Public | Detalhe |
+
+### Documents
+| Método | Rota | Auth | Descrição |
+|--------|------|------|-----------|
+| GET | `/documents` | JWT | Listar documentos do user |
 
 ### RBAC
 | Método | Rota | Auth | Descrição |
@@ -110,13 +126,15 @@ Rastreia mutações em coleções (ex: RoleList do User). Persiste apenas diffs.
 | POST | `/permissions` | JWT | Criar permissão |
 | GET | `/permissions` | JWT | Listar permissões |
 
-## Onboarding — 5 steps
+## Onboarding — 6 steps (step 6 é condicional)
 
 1. **condition** — Condição de saúde principal
 2. **experience** — Tempo de experiência com cannabis
 3. **hasPrescription** — Tem receita médica?
 4. **preferredForm** — Forma de uso preferida
 5. **assistedAccess** — Precisa de acesso assistido?
+6. **currentAccessMethod** — Como acessa cannabis atualmente? (condicional, só quando experience !== 'never')
+   - Valores: `regulated_association`, `anvisa_import`, `informal`, `self_cultivation`, `not_accessing`
 
 `accountType` **NÃO** está no OnboardingSession — vive só no User (coletado no registro).
 
@@ -124,7 +142,7 @@ Rastreia mutações em coleções (ex: RoleList do User). Persiste apenas diffs.
 
 ```
 User              → accountType (patient/guardian/prescriber/veterinarian/caregiver)
-OnboardingSession → condition, experience, preferredForm, hasPrescription, assistedAccess, summary
+OnboardingSession → condition, experience, currentAccessMethod, preferredForm, hasPrescription, assistedAccess, summary
 SupportTicket     → escalação de onboarding para humano
 Document          → tipo, URL S3, status (pending/approved/rejected), motivo rejeição
 Association       → perfil, região, produtos

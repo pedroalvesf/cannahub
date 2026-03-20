@@ -94,6 +94,8 @@ export class AuthenticateDeviceController {
         accountType: user.accountType,
         accountStatus: user.accountStatus,
         verificationStatus: user.verificationStatus,
+        phone: user.phone,
+        cpf: user.cpf,
       },
     };
   }

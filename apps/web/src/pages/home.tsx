@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { useAuthStore } from '@/stores/auth-store'
 
 export function HomePage() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   return (
     <div className="min-h-screen bg-brand-cream dark:bg-surface-dark">
 
@@ -28,7 +30,7 @@ export function HomePage() {
         {/* CTAs */}
         <div className="flex gap-3.5 items-center animate-fade-up-4">
           <Link
-            to="/quiz"
+            to={isAuthenticated ? '/acolhimento' : '/cadastro?redirect=/acolhimento'}
             className="text-base font-semibold text-brand-white bg-brand-green-deep px-9 py-4 rounded-btn shadow-hero hover:bg-brand-green-mid hover:-translate-y-0.5 hover:shadow-hero-hover transition-all no-underline"
           >
             Iniciar Acolhimento
@@ -271,7 +273,7 @@ export function HomePage() {
             </p>
           </div>
           <Link
-            to="/quiz"
+            to={isAuthenticated ? '/acolhimento' : '/cadastro?redirect=/acolhimento'}
             className="relative z-10 text-sm font-semibold text-brand-green-deep bg-brand-white px-[30px] py-[15px] rounded-btn whitespace-nowrap shrink-0 hover:bg-brand-cream hover:-translate-y-px transition-all no-underline"
           >
             Iniciar Acolhimento →

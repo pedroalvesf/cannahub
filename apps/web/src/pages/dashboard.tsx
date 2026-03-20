@@ -91,9 +91,9 @@ function EditButton({ onClick }: { onClick: () => void }) {
   )
 }
 
-function SectionCard({ title, children, action }: { title: string; children: React.ReactNode; action?: React.ReactNode }) {
+function SectionCard({ title, children, action, id }: { title: string; children: React.ReactNode; action?: React.ReactNode; id?: string }) {
   return (
-    <div className="bg-brand-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-card overflow-hidden">
+    <div id={id} className="bg-brand-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-card overflow-hidden">
       <div className="flex items-center justify-between px-6 py-4 border-b border-brand-cream-dark/50 dark:border-gray-700/30">
         <h2 className="text-[14px] font-bold text-brand-green-deep dark:text-white uppercase tracking-[0.04em]">
           {title}
@@ -136,6 +136,15 @@ function formatPhone(value: string) {
 function formatPhoneDisplay(value?: string | null) {
   if (!value) return null
   return formatPhone(value)
+}
+
+function formatCpfDisplay(value?: string | null) {
+  if (!value) return null
+  const digits = value.replace(/\D/g, '').slice(0, 11)
+  if (digits.length <= 3) return digits
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`
+  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`
 }
 
 function AddressForm({ initial, onSave, onCancel }: { initial: AddressData | null; onSave: (data: AddressData) => void; onCancel: () => void }) {
@@ -249,13 +258,14 @@ function ProfileEditForm({ user, onSave, onCancel, isPending }: {
   )
 }
 
-function NextSteps({ onboardingComplete, hasOnboarding, needsDoctor, hasAddress }: {
+function NextSteps({ onboardingComplete, hasOnboarding, needsDoctor, hasAddress, onAddAddress }: {
   onboardingComplete: boolean
   hasOnboarding: boolean
   needsDoctor: boolean
   hasAddress: boolean
+  onAddAddress: () => void
 }) {
-  const steps: { icon: React.ReactNode; title: string; description: string; action: string; to: string }[] = []
+  const steps: { icon: React.ReactNode; title: string; description: string; action: string; to?: string; onClick?: () => void }[] = []
 
   if (!hasOnboarding) {
     steps.push({
@@ -311,7 +321,7 @@ function NextSteps({ onboardingComplete, hasOnboarding, needsDoctor, hasAddress 
       title: 'Cadastrar endereço',
       description: 'Necessário para validação do comprovante de residência.',
       action: 'Adicionar',
-      to: '#endereco',
+      onClick: onAddAddress,
     })
   }
 
@@ -338,34 +348,49 @@ function NextSteps({ onboardingComplete, hasOnboarding, needsDoctor, hasAddress 
         Próximos passos
       </p>
       <div className="space-y-2">
-        {steps.map((step, i) => (
-          <Link
-            key={i}
-            to={step.to}
-            className="flex items-center gap-4 bg-brand-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-xl px-5 py-4 hover:border-brand-green-light/50 transition-colors no-underline group"
-          >
-            <div className="w-10 h-10 rounded-full bg-brand-green-pale dark:bg-gray-700 flex items-center justify-center shrink-0 text-brand-green-deep dark:text-brand-green-light group-hover:bg-brand-green-light/20 transition-colors">
-              {step.icon}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-medium text-brand-green-deep dark:text-white leading-tight">
-                {step.title}
-              </p>
-              <p className="text-[12px] text-brand-muted dark:text-gray-500 leading-snug mt-0.5">
-                {step.description}
-              </p>
-            </div>
-            {step.to === '#' ? (
-              <span className="text-[11px] font-bold uppercase tracking-wider text-brand-green-light bg-brand-green-pale dark:bg-gray-700 px-2.5 py-1 rounded-btn shrink-0">
-                {step.action}
-              </span>
-            ) : (
-              <span className="text-[13px] font-semibold text-brand-green-mid dark:text-brand-green-light shrink-0 group-hover:underline">
-                {step.action} →
-              </span>
-            )}
-          </Link>
-        ))}
+        {steps.map((step, i) => {
+          const isDisabled = !step.to && !step.onClick
+          const className = "flex items-center gap-4 bg-brand-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-xl px-5 py-4 hover:border-brand-green-light/50 transition-colors no-underline group w-full text-left"
+
+          const content = (
+            <>
+              <div className="w-10 h-10 rounded-full bg-brand-green-pale dark:bg-gray-700 flex items-center justify-center shrink-0 text-brand-green-deep dark:text-brand-green-light group-hover:bg-brand-green-light/20 transition-colors">
+                {step.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[14px] font-medium text-brand-green-deep dark:text-white leading-tight">
+                  {step.title}
+                </p>
+                <p className="text-[12px] text-brand-muted dark:text-gray-500 leading-snug mt-0.5">
+                  {step.description}
+                </p>
+              </div>
+              {isDisabled ? (
+                <span className="text-[11px] font-bold uppercase tracking-wider text-brand-green-light bg-brand-green-pale dark:bg-gray-700 px-2.5 py-1 rounded-btn shrink-0">
+                  {step.action}
+                </span>
+              ) : (
+                <span className="text-[13px] font-semibold text-brand-green-mid dark:text-brand-green-light shrink-0 group-hover:underline">
+                  {step.action} →
+                </span>
+              )}
+            </>
+          )
+
+          if (step.onClick) {
+            return (
+              <button key={i} onClick={step.onClick} className={className}>
+                {content}
+              </button>
+            )
+          }
+
+          return (
+            <Link key={i} to={step.to ?? '#'} className={className}>
+              {content}
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
@@ -473,6 +498,12 @@ export function DashboardPage() {
             hasOnboarding={!!onboarding}
             needsDoctor={onboarding?.needsDoctor === true}
             hasAddress={!!address}
+            onAddAddress={() => {
+              setEditingAddress(true)
+              setTimeout(() => {
+                document.getElementById('endereco')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              }, 100)
+            }}
           />
         )}
 
@@ -495,7 +526,7 @@ export function DashboardPage() {
                 <InfoRow label="Nome" value={user.name} />
                 <InfoRow label="Email" value={user.email} />
                 <InfoRow label="Tipo de conta" value={accountTypeLabel} />
-                <InfoRow label="CPF" value={user.cpf} />
+                <InfoRow label="CPF" value={formatCpfDisplay(user.cpf)} />
                 <InfoRow label="Telefone" value={formatPhoneDisplay(user.phone)} />
               </>
             )}
@@ -503,6 +534,7 @@ export function DashboardPage() {
 
           {/* Address */}
           <SectionCard
+            id="endereco"
             title="Endereço"
             action={
               !editingAddress ? (

@@ -1,12 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useLogin } from '@/hooks/use-auth'
+import { useAuthStore } from '@/stores/auth-store'
 
 export function LoginPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const redirectTo = searchParams.get('redirect') || '/'
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const loginMutation = useLogin()
+
+  // Already logged in — skip login
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(redirectTo === '/' ? '/painel' : redirectTo, { replace: true })
+    }
+  }, [isAuthenticated, navigate, redirectTo])
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')

@@ -7,6 +7,11 @@ export function Header() {
   const { isAuthenticated, logout } = useAuthStore()
   const [mobileOpen, setMobileOpen] = useState(false)
 
+  function handleLogout() {
+    logout()
+    window.location.href = '/'
+  }
+
   const navLinkClass = 'text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline'
   const mobileNavLinkClass = 'block text-[15px] font-medium text-brand-green-deep dark:text-gray-200 py-2.5 no-underline'
 
@@ -64,7 +69,7 @@ export function Header() {
               Meu painel
             </Link>
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="text-sm font-medium text-brand-green-deep px-4 py-2 rounded-btn hover:bg-brand-green-pale transition-colors"
             >
               Sair
@@ -79,7 +84,7 @@ export function Header() {
               Entrar
             </Link>
             <Link
-              to="/quiz"
+              to="/cadastro?redirect=/acolhimento"
               className="text-sm font-semibold text-brand-white bg-brand-green-deep px-[22px] py-2.5 rounded-btn hover:bg-brand-green-mid transition-colors hover:-translate-y-px no-underline"
             >
               Começar
@@ -144,7 +149,7 @@ export function Header() {
                   Meu painel
                 </Link>
                 <button
-                  onClick={() => { logout(); setMobileOpen(false) }}
+                  onClick={() => { handleLogout(); setMobileOpen(false) }}
                   className="text-[15px] font-medium text-brand-muted dark:text-gray-400 py-2 text-left"
                 >
                   Sair
@@ -160,7 +165,7 @@ export function Header() {
                   Entrar
                 </Link>
                 <Link
-                  to="/quiz"
+                  to="/cadastro?redirect=/acolhimento"
                   onClick={() => setMobileOpen(false)}
                   className="text-center text-[15px] font-semibold text-brand-white bg-brand-green-deep px-6 py-3 rounded-btn hover:bg-brand-green-mid transition-colors no-underline"
                 >

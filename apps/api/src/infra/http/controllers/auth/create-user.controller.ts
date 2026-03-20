@@ -10,6 +10,7 @@ import {
 import { CreateUserUseCase } from '@/domain/auth/application/use-cases/create-user';
 import { CreateUserDto } from '../dto/create-user-dto';
 import { UserAlreadyExistsError } from '@/domain/auth/application/use-cases/errors/user-already-exists-error';
+import { CpfAlreadyInUseError } from '@/domain/auth/application/use-cases/errors/cpf-already-in-use-error';
 import { AuthenticateDeviceUseCase } from '@/domain/auth/application/use-cases/authenticate-device';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Device } from '@/domain/auth/enterprise/entities/device';
@@ -56,6 +57,8 @@ export class CreateUserController {
       switch (error.constructor) {
         case UserAlreadyExistsError:
           throw new ConflictException(error.message);
+        case CpfAlreadyInUseError:
+          throw new ConflictException(error.message);
         default:
           throw new BadRequestException(error.message);
       }
@@ -95,6 +98,8 @@ export class CreateUserController {
         accountType: createdUser.accountType,
         accountStatus: createdUser.accountStatus,
         verificationStatus: createdUser.verificationStatus,
+        phone: createdUser.phone,
+        cpf: createdUser.cpf,
       },
     };
   }

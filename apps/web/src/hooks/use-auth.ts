@@ -26,6 +26,8 @@ interface AuthResponse {
     accountType?: string
     accountStatus: string
     verificationStatus: string
+    phone?: string
+    cpf?: string
   }
 }
 
@@ -46,6 +48,8 @@ export function useLogin() {
         accountStatus: data.user.accountStatus,
         verificationStatus: data.user.verificationStatus,
         status: data.user.accountStatus as 'pending' | 'approved' | 'rejected',
+        phone: data.user.phone,
+        cpf: data.user.cpf,
       })
     },
   })
@@ -68,6 +72,8 @@ export function useRegister() {
         accountStatus: data.user.accountStatus,
         verificationStatus: data.user.verificationStatus,
         status: data.user.accountStatus as 'pending' | 'approved' | 'rejected',
+        phone: data.user.phone,
+        cpf: data.user.cpf,
       })
     },
   })

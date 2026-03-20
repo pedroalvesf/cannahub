@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useRegister } from '@/hooks/use-auth'
+import { useAuthStore } from '@/stores/auth-store'
 
 function formatPhone(value: string) {
   const digits = value.replace(/\D/g, '').slice(0, 11)
@@ -9,6 +10,15 @@ function formatPhone(value: string) {
   if (digits.length <= 3) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
   if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3)}`
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 3)} ${digits.slice(3, 7)}-${digits.slice(7)}`
+}
+
+function formatCpf(value: string) {
+  const digits = value.replace(/\D/g, '').slice(0, 11)
+  if (digits.length === 0) return ''
+  if (digits.length <= 3) return digits
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`
+  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`
 }
 
 const ACCOUNT_TYPES = [
@@ -42,8 +52,16 @@ const ACCOUNT_TYPES = [
 export function RegisterPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const redirectTo = searchParams.get('redirect') || '/acolhimento'
+  const redirectTo = searchParams.get('redirect') || '/painel'
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const registerMutation = useRegister()
+
+  // Already logged in — skip registration
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(redirectTo, { replace: true })
+    }
+  }, [isAuthenticated, navigate, redirectTo])
 
   const initialType = searchParams.get('type') ?? ''
   const validType = ACCOUNT_TYPES.some((t) => t.value === initialType)
@@ -86,7 +104,7 @@ export function RegisterPage() {
         password,
         accountType,
         phone: rawPhone || undefined,
-        cpf: cpf || undefined,
+        cpf: cpf.replace(/\D/g, '') || undefined,
       },
       {
         onSuccess: () => navigate(redirectTo),
@@ -283,7 +301,7 @@ export function RegisterPage() {
                         id="cpf"
                         type="text"
                         value={cpf}
-                        onChange={(e) => setCpf(e.target.value)}
+                        onChange={(e) => setCpf(formatCpf(e.target.value))}
                         className="w-full px-4 py-3 rounded-lg border border-brand-cream-dark dark:border-gray-600 bg-brand-cream/50 dark:bg-gray-800 text-brand-text dark:text-white text-[14px] outline-none focus:border-brand-green-light focus:ring-1 focus:ring-brand-green-light/30 transition-colors"
                         placeholder="000.000.000-00"
                       />
@@ -318,7 +336,7 @@ export function RegisterPage() {
 
         <p className="text-center mt-6 text-[14px] text-brand-muted dark:text-gray-400">
           Já tem conta?{' '}
-          <Link to={redirectTo !== '/acolhimento' ? `/login?redirect=${encodeURIComponent(redirectTo)}` : '/login'} className="text-brand-green-deep dark:text-brand-green-light font-semibold hover:underline no-underline">
+          <Link to={redirectTo !== '/painel' ? `/login?redirect=${encodeURIComponent(redirectTo)}` : '/login'} className="text-brand-green-deep dark:text-brand-green-light font-semibold hover:underline no-underline">
             Entrar
           </Link>
         </p>

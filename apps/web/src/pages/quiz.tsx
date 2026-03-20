@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { Header } from '@/components/layout/header'
+import { useAuthStore } from '@/stores/auth-store'
 
 const PROFILES = [
   {
@@ -53,6 +55,16 @@ const PROFILES = [
 ]
 
 export function QuizPage() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const navigate = useNavigate()
+
+  // Already logged in — account type already set, go straight to onboarding
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/acolhimento', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
+
   return (
     <div className="min-h-screen bg-brand-cream dark:bg-surface-dark">
       <Header />
