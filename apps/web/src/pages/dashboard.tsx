@@ -18,12 +18,14 @@ const ACCOUNT_TYPE_LABELS: Record<string, string> = {
 const CONDITION_LABELS: Record<string, string> = {
   chronic_pain: 'Dor Crônica',
   anxiety: 'Ansiedade',
+  depression: 'Depressão',
+  insomnia: 'Insônia',
   epilepsy: 'Epilepsia',
   autism: 'Autismo / TEA',
   parkinsons: 'Parkinson',
   multiple_sclerosis: 'Esclerose Múltipla',
   fibromyalgia: 'Fibromialgia',
-  nausea: 'Náusea',
+  nausea: 'Náusea / Apetite',
   adhd: 'TDAH',
   ptsd: 'PTSD',
   veterinary: 'Uso Veterinário',
@@ -606,9 +608,17 @@ export function DashboardPage() {
               </div>
             ) : (
               <>
-                <InfoRow label="Condição principal" value={CONDITION_LABELS[onboarding.condition ?? ''] ?? onboarding.condition} />
+                <InfoRow label="Condições" value={
+                  onboarding.condition
+                    ? onboarding.condition.split(',').map((c) => CONDITION_LABELS[c.trim()] ?? c.trim()).join(', ')
+                    : undefined
+                } />
                 <InfoRow label="Experiência" value={EXPERIENCE_LABELS[onboarding.experience ?? ''] ?? onboarding.experience} />
-                <InfoRow label="Forma de uso preferida" value={FORM_LABELS[onboarding.preferredForm ?? ''] ?? onboarding.preferredForm} />
+                <InfoRow label="Formas de uso" value={
+                  onboarding.preferredForm
+                    ? onboarding.preferredForm.split(',').map((f) => FORM_LABELS[f.trim()] ?? f.trim()).join(', ')
+                    : undefined
+                } />
                 <InfoRow
                   label="Receita médica"
                   value={onboarding.hasPrescription === true ? 'Sim' : onboarding.hasPrescription === false ? 'Não' : undefined}

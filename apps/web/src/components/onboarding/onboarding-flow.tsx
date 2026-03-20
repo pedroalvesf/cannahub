@@ -14,6 +14,7 @@ interface StepConfig {
   key: string
   backendStepNumber: number
   infoBox?: { title: string; text: string }
+  multiSelect?: boolean
 }
 
 const BASE_STEPS: StepConfig[] = [
@@ -21,15 +22,20 @@ const BASE_STEPS: StepConfig[] = [
     key: 'condition',
     backendStepNumber: 1,
     question: 'Para começarmos, qual é o seu ponto de partida?',
-    subtitle: 'Selecione a condição que mais afeta sua qualidade de vida.',
+    subtitle: 'Selecione uma ou mais condições que afetam sua qualidade de vida.',
+    multiSelect: true,
     options: [
       { value: 'chronic_pain', label: 'Dor Crônica', description: 'Dores persistentes que afetam o dia a dia' },
-      { value: 'anxiety', label: 'Ansiedade', description: 'Ansiedade pânico ou estresse' },
+      { value: 'anxiety', label: 'Ansiedade', description: 'Ansiedade, pânico ou estresse' },
+      { value: 'depression', label: 'Depressão', description: 'Tristeza persistente e perda de interesse' },
+      { value: 'insomnia', label: 'Insônia', description: 'Dificuldade para dormir ou manter o sono' },
       { value: 'epilepsy', label: 'Epilepsia', description: 'Convulsões ou crises epilépticas' },
       { value: 'autism', label: 'Autismo / TEA', description: 'Transtorno do espectro autista' },
       { value: 'parkinsons', label: 'Parkinson', description: 'Tremores e rigidez muscular' },
       { value: 'fibromyalgia', label: 'Fibromialgia', description: 'Dor generalizada e fadiga' },
-      { value: 'ptsd', label: 'PTSD', description: 'Estresse pós traumático' },
+      { value: 'ptsd', label: 'PTSD', description: 'Estresse pós-traumático' },
+      { value: 'nausea', label: 'Náusea / Apetite', description: 'Náusea crônica ou perda de apetite' },
+      { value: 'multiple_sclerosis', label: 'Esclerose Múltipla', description: 'Espasticidade e dor associada' },
       { value: 'other', label: 'Outra condição' },
     ],
     allowFreeText: true,
@@ -80,13 +86,14 @@ const BASE_STEPS: StepConfig[] = [
     key: 'preferredForm',
     backendStepNumber: 4,
     question: 'Como prefere usar o medicamento?',
-    subtitle: 'Se não souber, sem problema — podemos orientar depois.',
+    subtitle: 'Selecione uma ou mais formas de uso. Se não souber, sem problema — podemos orientar depois.',
+    multiSelect: true,
     options: [
       { value: 'sublingual_oil', label: 'Óleo sublingual', description: 'Gotas sob a língua — mais comum' },
       { value: 'capsule', label: 'Cápsula', description: 'Dosagem precisa e prática' },
       { value: 'vaporization', label: 'Vaporização', description: 'Inalação sem combustão' },
       { value: 'topical', label: 'Uso tópico', description: 'Cremes para dor localizada' },
-      { value: 'edible', label: 'Comestível', description: 'Alimentos com cannabis' },
+      { value: 'edible', label: 'Comestível', description: 'Gummies e alimentos com cannabis' },
     ],
     columns: 2,
   },
@@ -215,6 +222,40 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
     })
   }
 
+  function toggleMultiOption(value: string) {
+    const currentStepConfig = visibleSteps[currentStep]
+    if (!currentStepConfig) return
+    const key = currentStepConfig.key
+    const current = answers[key] ?? ''
+    const selected = current ? current.split(',') : []
+    const idx = selected.indexOf(value)
+    if (idx >= 0) {
+      selected.splice(idx, 1)
+    } else {
+      selected.push(value)
+    }
+    const newAnswers = { ...answers, [key]: selected.join(',') }
+    setAnswers(newAnswers)
+  }
+
+  function confirmMultiSelect() {
+    const currentStepConfig = visibleSteps[currentStep]
+    if (!currentStepConfig) return
+    const key = currentStepConfig.key
+    const value = answers[key]
+    if (!value) return
+
+    submitStepToApi(currentStepConfig.backendStepNumber, value, false)
+
+    const nextVisibleSteps = getVisibleSteps(answers)
+    const isNowLastStep = currentStep === nextVisibleSteps.length - 1
+    if (isNowLastStep) {
+      goToSummary(answers)
+    } else {
+      goNext()
+    }
+  }
+
   function selectOption(value: string) {
     const currentStepConfig = visibleSteps[currentStep]
     if (!currentStepConfig) return
@@ -306,6 +347,12 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
   }
 
   function getLabelFor(stepConfig: StepConfig, value: string): string {
+    if (stepConfig.multiSelect && value.includes(',')) {
+      return value
+        .split(',')
+        .map((v) => stepConfig.options.find((o) => o.value === v)?.label ?? v)
+        .join(', ')
+    }
     const option = stepConfig.options.find((o) => o.value === value)
     return option?.label ?? value
   }
@@ -419,16 +466,34 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
 
           {/* Options */}
           <div className={`mt-6 grid gap-2.5 ${step.columns === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-            {step.options.map((option) => (
-              <OptionCard
-                key={option.value}
-                label={option.label}
-                description={option.description}
-                selected={answers[step.key] === option.value}
-                onClick={() => selectOption(option.value)}
-              />
-            ))}
+            {step.options.map((option) => {
+              const isMulti = step.multiSelect
+              const selectedValues = isMulti ? (answers[step.key] ?? '').split(',').filter(Boolean) : []
+              const isSelected = isMulti
+                ? selectedValues.includes(option.value)
+                : answers[step.key] === option.value
+              return (
+                <OptionCard
+                  key={option.value}
+                  label={option.label}
+                  description={option.description}
+                  selected={isSelected}
+                  onClick={() => isMulti ? toggleMultiOption(option.value) : selectOption(option.value)}
+                />
+              )
+            })}
           </div>
+
+          {/* Multi-select confirm button */}
+          {step.multiSelect && (
+            <button
+              onClick={confirmMultiSelect}
+              disabled={!answers[step.key] || isSubmitting}
+              className="mt-4 w-full py-3.5 font-bold text-white bg-brand-green-deep rounded-btn hover:bg-brand-green-mid transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              Continuar
+            </button>
+          )}
 
           {/* Info box (e.g. for informal access step) */}
           {step.infoBox && (

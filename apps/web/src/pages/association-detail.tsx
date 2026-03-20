@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { Header } from '@/components/layout/header'
 import { useAuthStore } from '@/stores/auth-store'
 import { sampleAssociations } from '@/data/sample-associations'
+import { sampleProducts } from '@/data/sample-products'
 
 export function AssociationDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -9,6 +10,7 @@ export function AssociationDetailPage() {
   const accountStatus = user?.accountStatus ?? user?.status ?? 'pending'
 
   const association = sampleAssociations.find((a) => a.slug === slug)
+  const hasCatalog = sampleProducts.some((p) => p.associationSlug === slug)
 
   if (!association) {
     return (
@@ -173,6 +175,19 @@ export function AssociationDetailPage() {
                   </div>
                 ))}
               </div>
+              {hasCatalog && (
+                <div className="mt-4 pt-4 border-t border-brand-cream-dark/30 dark:border-gray-800/50">
+                  <Link
+                    to={`/associacoes/${slug}/catalogo`}
+                    className="inline-flex items-center gap-2 text-[14px] font-semibold text-brand-white bg-brand-green-deep px-6 py-3 rounded-btn hover:bg-brand-green-mid transition-colors no-underline"
+                  >
+                    Ver catálogo completo
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </Link>
+                </div>
+              )}
             </Card>
 
             {/* Patient types */}

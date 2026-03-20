@@ -15,6 +15,8 @@ import { AssociationDetailPage } from '@/pages/association-detail'
 import { LoginPage } from '@/pages/login'
 import { RegisterPage } from '@/pages/register'
 import { DashboardPage } from '@/pages/dashboard'
+import { AssociationCatalogPage } from '@/pages/association-catalog'
+import { TreatmentsPage } from '@/pages/treatments'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -27,17 +29,19 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
-function ScrollToHash() {
-  const location = useLocation()
+function ScrollToTop() {
+  const { pathname, hash } = useLocation()
 
   useEffect(() => {
-    if (location.hash) {
-      const el = document.getElementById(location.hash.slice(1))
+    if (hash) {
+      const el = document.getElementById(hash.slice(1))
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' })
       }
+    } else {
+      window.scrollTo(0, 0)
     }
-  }, [location])
+  }, [pathname, hash])
 
   return null
 }
@@ -53,7 +57,7 @@ function AppContent() {
 
   return (
     <>
-    <ScrollToHash />
+    <ScrollToTop />
     <Routes>
       <Route
         path="/"
@@ -79,6 +83,7 @@ function AppContent() {
           <CatalogPage />
         }
       />
+      <Route path="/tratamentos" element={<TreatmentsPage />} />
       <Route
         path="/associacoes"
         element={
@@ -89,6 +94,12 @@ function AppContent() {
         path="/associacoes/:slug"
         element={
           <AssociationDetailPage />
+        }
+      />
+      <Route
+        path="/associacoes/:slug/catalogo"
+        element={
+          <AssociationCatalogPage />
         }
       />
       <Route path="/login" element={<LoginPage />} />

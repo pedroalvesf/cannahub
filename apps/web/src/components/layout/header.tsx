@@ -44,8 +44,8 @@ export function Header() {
           </Link>
         </li>
         <li>
-          <Link to="/catalogo" className={navLinkClass}>
-            Catálogo
+          <Link to="/tratamentos" className={navLinkClass}>
+            Tratamentos
           </Link>
         </li>
         <li>
@@ -130,8 +130,8 @@ export function Header() {
             <Link to="/#seguranca" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
               Segurança
             </Link>
-            <Link to="/catalogo" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
-              Catálogo
+            <Link to="/tratamentos" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
+              Tratamentos
             </Link>
             <Link to="/associacoes" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
               Associações

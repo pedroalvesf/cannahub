@@ -1,12 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export function OnboardingPage() {
-  const navigate = useNavigate()
-
   function handleComplete(_data: Record<string, string>) {
-    navigate('/painel')
+    // Hard reload para garantir que o auth store re-hidrate com dados atualizados
+    window.location.href = '/painel'
   }
 
   function handleEscalate(_reason: string) {

@@ -66,7 +66,7 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 * Step condicional: "Como você acessa cannabis atualmente?" — aparece só quando experiência !== 'never'
 ```
 
-## Rotas do frontend (9 páginas)
+## Rotas do frontend (12 páginas)
 
 | Rota | Página | Auth |
 |------|--------|------|
@@ -74,12 +74,14 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 | `/quiz` | Triagem (4 perfis) | Não |
 | `/cadastro` | Registro (2 steps: tipo + dados) | Não |
 | `/login` | Login | Não |
-| `/acolhimento` | Onboarding (5-6 steps, condicional) | Sim |
+| `/acolhimento` | Onboarding (5-6 steps, multi-select, condicional) | Sim |
 | `/documentos` | Upload de documentos | Sim |
 | `/painel` | Dashboard do paciente | Sim |
-| `/catalogo` | Catálogo (cepas + produtos) | Não (preço restrito) |
-| `/associacoes` | Associações credenciadas | Não (vínculo restrito) |
+| `/tratamentos` | Info científica sobre cannabis medicinal | Não |
+| `/catalogo` | Catálogo unificado (cepas + produtos) | Não |
+| `/associacoes` | Associações credenciadas (11) | Não |
 | `/associacoes/:slug` | Detalhe da associação | Não (CTA contextual) |
+| `/associacoes/:slug/catalogo` | Catálogo da associação | Não (preço restrito a aprovados) |
 
 ## Endpoints da API
 
@@ -151,15 +153,30 @@ text: #1C2B21          text-muted: #607060   white: #FDFCF9
 ## Regras de negócio importantes
 
 - **accountType vive só no User** — coletado no cadastro, NÃO duplicado na OnboardingSession
-- **Preços**: visíveis apenas para `accountStatus === 'approved'`
-- **Vínculo com associação**: restrito a aprovados
+- **Preços no catálogo**: visíveis apenas para `accountStatus === 'approved'`
+- **Vínculo com associação**: opcional — algumas associações não exigem vínculo/taxa, basta conta aprovada
 - **Documentos**: associação nunca vê — só admin
+- **Onboarding multi-select**: condições e formas de uso aceitam múltiplas seleções (armazenadas como string separada por vírgula)
 - **JwtAuthGuard NÃO é global** — cada controller precisa `@UseGuards(JwtAuthGuard)` ou `@Public()`
+
+## Status do paciente — modelo futuro
+
+Hoje o backend tem apenas `accountStatus` (`pending`/`approved`/`rejected`). O plano é implementar status granulares quando o painel admin de aprovação estiver pronto:
+
+| Situação real | accountStatus atual | Futuro (backend) |
+|---|---|---|
+| Fez cadastro, não fez acolhimento | `pending` | accountStatus: `incomplete`, onboarding: `not_started` |
+| Fez acolhimento, não enviou docs | `pending` | accountStatus: `incomplete`, documents: `not_submitted` |
+| Enviou docs, aguardando análise | `pending` | accountStatus: `pending_approval`, documents: `pending_review` |
+| Docs aprovados | `approved` | accountStatus: `approved`, documents: `approved` |
+| Docs recusados | `rejected` | accountStatus: `incomplete`, documents: `rejected` |
+
+O `GET /auth/me` passará a retornar esses campos e o frontend renderiza de acordo, sem inferir estado.
 
 ## Roadmap
 
 ### Fase 1 — MVP (atual)
-Auth, cadastro, onboarding, documentos, catálogo, associações, dashboard paciente
+Auth, cadastro, onboarding, documentos, catálogo por associação, tratamentos, dashboard paciente
 
 ### Fase 2 — Conteúdo
 Blog, diretório advogados, eventos, SEO, auto-cadastro associações
@@ -175,13 +192,20 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] Responsividade mobile (menu hamburger)
 - [x] CTAs contextuais (serviços CannHub nas páginas de associação + home)
 - [x] Step condicional no onboarding (acesso informal → regularização)
+- [x] Catálogo por associação (`/associacoes/:slug/catalogo`) com controle de acesso
+- [x] Página de tratamentos com referências científicas (Fiocruz, Paulo Casali)
+- [x] Multi-select no onboarding (condições + formas de uso)
+- [x] Scroll to top em navegação entre páginas
 - [ ] Upload real de documentos (S3)
-- [ ] Integrar catálogo com API real
+- [ ] Integrar catálogo com API real (substituir sample-products.ts)
+- [ ] Implementar status granulares no frontend (quando backend estiver pronto)
 
 ### Backend
 - [x] Controllers: associations (list, get by id), documents (list), update profile
-- [ ] Módulos completos: strains, products, memberships
+- [ ] Status granulares: onboardingStatus, documentsStatus, accountStatus (ver tabela acima)
 - [ ] Painel admin de aprovação de documentos
+- [ ] Módulos completos: strains, products, memberships
+- [ ] Endpoint de vínculo com associação (POST /associations/:id/link)
 - [ ] Notificações por e-mail (Resend)
 - [ ] Upload S3 com URLs assinadas
-- [ ] Seed de dados
+- [ ] Seed de dados (associações reais: Aliança Medicinal, AMME Medicinal)

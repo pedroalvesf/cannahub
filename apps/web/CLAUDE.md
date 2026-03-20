@@ -12,20 +12,23 @@ pnpm preview      # Preview production build
 
 ```
 src/
-├── App.tsx                     # Router (9 rotas)
+├── App.tsx                     # Router (12 rotas), ScrollToTop
 ├── index.css                   # Tailwind base + animações custom
 ├── components/
 │   ├── layout/header.tsx       # Navbar fixa (full-width, backdrop-blur)
-│   ├── onboarding/             # OptionCard, StepProgress, OnboardingFlow
+│   ├── onboarding/             # OptionCard, StepProgress, OnboardingFlow (multi-select)
 │   └── ui/theme-toggle.tsx     # Cycle light/dark/system
 ├── data/
-│   └── sample-associations.ts  # 9 associações com slugs, about, contato (shared entre pages)
+│   ├── sample-associations.ts  # 11 associações (inclui Aliança Medicinal + AMME Medicinal)
+│   └── sample-products.ts      # Produtos por associação (Aliança: 12, AMME: 19)
 ├── hooks/
 │   ├── use-auth.ts             # useLogin(), useRegister() (React Query mutations)
 │   ├── use-onboarding.ts       # useOnboardingSummary(), useStartOnboarding(), useSubmitStep(), etc.
 │   └── use-profile.ts          # useUpdateProfile() mutation
-├── lib/api.ts                  # Axios com interceptors (Bearer, device headers, refresh token)
-├── pages/                      # 9 páginas (ver rotas abaixo)
+├── lib/
+│   ├── api.ts                  # Axios com interceptors (Bearer, device headers, refresh token)
+│   └── query-client.ts         # QueryClient centralizado (shared entre App e stores)
+├── pages/                      # 12 páginas (ver rotas abaixo)
 └── stores/
     ├── auth-store.ts           # Zustand: isAuthenticated, user, login/logout/hydrate
     └── theme-store.ts          # Zustand: light/dark/system cycle
@@ -39,12 +42,14 @@ src/
 | `/quiz` | QuizPage | Não | Triagem (4 perfis 2x2) |
 | `/cadastro` | RegisterPage | Não | Registro 2 steps (tipo de conta + dados) |
 | `/login` | LoginPage | Não | Email + senha |
-| `/acolhimento` | OnboardingPage | Sim | 5-6 steps clínicos (step condicional: acesso atual) |
+| `/acolhimento` | OnboardingPage | Sim | 5-6 steps clínicos (multi-select condições/formas, step condicional: acesso atual) |
 | `/documentos` | DocumentsPage | Sim | Upload 4 documentos |
-| `/painel` | DashboardPage | Sim | Dashboard do paciente |
-| `/catalogo` | CatalogPage | Não | Cepas + produtos (preço restrito) |
-| `/associacoes` | AssociationsPage | Não | 9 associações (vínculo restrito) |
+| `/painel` | DashboardPage | Sim | Dashboard do paciente (edição inline, perfil clínico, docs, associações) |
+| `/tratamentos` | TreatmentsPage | Não | Info científica sobre cannabis medicinal (referências Fiocruz, JAMA, NEJM) |
+| `/catalogo` | CatalogPage | Não | Catálogo unificado (cepas + produtos) |
+| `/associacoes` | AssociationsPage | Não | 11 associações (Aliança e AMME no topo) |
 | `/associacoes/:slug` | AssociationDetailPage | Não | Detalhe com CTA contextual (4 estados auth) |
+| `/associacoes/:slug/catalogo` | AssociationCatalogPage | Não | Catálogo da associação (preços restritos a conta aprovada) |
 
 ## API client (`lib/api.ts`)
 
@@ -56,10 +61,10 @@ src/
 ## Stores (Zustand)
 
 ### auth-store
-- `user`: `{ id, email, name?, accountType?, accountStatus?, verificationStatus?, status? }`
-- `login(accessToken, refreshToken, user)` — salva no localStorage + state
-- `logout()` — limpa localStorage + state
-- `hydrate()` — restaura do localStorage, depois faz `GET /auth/me` pra sincronizar status atualizado
+- `user`: `{ id, email, name?, accountType?, accountStatus?, verificationStatus?, status?, phone?, cpf? }`
+- `login(accessToken, refreshToken, user)` — salva no localStorage + state, limpa React Query cache
+- `logout()` — limpa localStorage + state + React Query cache, usa `window.location.href = '/'`
+- `hydrate()` — restaura do localStorage, depois faz `GET /auth/me` pra sincronizar (preserva phone/cpf com `??` fallback)
 
 ### theme-store
 - Ciclo: light → dark → system
@@ -122,28 +127,35 @@ white:      #FDFCF9    → Cards, superfícies elevadas
 ## Controle de acesso
 
 - `user.accountStatus` (ou `user.status`) controla visibilidade:
-  - **Preços de produtos**: só `approved`
+  - **Preços no catálogo da associação**: só `approved`
   - **Botão "Solicitar Vínculo"**: só `approved`
-  - Não aprovados veem cadeado + link para cadastro
+  - **Não logado**: cadeado + "Criar conta"
+  - **Pendente**: cadeado + "Cadastro incompleto" + link para painel
+  - **Recusado**: cadeado + "Cadastro recusado" + link para painel
+- Vínculo com associação é **opcional** — conta aprovada é suficiente para ver preços
 
 ## Fluxo do paciente no frontend
 
 ```
-/quiz (triagem) → /cadastro (tipo via URL param + dados) → /acolhimento (5-6 steps) → /documentos (upload) → /painel (visão geral)
+/cadastro (tipo + dados) → /acolhimento (5-6 steps multi-select) → /documentos (upload) → /painel (visão geral)
+                                                                                              ↓
+                                                                            /associacoes → /:slug/catalogo (preços após aprovação)
 ```
 
 ## Onboarding — steps dinâmicos
 
 O frontend usa `getVisibleSteps(answers)` para montar a lista de steps visíveis. Cada step tem `key` e `backendStepNumber` desacoplados:
 
-| Frontend order | key | backendStepNumber | Condicional? |
-|---|---|---|---|
-| 1 | condition | 1 | Não |
-| 2 | experience | 2 | Não |
-| 3 | currentAccessMethod | 6 | Sim (só quando experience !== 'never') |
-| 4 | prescription | 3 | Não |
-| 5 | preferredForm | 4 | Não |
-| 6 | assistedAccess | 5 | Não |
+| Frontend order | key | backendStepNumber | Multi-select? | Condicional? |
+|---|---|---|---|---|
+| 1 | condition | 1 | Sim | Não |
+| 2 | experience | 2 | Não | Não |
+| 3 | currentAccessMethod | 6 | Não | Sim (experience !== 'never') |
+| 4 | prescription | 3 | Não | Não |
+| 5 | preferredForm | 4 | Sim | Não |
+| 6 | assistedAccess | 5 | Não | Não |
+
+Steps multi-select armazenam valores como string separada por vírgula (ex: `"anxiety,depression,insomnia"`).
 
 ## TypeScript
 

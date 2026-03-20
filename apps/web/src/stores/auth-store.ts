@@ -48,17 +48,18 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (token && userData) {
       set({ isAuthenticated: true, user: JSON.parse(userData) })
 
+      const storedUser = JSON.parse(userData) as User
       api.get('/auth/me').then(({ data }) => {
         const user: User = {
           id: data.id,
           email: data.email,
-          name: data.name,
-          accountType: data.accountType,
-          accountStatus: data.accountStatus,
-          verificationStatus: data.verificationStatus,
-          status: data.accountStatus as 'pending' | 'approved' | 'rejected',
-          phone: data.phone,
-          cpf: data.cpf,
+          name: data.name ?? storedUser.name,
+          accountType: data.accountType ?? storedUser.accountType,
+          accountStatus: data.accountStatus ?? storedUser.accountStatus,
+          verificationStatus: data.verificationStatus ?? storedUser.verificationStatus,
+          status: (data.accountStatus ?? storedUser.accountStatus) as 'pending' | 'approved' | 'rejected',
+          phone: data.phone ?? storedUser.phone,
+          cpf: data.cpf ?? storedUser.cpf,
         }
         localStorage.setItem('user', JSON.stringify(user))
         set({ user })
