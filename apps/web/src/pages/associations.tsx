@@ -141,7 +141,7 @@ export function AssociationsPage() {
 
 function AssociationCard({ association }: { association: Association }) {
   const user = useAuthStore((s) => s.user)
-  const isApproved = user?.status === 'approved'
+  const isApproved = user?.accountStatus === 'approved'
 
   return (
     <div className="rounded-card border border-brand-cream-dark dark:border-gray-800 bg-surface-card dark:bg-surface-dark-card overflow-hidden hover:border-brand-green-deep/30 transition-colors shadow-soft">

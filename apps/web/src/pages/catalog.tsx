@@ -478,7 +478,7 @@ function StrainCard({ strain }: { strain: Strain }) {
 
 function ProductCard({ product }: { product: Product }) {
   const user = useAuthStore((s) => s.user)
-  const isApproved = user?.status === 'approved'
+  const isApproved = user?.accountStatus === 'approved'
   const typeConfig: Record<string, { bg: string; icon: string }> = {
     'Óleo': { bg: 'from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-surface-dark-card', icon: '💧' },
     'Gummy': { bg: 'from-pink-50 to-pink-100/50 dark:from-pink-900/20 dark:to-surface-dark-card', icon: '🍬' },

@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-import { useAuthStore } from '@/stores/auth-store'
+import { useAuthStore, type User } from '@/stores/auth-store'
 
 interface LoginRequest {
   email: string
@@ -16,41 +16,51 @@ interface RegisterRequest {
   cpf?: string
 }
 
-interface AuthResponse {
+interface AuthTokens {
   accessToken: string
   refreshToken: string
-  user: {
-    id: string
-    email: string
-    name?: string
-    accountType?: string
-    accountStatus: string
-    verificationStatus: string
-    phone?: string
-    cpf?: string
+}
+
+/**
+ * Após autenticar, busca o perfil completo via GET /auth/me.
+ * Isso garante que roles, status granulares e todos os campos
+ * estejam disponíveis no store desde o primeiro render.
+ */
+async function loginAndFetchProfile(tokens: AuthTokens): Promise<{ tokens: AuthTokens; user: User }> {
+  // Salva tokens primeiro para que o interceptor do axios funcione
+  localStorage.setItem('accessToken', tokens.accessToken)
+  localStorage.setItem('refreshToken', tokens.refreshToken)
+
+  const { data } = await api.get('/auth/me')
+
+  return {
+    tokens,
+    user: {
+      id: data.id,
+      email: data.email,
+      name: data.name,
+      accountType: data.accountType,
+      accountStatus: data.accountStatus,
+      onboardingStatus: data.onboardingStatus,
+      documentsStatus: data.documentsStatus,
+      verificationStatus: data.verificationStatus,
+      phone: data.phone,
+      cpf: data.cpf,
+      roles: data.roles ?? [],
+    },
   }
 }
 
 export function useLogin() {
   const login = useAuthStore((s) => s.login)
 
-  return useMutation<AuthResponse, Error, LoginRequest>({
-    mutationFn: async (data) => {
-      const { data: res } = await api.post<AuthResponse>('/login', data)
-      return res
+  return useMutation({
+    mutationFn: async (data: LoginRequest) => {
+      const { data: res } = await api.post<AuthTokens & { user: unknown }>('/login', data)
+      return loginAndFetchProfile({ accessToken: res.accessToken, refreshToken: res.refreshToken })
     },
-    onSuccess: (data) => {
-      login(data.accessToken, data.refreshToken, {
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.name,
-        accountType: data.user.accountType,
-        accountStatus: data.user.accountStatus,
-        verificationStatus: data.user.verificationStatus,
-        status: data.user.accountStatus as 'pending' | 'approved' | 'rejected',
-        phone: data.user.phone,
-        cpf: data.user.cpf,
-      })
+    onSuccess: ({ tokens, user }) => {
+      login(tokens.accessToken, tokens.refreshToken, user)
     },
   })
 }
@@ -58,23 +68,13 @@ export function useLogin() {
 export function useRegister() {
   const login = useAuthStore((s) => s.login)
 
-  return useMutation<AuthResponse, Error, RegisterRequest>({
-    mutationFn: async (data) => {
-      const { data: res } = await api.post<AuthResponse>('/auth/user', data)
-      return res
+  return useMutation({
+    mutationFn: async (data: RegisterRequest) => {
+      const { data: res } = await api.post<AuthTokens & { user: unknown }>('/auth/user', data)
+      return loginAndFetchProfile({ accessToken: res.accessToken, refreshToken: res.refreshToken })
     },
-    onSuccess: (data) => {
-      login(data.accessToken, data.refreshToken, {
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.name,
-        accountType: data.user.accountType,
-        accountStatus: data.user.accountStatus,
-        verificationStatus: data.user.verificationStatus,
-        status: data.user.accountStatus as 'pending' | 'approved' | 'rejected',
-        phone: data.user.phone,
-        cpf: data.user.cpf,
-      })
+    onSuccess: ({ tokens, user }) => {
+      login(tokens.accessToken, tokens.refreshToken, user)
     },
   })
 }

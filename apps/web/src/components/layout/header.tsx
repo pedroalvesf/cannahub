@@ -4,8 +4,9 @@ import { useAuthStore } from '@/stores/auth-store'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
 export function Header() {
-  const { isAuthenticated, logout } = useAuthStore()
+  const { isAuthenticated, logout, user } = useAuthStore()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const isAdmin = user?.roles?.includes('admin')
 
   function handleLogout() {
     logout()
@@ -54,6 +55,11 @@ export function Header() {
           </Link>
         </li>
         <li>
+          <Link to="/legislacao" className={navLinkClass}>
+            Legislação
+          </Link>
+        </li>
+        <li>
           <ThemeToggle />
         </li>
       </ul>
@@ -62,6 +68,14 @@ export function Header() {
       <div className="hidden md:flex items-center gap-2.5">
         {isAuthenticated ? (
           <>
+            {isAdmin && (
+              <Link
+                to="/admin/usuarios"
+                className="text-sm font-medium text-amber-700 dark:text-amber-400 px-4 py-2 rounded-btn hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors no-underline"
+              >
+                Admin
+              </Link>
+            )}
             <Link
               to="/painel"
               className="text-sm font-medium text-brand-green-deep dark:text-brand-green-light px-4 py-2 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors no-underline"
@@ -136,11 +150,23 @@ export function Header() {
             <Link to="/associacoes" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
               Associações
             </Link>
+            <Link to="/legislacao" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
+              Legislação
+            </Link>
           </div>
 
           <div className="border-t border-brand-cream-dark/30 dark:border-gray-700/30 pt-4 flex flex-col gap-2">
             {isAuthenticated ? (
               <>
+                {isAdmin && (
+                  <Link
+                    to="/admin/usuarios"
+                    onClick={() => setMobileOpen(false)}
+                    className="text-[15px] font-medium text-amber-700 dark:text-amber-400 py-2 no-underline"
+                  >
+                    Admin
+                  </Link>
+                )}
                 <Link
                   to="/painel"
                   onClick={() => setMobileOpen(false)}

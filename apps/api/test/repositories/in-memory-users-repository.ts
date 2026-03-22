@@ -1,6 +1,7 @@
 import {
   UsersRepository,
   RoleDTO,
+  FindManyUsersParams,
 } from '@/domain/auth/application/repositories/users-repository';
 import { User } from '@/domain/auth/enterprise/entities/user';
 
@@ -13,6 +14,38 @@ export class InMemoryUsersRepository implements UsersRepository {
   async findById(id: string): Promise<User | null> {
     const user = this.items.find((item) => item.id.toString() === id);
     return user ?? null;
+  }
+
+  async findMany(params: FindManyUsersParams): Promise<{ users: User[]; total: number }> {
+    const { accountStatus, accountType, search, page = 1, perPage = 20 } = params;
+
+    let filtered = [...this.items];
+
+    if (accountStatus) {
+      filtered = filtered.filter((u) => u.accountStatus === accountStatus);
+    }
+
+    if (accountType) {
+      filtered = filtered.filter((u) => u.accountType === accountType);
+    }
+
+    if (search) {
+      const lower = search.toLowerCase();
+      filtered = filtered.filter(
+        (u) =>
+          u.name?.toLowerCase().includes(lower) ||
+          u.email.toLowerCase().includes(lower) ||
+          u.cpf?.includes(search),
+      );
+    }
+
+    filtered.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    const total = filtered.length;
+    const start = (page - 1) * perPage;
+    const users = filtered.slice(start, start + perPage);
+
+    return { users, total };
   }
 
   async findByCpf(cpf: string): Promise<User | null> {

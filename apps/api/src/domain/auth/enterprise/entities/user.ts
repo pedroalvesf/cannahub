@@ -12,6 +12,8 @@ export interface UserProps {
   lastLoginAt?: Date;
   accountType?: string;
   accountStatus: string;
+  onboardingStatus: string;
+  documentsStatus: string;
   verificationStatus: string;
   phone?: string;
   cpf?: string;
@@ -60,6 +62,14 @@ export class User extends AggregateRoot<UserProps> {
     return this.props.accountStatus;
   }
 
+  get onboardingStatus() {
+    return this.props.onboardingStatus;
+  }
+
+  get documentsStatus() {
+    return this.props.documentsStatus;
+  }
+
   get verificationStatus() {
     return this.props.verificationStatus;
   }
@@ -91,6 +101,16 @@ export class User extends AggregateRoot<UserProps> {
 
   set accountStatus(status: string) {
     this.props.accountStatus = status;
+    this.touch();
+  }
+
+  set onboardingStatus(status: string) {
+    this.props.onboardingStatus = status;
+    this.touch();
+  }
+
+  set documentsStatus(status: string) {
+    this.props.documentsStatus = status;
     this.touch();
   }
 
@@ -195,7 +215,7 @@ export class User extends AggregateRoot<UserProps> {
   static create(
     props: Optional<
       UserProps,
-      'createdAt' | 'updatedAt' | 'roles' | 'isActive' | 'accountStatus' | 'verificationStatus'
+      'createdAt' | 'updatedAt' | 'roles' | 'isActive' | 'accountStatus' | 'onboardingStatus' | 'documentsStatus' | 'verificationStatus'
     >,
     id?: UniqueEntityID
   ) {
@@ -205,6 +225,8 @@ export class User extends AggregateRoot<UserProps> {
         roles: props.roles ?? new RoleList(),
         isActive: props.isActive ?? true,
         accountStatus: props.accountStatus ?? 'pending',
+        onboardingStatus: props.onboardingStatus ?? 'not_started',
+        documentsStatus: props.documentsStatus ?? 'not_submitted',
         verificationStatus: props.verificationStatus ?? 'unverified',
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),

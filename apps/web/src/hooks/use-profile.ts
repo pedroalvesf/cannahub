@@ -8,36 +8,28 @@ interface UpdateProfileRequest {
   cpf?: string
 }
 
-interface ProfileResponse {
-  id: string
-  email: string
-  name?: string
-  phone?: string
-  cpf?: string
-  accountType?: string
-  accountStatus: string
-  verificationStatus: string
-}
-
 export function useUpdateProfile() {
-  const { login } = useAuthStore.getState()
+  const login = useAuthStore((s) => s.login)
+  const currentUser = useAuthStore((s) => s.user)
 
-  return useMutation<ProfileResponse, Error, UpdateProfileRequest>({
-    mutationFn: async (data) => {
-      const { data: res } = await api.put<ProfileResponse>('/auth/profile', data)
+  return useMutation({
+    mutationFn: async (data: UpdateProfileRequest) => {
+      const { data: res } = await api.put('/auth/profile', data)
       return res
     },
     onSuccess: (data) => {
       const accessToken = localStorage.getItem('accessToken') ?? ''
       const refreshToken = localStorage.getItem('refreshToken') ?? ''
+
+      // Atualiza os campos editáveis, preserva o restante do user atual
       login(accessToken, refreshToken, {
+        ...currentUser,
         id: data.id,
         email: data.email,
         name: data.name,
         accountType: data.accountType,
         accountStatus: data.accountStatus,
         verificationStatus: data.verificationStatus,
-        status: data.accountStatus as 'pending' | 'approved' | 'rejected',
         phone: data.phone,
         cpf: data.cpf,
       })

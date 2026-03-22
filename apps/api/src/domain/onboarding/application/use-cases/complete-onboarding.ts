@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/core/either';
 import { OnboardingSession } from '../../enterprise/entities/onboarding-session';
 import { OnboardingSessionsRepository } from '../repositories/onboarding-sessions-repository';
+import { UsersRepository } from '@/domain/auth/application/repositories/users-repository';
 import { SessionNotFoundError } from './errors/session-not-found-error';
 import { SessionAlreadyCompletedError } from './errors/session-already-completed-error';
 
@@ -58,6 +59,7 @@ const ACCESS_LABELS: Record<string, string> = {
 export class CompleteOnboardingUseCase {
   constructor(
     private onboardingSessionsRepository: OnboardingSessionsRepository,
+    private usersRepository: UsersRepository,
   ) {}
 
   async execute({
@@ -86,6 +88,13 @@ export class CompleteOnboardingUseCase {
     }
 
     await this.onboardingSessionsRepository.save(session);
+
+    // Update user onboarding status
+    const user = await this.usersRepository.findById(userId);
+    if (user) {
+      user.onboardingStatus = 'completed';
+      await this.usersRepository.save(user);
+    }
 
     return right({ session });
   }

@@ -35,6 +35,14 @@ import { GetAssociationController } from './controllers/association/get-associat
 // Controllers - Documents
 import { ListDocumentsController } from './controllers/patient/list-documents.controller';
 
+// Controllers - Admin
+import { AdminListUsersController } from './controllers/admin/list-users.controller';
+import { AdminGetUserDetailController } from './controllers/admin/get-user-detail.controller';
+import { AdminApproveDocumentController } from './controllers/admin/approve-document.controller';
+import { AdminRejectDocumentController } from './controllers/admin/reject-document.controller';
+import { AdminUpdateUserStatusController } from './controllers/admin/update-user-status.controller';
+import { AdminDeleteUsersController } from './controllers/admin/delete-users.controller';
+
 // Controllers - Onboarding
 import { StartOnboardingController } from './controllers/onboarding/start-onboarding.controller';
 import { SubmitStepController } from './controllers/onboarding/submit-step.controller';
@@ -76,6 +84,14 @@ import { GetAssociationByIdUseCase } from '@/domain/association/application/use-
 import { ListUserDocumentsUseCase } from '@/domain/patient/application/use-cases/list-user-documents';
 import { GetDocumentByIdUseCase } from '@/domain/patient/application/use-cases/get-document-by-id';
 
+// Use Cases - Admin
+import { ListUsersUseCase } from '@/domain/admin/application/use-cases/list-users';
+import { GetUserDetailUseCase } from '@/domain/admin/application/use-cases/get-user-detail';
+import { ApproveDocumentUseCase } from '@/domain/admin/application/use-cases/approve-document';
+import { RejectDocumentUseCase } from '@/domain/admin/application/use-cases/reject-document';
+import { UpdateUserStatusUseCase } from '@/domain/admin/application/use-cases/update-user-status';
+import { DeleteUsersUseCase } from '@/domain/admin/application/use-cases/delete-users';
+
 // Use Cases - Onboarding
 import { StartOnboardingUseCase } from '@/domain/onboarding/application/use-cases/start-onboarding';
 import { SubmitStepUseCase } from '@/domain/onboarding/application/use-cases/submit-step';
@@ -113,6 +129,14 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     // Association Controllers
     ListAssociationsController,
     GetAssociationController,
+
+    // Admin Controllers
+    AdminListUsersController,
+    AdminGetUserDetailController,
+    AdminApproveDocumentController,
+    AdminRejectDocumentController,
+    AdminUpdateUserStatusController,
+    AdminDeleteUsersController,
 
     // Document Controllers
     ListDocumentsController,
@@ -154,6 +178,14 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     // Association Use Cases
     ListAssociationsUseCase,
     GetAssociationByIdUseCase,
+
+    // Admin Use Cases
+    ListUsersUseCase,
+    GetUserDetailUseCase,
+    ApproveDocumentUseCase,
+    RejectDocumentUseCase,
+    UpdateUserStatusUseCase,
+    DeleteUsersUseCase,
 
     // Document Use Cases
     ListUserDocumentsUseCase,

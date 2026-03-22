@@ -17,6 +17,9 @@ import { RegisterPage } from '@/pages/register'
 import { DashboardPage } from '@/pages/dashboard'
 import { AssociationCatalogPage } from '@/pages/association-catalog'
 import { TreatmentsPage } from '@/pages/treatments'
+import { LegislationPage } from '@/pages/legislation'
+import { AdminUsersPage } from '@/pages/admin/users'
+import { AdminUserDetailPage } from '@/pages/admin/user-detail'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -24,6 +27,23 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!isAuthenticated) {
     return <Navigate to={`/cadastro?redirect=${encodeURIComponent(location.pathname)}`} replace />
+  }
+
+  return <>{children}</>
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const user = useAuthStore((s) => s.user)
+  const location = useLocation()
+
+  if (!isAuthenticated) {
+    return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />
+  }
+
+  const isAdmin = user?.roles?.includes('admin')
+  if (!isAdmin) {
+    return <Navigate to="/painel" replace />
   }
 
   return <>{children}</>
@@ -84,6 +104,7 @@ function AppContent() {
         }
       />
       <Route path="/tratamentos" element={<TreatmentsPage />} />
+      <Route path="/legislacao" element={<LegislationPage />} />
       <Route
         path="/associacoes"
         element={
@@ -105,6 +126,8 @@ function AppContent() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<RegisterPage />} />
       <Route path="/painel" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path="/admin/usuarios" element={<AdminRoute><AdminUsersPage /></AdminRoute>} />
+      <Route path="/admin/usuarios/:id" element={<AdminRoute><AdminUserDetailPage /></AdminRoute>} />
     </Routes>
     </>
   )

@@ -5,7 +5,7 @@
 ```bash
 pnpm dev                # Dev server (port 3000)
 pnpm build              # Compile TypeScript (nest build --tsc)
-pnpm test               # Unit tests — 71 passando (vitest run --project unit)
+pnpm test               # Unit tests — 90 passando (vitest run --project unit)
 pnpm test:watch         # Watch mode
 pnpm test:e2e           # E2E (precisa Postgres na porta 8239)
 pnpm lint               # ESLint fix

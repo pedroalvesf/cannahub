@@ -22,6 +22,8 @@ model User {
   lastLoginAt        DateTime?
   accountType        String?        // AccountType enum
   accountStatus      String         @default("pending")  // AccountStatus enum
+  onboardingStatus   String         @default("not_started")  // not_started | in_progress | completed
+  documentsStatus    String         @default("not_submitted") // not_submitted | pending_review | approved | rejected
   verificationStatus String         @default("unverified") // VerificationStatus enum
   phone              String?
   cpf                String?        @unique

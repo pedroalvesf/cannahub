@@ -6,55 +6,14 @@ import { useOnboardingSummary } from '@/hooks/use-onboarding'
 import { useAddress, useSaveAddress } from '@/hooks/use-address'
 import { useUpdateProfile } from '@/hooks/use-profile'
 import type { AddressData } from '@/hooks/use-address'
-
-const ACCOUNT_TYPE_LABELS: Record<string, string> = {
-  patient: 'Paciente Adulto',
-  guardian: 'Responsável Legal',
-  prescriber: 'Médico Prescritor',
-  veterinarian: 'Veterinário',
-  caregiver: 'Cuidador',
-}
-
-const CONDITION_LABELS: Record<string, string> = {
-  chronic_pain: 'Dor Crônica',
-  anxiety: 'Ansiedade',
-  depression: 'Depressão',
-  insomnia: 'Insônia',
-  epilepsy: 'Epilepsia',
-  autism: 'Autismo / TEA',
-  parkinsons: 'Parkinson',
-  multiple_sclerosis: 'Esclerose Múltipla',
-  fibromyalgia: 'Fibromialgia',
-  nausea: 'Náusea / Apetite',
-  adhd: 'TDAH',
-  ptsd: 'PTSD',
-  veterinary: 'Uso Veterinário',
-}
-
-const EXPERIENCE_LABELS: Record<string, string> = {
-  never: 'Nunca usei',
-  less_than_6m: 'Menos de 6 meses',
-  '6m_to_1y': '6 meses a 1 ano',
-  '1y_to_3y': '1 a 3 anos',
-  more_than_3y: 'Mais de 3 anos',
-}
-
-const FORM_LABELS: Record<string, string> = {
-  sublingual_oil: 'Óleo sublingual',
-  vaporization: 'Vaporização',
-  smoking: 'Fumo',
-  topical: 'Uso tópico',
-  capsule: 'Cápsula',
-  edible: 'Comestível',
-}
-
-const ACCESS_METHOD_LABELS: Record<string, string> = {
-  regulated_association: 'Associação regulamentada',
-  anvisa_import: 'Importação via Anvisa',
-  informal: 'Acesso informal',
-  self_cultivation: 'Autocultivo',
-  not_accessing: 'Ainda não acessa',
-}
+import {
+  ACCOUNT_TYPE_LABELS,
+  CONDITION_LABELS,
+  EXPERIENCE_LABELS,
+  FORM_LABELS,
+  ACCESS_METHOD_LABELS,
+  formatMultiSelect,
+} from '@/constants/labels'
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
   pending: { label: 'Pendente', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800' },
@@ -410,7 +369,7 @@ export function DashboardPage() {
 
   if (!user) return null
 
-  const accountStatus = user.accountStatus ?? user.status ?? 'pending'
+  const accountStatus = user.accountStatus ?? 'pending'
   const accountTypeLabel = ACCOUNT_TYPE_LABELS[user.accountType ?? ''] ?? user.accountType
   const onboardingComplete = onboarding?.status === 'completed' || onboarding?.status === 'awaiting_prescription'
 
@@ -608,17 +567,9 @@ export function DashboardPage() {
               </div>
             ) : (
               <>
-                <InfoRow label="Condições" value={
-                  onboarding.condition
-                    ? onboarding.condition.split(',').map((c) => CONDITION_LABELS[c.trim()] ?? c.trim()).join(', ')
-                    : undefined
-                } />
+                <InfoRow label="Condições" value={formatMultiSelect(onboarding.condition, CONDITION_LABELS)} />
                 <InfoRow label="Experiência" value={EXPERIENCE_LABELS[onboarding.experience ?? ''] ?? onboarding.experience} />
-                <InfoRow label="Formas de uso" value={
-                  onboarding.preferredForm
-                    ? onboarding.preferredForm.split(',').map((f) => FORM_LABELS[f.trim()] ?? f.trim()).join(', ')
-                    : undefined
-                } />
+                <InfoRow label="Formas de uso" value={formatMultiSelect(onboarding.preferredForm, FORM_LABELS)} />
                 <InfoRow
                   label="Receita médica"
                   value={onboarding.hasPrescription === true ? 'Sim' : onboarding.hasPrescription === false ? 'Não' : undefined}

@@ -28,7 +28,7 @@ export function HomePage() {
         </p>
 
         {/* CTAs */}
-        <div className="flex gap-3.5 items-center animate-fade-up-4">
+        <div className="flex flex-wrap gap-3.5 items-center animate-fade-up-4">
           <Link
             to={isAuthenticated ? '/acolhimento' : '/cadastro?redirect=/acolhimento'}
             className="text-base font-semibold text-brand-white bg-brand-green-deep px-9 py-4 rounded-btn shadow-hero hover:bg-brand-green-mid hover:-translate-y-0.5 hover:shadow-hero-hover transition-all no-underline"
@@ -42,6 +42,14 @@ export function HomePage() {
             Entenda o processo
           </a>
         </div>
+
+        {/* Legal awareness note */}
+        <p className="mt-9 text-[13px] text-brand-muted dark:text-gray-500 font-light animate-fade-up-4">
+          Sim, cannabis medicinal <strong className="font-medium text-brand-green-deep dark:text-gray-300">é legal no Brasil</strong> — regulamentada pela Anvisa desde 2015.{' '}
+          <Link to="/legislacao" className="text-brand-green-mid hover:text-brand-green-deep dark:hover:text-brand-green-light underline underline-offset-2 decoration-brand-green-mid/30 hover:decoration-brand-green-mid transition-colors">
+            Entenda a legislação
+          </Link>
+        </p>
 
         {/* Decorative circle */}
         <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full bg-[radial-gradient(circle,rgba(90,148,104,0.1)_0%,transparent_70%)] pointer-events-none animate-pulse-slow hidden lg:block" />

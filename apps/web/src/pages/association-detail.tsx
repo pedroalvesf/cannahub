@@ -7,7 +7,7 @@ import { sampleProducts } from '@/data/sample-products'
 export function AssociationDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { user, isAuthenticated } = useAuthStore()
-  const accountStatus = user?.accountStatus ?? user?.status ?? 'pending'
+  const accountStatus = user?.accountStatus ?? 'pending'
 
   const association = sampleAssociations.find((a) => a.slug === slug)
   const hasCatalog = sampleProducts.some((p) => p.associationSlug === slug)

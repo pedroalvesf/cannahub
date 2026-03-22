@@ -1,8 +1,9 @@
 import { PrismaUsersMapper } from '../mappers/prisma-users-mapper';
-import { UsersRepository } from '@/domain/auth/application/repositories/users-repository';
+import { UsersRepository, FindManyUsersParams } from '@/domain/auth/application/repositories/users-repository';
 import { Injectable } from '@nestjs/common';
 import { User } from '@/domain/auth/enterprise/entities/user';
 import { PrismaService } from '../prisma.service';
+import { Prisma } from '@/generated/prisma/client';
 
 @Injectable()
 export class PrismaUsersRepository implements UsersRepository {
@@ -36,6 +37,43 @@ export class PrismaUsersRepository implements UsersRepository {
     };
 
     return PrismaUsersMapper.toDomain(userWithRoles);
+  }
+
+  async findMany(params: FindManyUsersParams): Promise<{ users: User[]; total: number }> {
+    const { accountStatus, accountType, search, page = 1, perPage = 20 } = params;
+
+    const where: Prisma.UserWhereInput = {};
+
+    if (accountStatus) {
+      where.accountStatus = accountStatus;
+    }
+
+    if (accountType) {
+      where.accountType = accountType;
+    }
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } },
+        { cpf: { contains: search } },
+      ];
+    }
+
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * perPage,
+        take: perPage,
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+
+    return {
+      users: users.map(PrismaUsersMapper.toDomain),
+      total,
+    };
   }
 
   async findByCpf(cpf: string): Promise<User | null> {

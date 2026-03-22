@@ -35,7 +35,7 @@ function formatPrice(price: number) {
 export function AssociationCatalogPage() {
   const { slug } = useParams<{ slug: string }>()
   const { isAuthenticated, user } = useAuthStore()
-  const accountStatus = user?.accountStatus ?? user?.status ?? 'pending'
+  const accountStatus = user?.accountStatus ?? 'pending'
   // Preços visíveis para usuários com cadastro aprovado
   // Associações podem optar por exigir vínculo ou não — por padrão, conta aprovada é suficiente
   const canSeePrices = isAuthenticated && accountStatus === 'approved'
