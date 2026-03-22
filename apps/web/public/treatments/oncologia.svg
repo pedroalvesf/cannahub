@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320" viewBox="0 0 480 320">
+  <defs>
+    <style>
+      .line { stroke: #233A34; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .fill-mint { fill: #A8C8A4; stroke: #233A34; stroke-width: 4; stroke-linejoin: round; }
+      .fill-light { fill: #D4E8DA; }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="#F3EEDF" rx="20"/>
+  <!-- IV stand (treatment) -->
+  <line x1="160" y1="60" x2="160" y2="200" stroke="#233A34" stroke-width="4" stroke-linecap="round"/>
+  <line x1="140" y1="200" x2="180" y2="200" stroke="#233A34" stroke-width="4" stroke-linecap="round"/>
+  <line x1="140" y1="60" x2="180" y2="60" stroke="#233A34" stroke-width="3" stroke-linecap="round"/>
+  <!-- IV bag -->
+  <rect x="145" y="68" rx="6" width="30" height="40" class="fill-mint"/>
+  <line x1="160" y1="108" x2="160" y2="135" stroke="#5A9468" stroke-width="2" stroke-dasharray="4 3"/>
+  <!-- Patient resting (simplified) -->
+  <ellipse cx="280" cy="165" rx="80" ry="12" fill="#D4E8DA" stroke="#233A34" stroke-width="3"/>
+  <circle cx="230" cy="140" r="22" fill="#F3D8C6" stroke="#233A34" stroke-width="4"/>
+  <path d="M222 137 Q226 134 230 137" class="line" stroke-width="3"/>
+  <path d="M235 137 Q239 134 243 137" class="line" stroke-width="3"/>
+  <path d="M225 150 Q230 154 235 150" class="line" stroke-width="3"/>
+  <!-- Comfort symbols -->
+  <path d="M340 100 Q340 88 350 88 Q360 88 360 100 Q360 112 340 124 Q320 112 320 100 Q320 88 330 88 Q340 88 340 100Z" fill="#D4E8DA" stroke="#5A9468" stroke-width="2.5"/>
+  <!-- Leaf -->
+  <path d="M355 140 Q345 120 360 110 Q375 120 365 140Z" class="fill-mint"/>
+  <line x1="360" y1="115" x2="358" y2="138" stroke="#233A34" stroke-width="2"/>
+  <!-- Rising quality of life arrow -->
+  <path d="M340 185 L360 165 L380 175 L400 150" stroke="#5A9468" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M394 148 L402 148 L402 156" stroke="#5A9468" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Label -->
+  <text x="240" y="258" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#233A34" text-anchor="middle">Oncologia e Paliativos</text>
+  <text x="240" y="283" font-family="Arial, sans-serif" font-size="13" fill="#607060" text-anchor="middle">Controle de náusea, dor e qualidade de vida</text>
+</svg>

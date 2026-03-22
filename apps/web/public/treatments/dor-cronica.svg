@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320" viewBox="0 0 480 320">
+  <defs>
+    <style>
+      .line { stroke: #233A34; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .fill-mint { fill: #A8C8A4; stroke: #233A34; stroke-width: 4; stroke-linejoin: round; }
+      .fill-beige { fill: #F3EEDF; }
+      .fill-light { fill: #D4E8DA; stroke: #233A34; stroke-width: 4; stroke-linejoin: round; }
+      .fill-skin { fill: #F3D8C6; stroke: #233A34; stroke-width: 4; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="#F3EEDF" rx="20"/>
+  <!-- Body silhouette — back/spine -->
+  <path d="M220 70 Q210 100 215 140 Q220 180 215 210" class="fill-skin" fill="none"/>
+  <path d="M260 70 Q270 100 265 140 Q260 180 265 210" class="fill-skin" fill="none"/>
+  <!-- Spine -->
+  <line x1="240" y1="70" x2="240" y2="210" class="line" stroke-dasharray="8 6"/>
+  <!-- Pain points -->
+  <circle cx="240" cy="110" r="18" fill="#E8B4B4" stroke="#C77070" stroke-width="3" opacity="0.7"/>
+  <circle cx="240" cy="160" r="14" fill="#E8B4B4" stroke="#C77070" stroke-width="3" opacity="0.5"/>
+  <!-- Relief wave from CBD drop -->
+  <path d="M320 90 Q330 80 340 90 Q350 100 340 105 L330 120 L320 105 Q310 100 320 90Z" class="fill-mint"/>
+  <!-- Drop ripples -->
+  <circle cx="330" cy="140" r="10" stroke="#5A9468" stroke-width="2" fill="none" opacity="0.6"/>
+  <circle cx="330" cy="140" r="20" stroke="#5A9468" stroke-width="1.5" fill="none" opacity="0.3"/>
+  <circle cx="330" cy="140" r="30" stroke="#5A9468" stroke-width="1" fill="none" opacity="0.15"/>
+  <!-- Arrow pain → relief -->
+  <path d="M270 110 L305 110" stroke="#5A9468" stroke-width="2.5" stroke-linecap="round" marker-end="none"/>
+  <path d="M300 105 L310 110 L300 115" stroke="#5A9468" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Label -->
+  <text x="240" y="258" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#233A34" text-anchor="middle">Dor Crônica</text>
+  <text x="240" y="283" font-family="Arial, sans-serif" font-size="13" fill="#607060" text-anchor="middle">Modulação da dor via receptores CB1 e CB2</text>
+</svg>

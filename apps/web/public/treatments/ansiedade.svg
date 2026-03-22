@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320" viewBox="0 0 480 320">
+  <defs>
+    <style>
+      .line { stroke: #233A34; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .fill-mint { fill: #A8C8A4; stroke: #233A34; stroke-width: 4; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="#F3EEDF" rx="20"/>
+  <!-- Head profile -->
+  <circle cx="200" cy="120" r="50" fill="#F3D8C6" stroke="#233A34" stroke-width="4"/>
+  <!-- Chaotic thoughts (anxiety) -->
+  <path d="M170 80 Q155 60 165 50" class="line" opacity="0.5"/>
+  <path d="M185 70 Q178 48 190 42" class="line" opacity="0.5"/>
+  <path d="M210 68 Q215 45 228 48" class="line" opacity="0.5"/>
+  <path d="M230 78 Q245 60 240 50" class="line" opacity="0.5"/>
+  <!-- Calm expression -->
+  <path d="M183 115 Q187 110 191 115" class="line"/>
+  <path d="M209 115 Q213 110 217 115" class="line"/>
+  <path d="M190 137 Q200 145 210 137" class="line"/>
+  <!-- Calm wave transition -->
+  <path d="M280 90 Q295 75 310 90 Q325 105 340 90 Q355 75 370 90" stroke="#5A9468" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M280 120 Q295 110 310 120 Q325 130 340 120 Q355 110 370 120" stroke="#5A9468" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.7"/>
+  <path d="M290 148 Q305 140 315 148 Q325 156 340 148 Q350 140 360 148" stroke="#5A9468" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.4"/>
+  <!-- Leaf/nature element -->
+  <path d="M350 170 Q340 150 355 140 Q370 150 360 170Z" class="fill-mint"/>
+  <line x1="355" y1="145" x2="355" y2="168" stroke="#233A34" stroke-width="2"/>
+  <!-- Label -->
+  <text x="240" y="258" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#233A34" text-anchor="middle">Ansiedade e TEPT</text>
+  <text x="240" y="283" font-family="Arial, sans-serif" font-size="13" fill="#607060" text-anchor="middle">Efeito ansiolítico sem risco de dependência</text>
+</svg>

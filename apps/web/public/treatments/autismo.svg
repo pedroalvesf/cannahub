@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="320" viewBox="0 0 480 320">
+  <defs>
+    <style>
+      .line { stroke: #233A34; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .fill-mint { fill: #A8C8A4; stroke: #233A34; stroke-width: 4; stroke-linejoin: round; }
+      .fill-light { fill: #D4E8DA; stroke: #233A34; stroke-width: 3; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="#F3EEDF" rx="20"/>
+  <!-- Two figures (connection) -->
+  <!-- Adult -->
+  <circle cx="190" cy="100" r="28" fill="#F3D8C6" stroke="#233A34" stroke-width="4"/>
+  <path d="M178 95 Q182 91 186 95" class="line"/>
+  <path d="M194 95 Q198 91 202 95" class="line"/>
+  <path d="M183 112 Q190 118 197 112" class="line"/>
+  <path d="M165 190 Q175 150 190 145 Q205 150 215 190" fill="#A9B8BD" stroke="#233A34" stroke-width="4"/>
+  <!-- Child -->
+  <circle cx="300" cy="115" r="22" fill="#F3D8C6" stroke="#233A34" stroke-width="4"/>
+  <circle cx="293" cy="112" r="2.5" fill="#233A34"/>
+  <circle cx="307" cy="112" r="2.5" fill="#233A34"/>
+  <path d="M294 124 Q300 129 306 124" class="line"/>
+  <path d="M280 190 Q290 160 300 155 Q310 160 320 190" class="fill-mint"/>
+  <!-- Connection line (bond/interaction) -->
+  <path d="M218 120 Q245 100 278 115" stroke="#5A9468" stroke-width="3" stroke-dasharray="6 4" fill="none"/>
+  <!-- Heart between them -->
+  <path d="M248 98 Q248 90 254 90 Q260 90 260 98 Q260 106 248 114 Q236 106 236 98 Q236 90 242 90 Q248 90 248 98Z" fill="#D4E8DA" stroke="#5A9468" stroke-width="2"/>
+  <!-- Puzzle pieces (autism symbol) -->
+  <rect x="120" y="160" width="30" height="30" rx="4" class="fill-light"/>
+  <path d="M150 170 Q158 170 158 175 Q158 180 150 180" fill="#D4E8DA" stroke="#233A34" stroke-width="3"/>
+  <rect x="340" y="155" width="28" height="28" rx="4" class="fill-light"/>
+  <!-- Label -->
+  <text x="240" y="258" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#233A34" text-anchor="middle">Autismo / TEA</text>
+  <text x="240" y="283" font-family="Arial, sans-serif" font-size="13" fill="#607060" text-anchor="middle">Melhora em irritabilidade, sono e interação social</text>
+</svg>
