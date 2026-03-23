@@ -6,22 +6,31 @@ export default {
     extend: {
       colors: {
         brand: {
-          'green-deep': '#243D2C',
-          'green-mid': '#3A6647',
-          'green-light': '#5A9468',
-          'green-pale': '#D4E8DA',
-          cream: '#F4EFE4',
-          'cream-dark': '#E5DDC9',
-          sand: '#C8BFA8',
-          text: '#1C2B21',
-          muted: '#607060',
-          white: '#FDFCF9',
+          // Verde — paleta refinada (mais escuro e firme)
+          'green-deep': '#192F1A',
+          'green-mid': '#25461E',
+          'green-light': '#3D6A27',
+          'green-pale': '#E6F0DA',
+          'green-xs': '#B8D09A',
+          // Bege — mais quente e sólido
+          cream: '#EDE7DA',
+          'cream-dark': '#DDD4C3',
+          'cream-darker': '#BDB2A0',
+          sand: '#BDB2A0',
+          // Backgrounds
+          off: '#F7F3EC',
+          white: '#F7F3EC',
+          // Texto — mais denso
+          text: '#141F14',
+          'text-md': '#314230',
+          muted: '#5C7260',
+          'text-xs': '#8A9C8C',
         },
         surface: {
-          DEFAULT: '#F4EFE4',
-          card: '#FDFCF9',
-          dark: '#1C2B21',
-          'dark-card': '#243D2C',
+          DEFAULT: '#F7F3EC',
+          card: '#FFFFFF',
+          dark: '#141F14',
+          'dark-card': '#192F1A',
         },
       },
       fontFamily: {
@@ -34,12 +43,12 @@ export default {
         banner: '24px',
       },
       boxShadow: {
-        soft: '0 1px 4px rgba(36, 61, 44, 0.04)',
-        card: '0 12px 32px rgba(36, 61, 44, 0.1)',
-        nav: '0 2px 16px rgba(36, 61, 44, 0.08)',
-        hero: '0 4px 20px rgba(36, 61, 44, 0.25)',
-        'hero-hover': '0 8px 30px rgba(36, 61, 44, 0.3)',
-        cta: '0 16px 40px rgba(36, 61, 44, 0.12)',
+        soft: '0 1px 4px rgba(25, 47, 26, 0.04)',
+        card: '0 12px 32px rgba(25, 47, 26, 0.08)',
+        nav: '0 2px 16px rgba(25, 47, 26, 0.06)',
+        hero: '0 4px 20px rgba(25, 47, 26, 0.25)',
+        'hero-hover': '0 8px 30px rgba(25, 47, 26, 0.3)',
+        cta: '0 16px 40px rgba(25, 47, 26, 0.12)',
       },
       keyframes: {
         fadeDown: {

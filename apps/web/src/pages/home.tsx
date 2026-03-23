@@ -3,313 +3,704 @@ import { useAuthStore } from '@/stores/auth-store'
 
 export function HomePage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const acolhimentoLink = isAuthenticated ? '/acolhimento' : '/cadastro?redirect=/acolhimento'
+
   return (
-    <div className="min-h-screen bg-brand-cream dark:bg-surface-dark">
+    <div className="min-h-screen bg-brand-off dark:bg-surface-dark">
 
-      {/* ─── HERO ──────────────────────────────────────────── */}
-      <section className="min-h-screen flex flex-col justify-center px-6 pt-[100px] pb-20 max-w-[1100px] mx-auto relative">
-        {/* Eyebrow */}
-        <div className="inline-flex items-center gap-2 bg-brand-green-pale text-brand-green-mid text-xs font-semibold px-3.5 py-1.5 rounded-btn mb-7 w-fit uppercase tracking-[0.06em] animate-fade-up-1">
-          <span className="w-1.5 h-1.5 bg-brand-green-light rounded-full" />
-          Cannabis Medicinal no Brasil
-        </div>
+      {/* ================================================================
+          1. HERO — bg-brand-green-deep, full-width
+          ================================================================ */}
+      <section className="relative bg-brand-green-deep overflow-hidden">
+        {/* Decorative: "Legal." large text */}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none select-none absolute right-[-20px] bottom-[-32px] font-serif italic text-white opacity-[0.03] leading-none whitespace-nowrap tracking-[-0.04em] text-[clamp(140px,20vw,260px)]"
+        >
+          Legal.
+        </span>
+        {/* Radial gradient overlay */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{ backgroundImage: 'radial-gradient(circle at 60% 40%, rgba(255,255,255,.03) 0%, transparent 55%)' }}
+        />
 
-        {/* Headline */}
-        <h1 className="font-serif text-[clamp(40px,5.5vw,68px)] leading-[1.1] text-brand-green-deep dark:text-white max-w-[720px] mb-[22px] animate-fade-up-2">
-          Sua jornada para o{' '}
-          tratamento com cannabis,{' '}
-          <em className="text-brand-green-mid">guiada pela segurança.</em>
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-lg font-light text-brand-muted dark:text-gray-400 leading-[1.65] max-w-[520px] mb-11 animate-fade-up-3">
-          A CannHub valida sua documentação, orienta sobre o produto certo e
-          regulamentado — com segurança, base jurídica e acolhimento de verdade.
-        </p>
-
-        {/* CTAs */}
-        <div className="flex flex-wrap gap-3.5 items-center animate-fade-up-4">
-          <Link
-            to={isAuthenticated ? '/acolhimento' : '/cadastro?redirect=/acolhimento'}
-            className="text-base font-semibold text-brand-white bg-brand-green-deep px-9 py-4 rounded-btn shadow-hero hover:bg-brand-green-mid hover:-translate-y-0.5 hover:shadow-hero-hover transition-all no-underline"
-          >
-            Iniciar Acolhimento
-          </Link>
-          <a
-            href="#como-funciona"
-            className="text-[15px] font-medium text-brand-green-deep bg-transparent border-[1.5px] border-brand-green-deep/30 px-7 py-[15px] rounded-btn hover:border-brand-green-deep hover:bg-brand-green-pale hover:-translate-y-0.5 transition-all no-underline"
-          >
-            Entenda o processo
-          </a>
-        </div>
-
-        {/* Legal awareness note */}
-        <p className="mt-9 text-[13px] text-brand-muted dark:text-gray-500 font-light animate-fade-up-4">
-          Sim, cannabis medicinal <strong className="font-medium text-brand-green-deep dark:text-gray-300">é legal no Brasil</strong> — regulamentada pela Anvisa desde 2015.{' '}
-          <Link to="/legislacao" className="text-brand-green-mid hover:text-brand-green-deep dark:hover:text-brand-green-light underline underline-offset-2 decoration-brand-green-mid/30 hover:decoration-brand-green-mid transition-colors">
-            Entenda a legislação
-          </Link>
-        </p>
-
-        {/* Decorative circle */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full bg-[radial-gradient(circle,rgba(90,148,104,0.1)_0%,transparent_70%)] pointer-events-none animate-pulse-slow hidden lg:block" />
-      </section>
-
-      {/* ─── PARA QUEM ────────────────────────────────────── */}
-      <section id="para-quem" className="px-6 py-[72px] max-w-[1100px] mx-auto">
-        <h2 className="font-serif text-[clamp(26px,3.5vw,40px)] text-brand-green-deep dark:text-white leading-[1.2] mb-10">
-          Para quem é o CannHub?
-        </h2>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-          <div className="group hover:-translate-y-2 transition-all cursor-pointer">
-            <img src="/cards/paciente_adulto.svg" alt="Paciente Adulto" className="w-full h-auto" />
+        <div className="relative z-10 max-w-[1100px] mx-auto px-6 md:px-20 pt-[100px] pb-24">
+          {/* Eyebrow */}
+          <div className="inline-flex items-center gap-2 text-[11.5px] text-white/[0.45] uppercase tracking-[0.1em] font-medium mb-9">
+            <span className="w-[5px] h-[5px] rounded-full bg-brand-green-light" />
+            Cannabis medicinal no Brasil
           </div>
-          <div className="group hover:-translate-y-2 transition-all cursor-pointer">
-            <img src="/cards/responsavel_legal.svg" alt="Responsável Legal" className="w-full h-auto" />
-          </div>
-          <div className="group hover:-translate-y-2 transition-all cursor-pointer">
-            <img src="/cards/medicos_veterinarios.svg" alt="Médicos e Veterinários" className="w-full h-auto" />
-          </div>
-          <div className="group hover:-translate-y-2 transition-all cursor-pointer">
-            <img src="/cards/iniciantes.svg" alt="Iniciantes" className="w-full h-auto" />
-          </div>
-        </div>
-      </section>
 
-      {/* Divider */}
-      <div className="max-w-[1100px] mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-brand-cream-dark to-transparent" />
-      </div>
+          {/* Headline */}
+          <h1 className="font-serif text-[clamp(48px,6.5vw,80px)] text-white leading-[1.05] tracking-[-0.03em] mb-7 max-w-[820px]">
+            Existe um caminho{' '}
+            <em className="italic text-brand-green-xs">seguro e legal</em>{' '}
+            para o que você usa.
+          </h1>
 
-      {/* ─── COMO FUNCIONA — Jornada ────────────────────────── */}
-      <section id="como-funciona" className="px-6 py-[72px] max-w-[1100px] mx-auto">
-        <div className="mb-12">
-          <h2 className="font-serif text-[clamp(26px,3.5vw,40px)] text-brand-green-deep dark:text-white leading-[1.2] mb-3">
-            Como funciona
-          </h2>
-          <p className="text-[15px] text-brand-muted dark:text-gray-400 font-light leading-[1.65] max-w-[520px]">
-            A CannHub guia você em cada etapa — do primeiro contato até o acesso ao produto regulamentado.
+          {/* Subtitle */}
+          <p className="text-lg text-white/60 max-w-[580px] leading-[1.7] font-light mb-11">
+            Milhões de brasileiros já usam cannabis para tratar sua condição — mas sem prescrição, sem garantia de qualidade, sem amparo legal.
+            <br /><br />
+            <strong className="text-white/[0.85] font-medium">Isso pode mudar. Mais rápido do que você imagina.</strong>
+          </p>
+
+          {/* CTAs */}
+          <div className="flex flex-wrap gap-3 items-center mb-[52px]">
+            <Link
+              to={acolhimentoLink}
+              className="px-7 py-3.5 bg-white text-brand-green-deep rounded-lg text-[15px] font-medium tracking-[0.01em] hover:opacity-90 transition-opacity no-underline"
+            >
+              Quero regularizar meu tratamento
+            </Link>
+            <Link
+              to="/legislacao"
+              className="px-6 py-[13px] bg-transparent text-white/75 border border-white/20 rounded-lg text-[15px] hover:border-white/50 hover:text-white transition-all no-underline"
+            >
+              Como funciona na lei →
+            </Link>
+          </div>
+
+          {/* Legal note */}
+          <p className="text-[13px] text-white/[0.38] leading-[1.6] max-w-[440px]">
+            <strong className="text-white/60 font-medium">Cannabis medicinal é legal no Brasil desde 2015</strong>, regulamentada pela Anvisa.
+            <br />
+            Com prescrição médica, você tem{' '}
+            <Link to="/legislacao" className="text-white/[0.55] underline underline-offset-[3px] hover:text-white/80 transition-colors">
+              amparo legal completo
+            </Link>{' '}
+            para comprar, importar e usar.
           </p>
         </div>
+      </section>
 
-        <div className="grid md:grid-cols-4 gap-6">
-          {[
-            {
-              step: '01',
-              title: 'Acolhimento',
-              description: 'Conte sobre sua condição e experiência. Nosso questionário clínico é rápido e sigiloso.',
-              icon: (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                </svg>
-              ),
-            },
-            {
-              step: '02',
-              title: 'Prescrição médica',
-              description: 'Não tem receita? A CannHub conecta você a médicos prescritores parceiros via teleconsulta.',
-              icon: (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                  <polyline points="10 9 9 9 8 9" />
-                </svg>
-              ),
-            },
-            {
-              step: '03',
-              title: 'Documentação',
-              description: 'Envie receita, laudo e identidade. Nós validamos tudo com segurança e criptografia.',
-              icon: (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0110 0v4" />
-                </svg>
-              ),
-            },
-            {
-              step: '04',
-              title: 'Acesso ao tratamento',
-              description: 'Conectamos você à associação certa, com produtos regulamentados e acompanhamento contínuo.',
-              icon: (
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-              ),
-            },
-          ].map((item, i) => (
-            <div key={i} className="relative">
-              {/* Connector line */}
-              {i < 3 && (
-                <div className="hidden md:block absolute top-[28px] left-[calc(100%+4px)] w-[calc(100%-48px)] h-px bg-brand-cream-dark dark:bg-gray-700 translate-x-[-8px]" />
-              )}
-              <div className="bg-brand-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-card p-6 h-full hover:-translate-y-1 transition-all">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-11 h-11 rounded-full bg-brand-green-pale dark:bg-gray-700 flex items-center justify-center shrink-0 text-brand-green-deep dark:text-brand-green-light">
-                    {item.icon}
-                  </div>
-                  <span className="text-[11px] font-bold text-brand-green-light dark:text-brand-green-light/60 uppercase tracking-wider">
-                    Etapa {item.step}
-                  </span>
-                </div>
-                <h3 className="font-serif text-[17px] text-brand-green-deep dark:text-white mb-2 leading-tight">
-                  {item.title}
-                </h3>
-                <p className="text-[13px] font-light text-brand-muted dark:text-gray-400 leading-[1.7]">
-                  {item.description}
-                </p>
-              </div>
+      {/* ================================================================
+          2. PHOTO SECTION — still bg-brand-green-deep
+          ================================================================ */}
+      <section className="bg-brand-green-deep px-6 md:px-20 pb-20">
+        <div className="relative max-w-[1100px] mx-auto rounded-[20px] overflow-hidden bg-brand-green-mid border border-white/[0.06] h-[280px] md:h-[480px] flex flex-col items-center justify-center gap-3.5">
+          {/* Grid pattern overlay */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage:
+                'linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px)',
+              backgroundSize: '60px 60px',
+            }}
+          />
+
+          {/* Photo placeholder */}
+          <div className="relative z-10 flex flex-col items-center gap-2.5">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.2)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+            <div className="text-xs text-white/25 text-center leading-[1.5]">
+              Foto editorial — paciente real, ambiente de acolhimento<br />ou médico prescritor
             </div>
-          ))}
+            <div className="text-[10px] text-white/[0.15] uppercase tracking-[0.08em]">1100 × 480px · paisagem</div>
+          </div>
+
+          {/* Floating stats bar */}
+          <div className="absolute bottom-4 md:bottom-7 left-4 md:left-7 right-4 md:right-7 z-20 grid grid-cols-1 md:grid-cols-3 gap-px bg-white/[0.07] rounded-xl overflow-hidden border border-white/[0.08]">
+            {[
+              { num: '6,9M', label: 'brasileiros elegíveis' },
+              { num: '25+', label: 'produtos Anvisa' },
+              { num: '2015', label: 'legal no Brasil' },
+            ].map((stat) => (
+              <div key={stat.num} className="bg-[rgba(20,31,20,0.6)] backdrop-blur-sm px-5 py-4 text-center">
+                <div className="font-serif text-2xl text-white leading-none">{stat.num}</div>
+                <div className="text-[11px] text-white/[0.38] mt-1">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="max-w-[1100px] mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-brand-cream-dark to-transparent" />
-      </div>
-
-      {/* ─── SERVIÇOS CANNAHUB ──────────────────────────────── */}
-      <section className="px-6 py-[72px] max-w-[1100px] mx-auto">
-        <div className="mb-12">
-          <h2 className="font-serif text-[clamp(26px,3.5vw,40px)] text-brand-green-deep dark:text-white leading-[1.2] mb-3">
-            O que a CannHub oferece
-          </h2>
-          <p className="text-[15px] text-brand-muted dark:text-gray-400 font-light leading-[1.65] max-w-[520px]">
-            Mais do que um diretório — somos seu parceiro em cada etapa do tratamento.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-5">
-          {[
-            {
-              title: 'Rede de prescritores',
-              description: 'Médicos e veterinários especializados em cannabis medicinal. Teleconsulta disponível para todo o Brasil.',
-              icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 00-3-3.87" />
-                  <path d="M16 3.13a4 4 0 010 7.75" />
-                </svg>
-              ),
-              badge: 'Em breve',
-            },
-            {
-              title: 'Orientação jurídica',
-              description: 'Suporte com habeas corpus preventivo, importação pela ANVISA e segurança legal do seu tratamento.',
-              icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 16v-4" />
-                  <path d="M12 8h.01" />
-                </svg>
-              ),
-              badge: 'Em breve',
-            },
-            {
-              title: 'Acolhimento humanizado',
-              description: 'Avaliação clínica personalizada, grupos de apoio e acompanhamento contínuo durante todo o tratamento.',
-              icon: (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                </svg>
-              ),
-              badge: null,
-            },
-          ].map((service, i) => (
-            <div key={i} className="bg-brand-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-card p-7 relative overflow-hidden hover:-translate-y-1 transition-all">
-              <div className="flex items-center justify-between mb-4">
-                <div className="w-11 h-11 rounded-full bg-brand-green-deep flex items-center justify-center text-brand-white">
-                  {service.icon}
-                </div>
-                {service.badge && (
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-brand-green-light bg-brand-green-pale dark:bg-gray-700 px-2.5 py-1 rounded-btn">
-                    {service.badge}
-                  </span>
-                )}
+      {/* ================================================================
+          3. CONTEXT BAR — bg-brand-cream
+          ================================================================ */}
+      <div className="bg-brand-cream dark:bg-surface-dark-card border-b border-brand-cream-dark dark:border-gray-700 px-6 md:px-20">
+        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] items-center gap-6 md:gap-12 min-h-[72px] py-4 md:py-0">
+          <div className="text-xs text-brand-text-xs dark:text-gray-500 uppercase tracking-[0.08em] font-medium whitespace-nowrap">
+            Em números
+          </div>
+          <div className="flex flex-col md:flex-row items-stretch">
+            {[
+              { big: '~4M', desc: 'brasileiros usam cannabis sem prescrição' },
+              { big: '89%', desc: 'não sabem que podem regularizar legalmente' },
+              { big: '10–30 dias', desc: 'tempo médio para obter acesso legal' },
+              { big: 'R$ 0', desc: 'custo para iniciar o acolhimento na CannHub' },
+            ].map((item, i) => (
+              <div
+                key={item.big}
+                className={`flex items-center gap-2.5 py-4 md:py-[18px] px-0 md:px-6 flex-1 ${i > 0 ? 'border-t md:border-t-0 md:border-l border-brand-cream-dark dark:border-gray-700' : ''}`}
+              >
+                <span className="font-serif text-[26px] text-brand-text dark:text-white leading-none whitespace-nowrap">{item.big}</span>
+                <span className="text-[12.5px] text-brand-muted dark:text-gray-400 leading-[1.4]">{item.desc}</span>
               </div>
-              <h3 className="font-serif text-[18px] text-brand-green-deep dark:text-white mb-2 leading-tight">
-                {service.title}
-              </h3>
-              <p className="text-[13px] font-light text-brand-muted dark:text-gray-400 leading-[1.7]">
-                {service.description}
-              </p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </section>
-
-      {/* Divider */}
-      <div className="max-w-[1100px] mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-brand-cream-dark to-transparent" />
       </div>
 
-      {/* ─── BENEFÍCIOS (cards SVG) ─────────────────────────── */}
-      <section className="px-6 py-[72px] max-w-[1100px] mx-auto">
-        <h2 className="font-serif text-[clamp(26px,3.5vw,40px)] text-brand-green-deep dark:text-white leading-[1.2] mb-10">
-          Por que a CannHub?
+      {/* ================================================================
+          4. RECOGNITION — "Você se reconhece aqui?"
+          ================================================================ */}
+      <section className="max-w-[1260px] mx-auto px-6 md:px-20 py-24">
+        <div className="text-[11.5px] text-brand-green-light dark:text-brand-green-xs uppercase tracking-[0.1em] font-medium mb-3.5">
+          Você se reconhece aqui?
+        </div>
+        <h2 className="font-serif text-[clamp(30px,4vw,44px)] text-brand-text dark:text-white leading-[1.1] tracking-[-0.02em] mb-3 max-w-[540px]">
+          Situações que a gente conhece bem.
         </h2>
+        <p className="text-base text-brand-muted dark:text-gray-400 max-w-[520px] leading-[1.7] font-light mb-[52px]">
+          Não tem julgamento. Tem solução.
+        </p>
 
-        <div className="grid md:grid-cols-3 gap-5">
-          <div className="group hover:-translate-y-2 transition-all cursor-pointer">
-            <img src="/cards/seguranca_juridica.svg" alt="Segurança Jurídica" className="w-full h-auto" />
+        <div className="grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr] gap-3.5">
+          {/* Main card */}
+          <div className="bg-brand-green-deep rounded-card p-8 md:p-10 flex flex-col gap-4">
+            <div className="w-11 h-11 rounded-xl bg-white/[0.08] flex items-center justify-center shrink-0">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
+            <div className="font-serif text-[22px] text-white leading-[1.2]">
+              "Eu uso, mas compro<br className="hidden md:block" /> sem saber de onde vem."
+            </div>
+            <div className="text-[14.5px] text-white/65 leading-[1.7] font-light">
+              Produto sem laudo, sem concentração garantida, sem rastreabilidade. Você não sabe o que está usando de verdade — e isso tem consequências para o tratamento e para a sua segurança jurídica.
+            </div>
+            <Link
+              to="/legislacao"
+              className="mt-auto self-start inline-flex items-center gap-1.5 text-[13px] font-medium text-white px-[18px] py-2.5 bg-white/10 border border-white/[0.15] rounded-lg hover:bg-white/[0.18] transition-colors no-underline"
+            >
+              Entender meu caminho legal →
+            </Link>
           </div>
-          <div className="group hover:-translate-y-2 transition-all cursor-pointer">
-            <img src="/cards/curadoria_de_cepas.svg" alt="Curadoria de Cepas" className="w-full h-auto" />
+
+          {/* Card 2 */}
+          <div className="bg-brand-cream dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700 rounded-card p-8 flex flex-col gap-4">
+            <div className="w-11 h-11 rounded-xl bg-brand-off dark:bg-gray-700 flex items-center justify-center shrink-0">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep dark:text-brand-green-light">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.42 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.95a16 16 0 0 0 6.29 6.29l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
+            </div>
+            <div className="text-base font-medium text-brand-text dark:text-white leading-[1.3]">
+              "Meu médico disse que não pode prescrever."
+            </div>
+            <div className="text-[13.5px] text-brand-muted dark:text-gray-400 leading-[1.65]">
+              Qualquer médico pode prescrever cannabis medicinal no Brasil. Se o seu recusou, você tem o direito de buscar outro profissional — e a CannHub conecta você a prescritores especializados.
+            </div>
           </div>
-          <div className="group hover:-translate-y-2 transition-all cursor-pointer">
-            <img src="/cards/acolhimento_real.svg" alt="Acolhimento Real" className="w-full h-auto" />
+
+          {/* Card 3 */}
+          <div className="bg-brand-cream dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700 rounded-card p-8 flex flex-col gap-4">
+            <div className="w-11 h-11 rounded-xl bg-brand-off dark:bg-gray-700 flex items-center justify-center shrink-0">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep dark:text-brand-green-light">
+                <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <div className="text-base font-medium text-brand-text dark:text-white leading-[1.3]">
+              "Tenho medo de problemas legais."
+            </div>
+            <div className="text-[13.5px] text-brand-muted dark:text-gray-400 leading-[1.65]">
+              Com prescrição médica, você tem amparo legal completo para comprar, importar e usar. Não é crime. É tratamento de saúde regulamentado pela Anvisa desde 2015.
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ─── CTA STRIP ────────────────────────────────────── */}
-      <div className="px-6 py-[72px] max-w-[1100px] mx-auto">
-        <div className="bg-brand-green-deep rounded-banner px-[60px] py-[52px] flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden">
-          <div className="absolute -right-[100px] -top-[100px] w-[320px] h-[320px] rounded-full bg-white/[0.03] pointer-events-none" />
-          <div className="relative z-10">
-            <h3 className="font-serif text-[28px] text-brand-white leading-[1.3] mb-2.5">
-              Pronto para dar o primeiro passo?
-            </h3>
-            <p className="text-sm text-brand-white/60 font-light leading-[1.7] max-w-[440px]">
-              Leva menos de 5 minutos para criar seu perfil. Nossa equipe analisa seus documentos em até 48 horas e te orienta durante todo o processo.
+      {/* ================================================================
+          5. HOW IT WORKS — bg-brand-cream
+          ================================================================ */}
+      <section id="como-funciona" className="bg-brand-cream dark:bg-surface-dark-card py-24 px-6 md:px-20">
+        <div className="max-w-[1100px] mx-auto">
+          {/* Two-column header */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 items-end mb-16">
+            <div>
+              <div className="text-[11.5px] text-brand-green-light dark:text-brand-green-xs uppercase tracking-[0.1em] font-medium mb-3.5">
+                O processo
+              </div>
+              <h2 className="font-serif text-[clamp(30px,4vw,44px)] text-brand-text dark:text-white leading-[1.1] tracking-[-0.02em] max-w-[540px]">
+                Do primeiro contato ao acesso regulamentado.
+              </h2>
+            </div>
+            <p className="text-base text-brand-muted dark:text-gray-400 leading-[1.7] font-light">
+              A CannHub guia você em cada etapa — sem burocracia, sem jargão, sem deixar ninguém para trás.
             </p>
           </div>
-          <Link
-            to={isAuthenticated ? '/acolhimento' : '/cadastro?redirect=/acolhimento'}
-            className="relative z-10 text-sm font-semibold text-brand-green-deep bg-brand-white px-[30px] py-[15px] rounded-btn whitespace-nowrap shrink-0 hover:bg-brand-cream hover:-translate-y-px transition-all no-underline"
-          >
-            Iniciar Acolhimento →
-          </Link>
+
+          {/* 4 step cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                step: '01',
+                title: 'Acolhimento',
+                desc: 'Nos conte sua condição e sua experiência. Nosso questionário clínico é rápido, sigiloso e sem julgamentos.',
+                icon: (
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep dark:text-brand-green-light">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                ),
+              },
+              {
+                step: '02',
+                title: 'Prescrição médica',
+                desc: 'Não tem receita? A CannHub conecta você a médicos prescritores parceiros via teleconsulta para todo o Brasil.',
+                icon: (
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep dark:text-brand-green-light">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                  </svg>
+                ),
+              },
+              {
+                step: '03',
+                title: 'Documentação',
+                desc: 'Envie receita, laudo e identidade. Validamos tudo com segurança, criptografia e conformidade com a LGPD.',
+                icon: (
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep dark:text-brand-green-light">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                  </svg>
+                ),
+              },
+              {
+                step: '04',
+                title: 'Acesso ao tratamento',
+                desc: 'Conectamos você à associação credenciada certa — que opera dentro da lei, com produtos certificados e acompanhamento contínuo.',
+                icon: (
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep dark:text-brand-green-light">
+                    <path d="M12 2L4 6V12C4 16.42 7.56 20.57 12 22C16.44 20.57 20 16.42 20 12V6L12 2Z" />
+                    <path d="M9 12l2 2 4-4" />
+                  </svg>
+                ),
+              },
+            ].map((item, i) => (
+              <div key={item.step} className="relative">
+                {/* Connector line */}
+                {i < 3 && (
+                  <div className="hidden lg:block absolute top-[48px] right-[-13px] w-[26px] h-px bg-brand-cream-dark dark:bg-gray-700 z-10" />
+                )}
+                <div className="bg-brand-off dark:bg-surface-dark border border-brand-cream-dark dark:border-gray-700 rounded-[16px] p-6 h-full">
+                  <div className="w-[38px] h-[38px] bg-brand-green-pale dark:bg-gray-700 rounded-[10px] flex items-center justify-center mb-5">
+                    {item.icon}
+                  </div>
+                  <div className="text-[10.5px] text-brand-text-xs dark:text-gray-500 uppercase tracking-[0.1em] font-medium mb-2">
+                    Etapa {item.step}
+                  </div>
+                  <div className="text-[15px] font-medium text-brand-text dark:text-white mb-2 leading-[1.3]">
+                    {item.title}
+                  </div>
+                  <div className="text-[13px] text-brand-muted dark:text-gray-400 leading-[1.65]">
+                    {item.desc}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================================
+          6. FOR WHO — editorial layout
+          ================================================================ */}
+      <section id="para-quem" className="max-w-[1260px] mx-auto px-6 md:px-20 py-24">
+        <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-16 items-start">
+          {/* Left — sticky header */}
+          <div className="md:sticky md:top-20">
+            <div className="text-[11.5px] text-brand-green-light dark:text-brand-green-xs uppercase tracking-[0.1em] font-medium mb-3.5">
+              Perfis
+            </div>
+            <h2 className="font-serif text-[clamp(26px,3vw,36px)] text-brand-text dark:text-white leading-[1.1] tracking-[-0.02em] mb-3">
+              Para quem é o CannHub?
+            </h2>
+            <p className="text-sm text-brand-muted dark:text-gray-400 leading-[1.7] font-light mt-3">
+              Não importa se você já usa, se está começando agora ou se está buscando para um familiar. Existe um caminho para cada situação.
+            </p>
+          </div>
+
+          {/* Right — 2x2 grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {[
+              {
+                color: 'bg-[#E8F0E0]',
+                hint: 'foto · adulto',
+                name: 'Paciente adulto',
+                desc: 'Já usa ou quer começar. Quer ter segurança jurídica, orientação médica e acesso legal ao tratamento certo para sua condição.',
+                icon: (
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-xs">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                  </svg>
+                ),
+              },
+              {
+                color: 'bg-[#E8EEF5]',
+                hint: 'foto · família',
+                name: 'Responsável legal',
+                desc: 'Cuida de criança ou dependente. Precisa de segurança, laudo e orientação médica especializada.',
+                icon: (
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-xs">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                ),
+              },
+              {
+                color: 'bg-[#F5EDE8]',
+                hint: 'foto · médico',
+                name: 'Médico e veterinário',
+                desc: 'Quer prescrever com segurança. Acesso à literatura científica, protocolos e rede de associações.',
+                icon: (
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-xs">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                  </svg>
+                ),
+              },
+              {
+                color: 'bg-[#F0ECF8]',
+                hint: 'foto · iniciante',
+                name: 'Iniciante',
+                desc: 'Nunca usou, mas quer entender. A CannHub orienta do zero, sem jargão e sem pressa.',
+                icon: (
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-xs">
+                    <circle cx="12" cy="12" r="10" /><path d="M12 8v4l3 3" />
+                  </svg>
+                ),
+              },
+            ].map((profile) => (
+              <div
+                key={profile.name}
+                className="bg-brand-off dark:bg-surface-dark border border-brand-cream-dark dark:border-gray-700 rounded-[16px] overflow-hidden cursor-pointer transition-all hover:border-brand-green-light hover:-translate-y-0.5"
+              >
+                <div className={`${profile.color} dark:bg-surface-dark-card h-[120px] flex flex-col items-center justify-center gap-2 border-b border-brand-cream-dark dark:border-gray-700`}>
+                  {profile.icon}
+                  <div className="text-[9.5px] text-brand-text-xs uppercase tracking-[0.06em]">{profile.hint}</div>
+                </div>
+                <div className="px-5 py-[18px]">
+                  <div className="text-[15px] font-medium text-brand-text dark:text-white mb-1">{profile.name}</div>
+                  <div className="text-[13px] text-brand-muted dark:text-gray-400 leading-[1.55]">{profile.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================================
+          7. BEFORE / AFTER — bg-brand-green-deep
+          ================================================================ */}
+      <section className="relative bg-brand-green-deep py-24 px-6 md:px-20 overflow-hidden">
+        {/* Decorative circle */}
+        <div aria-hidden="true" className="pointer-events-none absolute -top-[100px] -right-[100px] w-[500px] h-[500px] rounded-full bg-white/[0.02]" />
+
+        <div className="max-w-[1100px] mx-auto">
+          <div className="mb-[52px]">
+            <div className="text-[11.5px] text-brand-green-xs/60 uppercase tracking-[0.1em] font-medium mb-3.5">
+              A diferença real
+            </div>
+            <h2 className="font-serif text-[clamp(28px,3.5vw,42px)] text-white leading-[1.1] tracking-[-0.02em] max-w-[500px]">
+              O que muda quando você regulariza.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_48px_1fr] gap-6 md:gap-0 items-start">
+            {/* BEFORE column */}
+            <div className="md:pr-10">
+              <div className="flex items-center gap-2 text-[11px] text-white/30 uppercase tracking-[0.1em] font-medium mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                Sem regularização
+              </div>
+              <div className="flex flex-col gap-2.5">
+                {[
+                  'Produto sem laudo de qualidade e sem concentração garantida',
+                  'Sem amparo legal — risco jurídico a cada compra',
+                  'Dosagem no achismo, sem orientação médica',
+                  'Preços imprevisíveis, sem rastreabilidade da origem',
+                  'Nenhum acompanhamento do resultado do tratamento',
+                ].map((text) => (
+                  <div key={text} className="flex items-start gap-3 px-4 py-3.5 rounded-[10px] bg-white/[0.04] border border-white/[0.06]">
+                    <div className="w-5 h-5 rounded-full bg-white/[0.08] flex items-center justify-center shrink-0 mt-px">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,.3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="2" y1="2" x2="8" y2="8" /><line x1="8" y1="2" x2="2" y2="8" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-white/[0.45] leading-[1.5]">{text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Arrow divider */}
+            <div className="hidden md:flex items-center justify-center pt-[52px]">
+              <div className="w-9 h-9 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.4)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </div>
+            </div>
+
+            {/* AFTER column */}
+            <div className="md:pl-10">
+              <div className="flex items-center gap-2 text-[11px] text-brand-green-xs uppercase tracking-[0.1em] font-medium mb-5">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-green-xs" />
+                Com a CannHub
+              </div>
+              <div className="flex flex-col gap-2.5">
+                {[
+                  'Produto com laudo analítico, concentração certificada e padrão Anvisa',
+                  'Prescrição médica válida — amparo legal completo para comprar e usar',
+                  'Dose individualizada por médico especializado no seu caso',
+                  'Vinculação a associações credenciadas, auditadas e que operam dentro da lei',
+                  'Acompanhamento contínuo com ajuste de protocolo ao longo do tempo',
+                ].map((text) => (
+                  <div key={text} className="flex items-start gap-3 px-4 py-3.5 rounded-[10px] bg-[rgba(200,221,184,0.08)] border border-[rgba(200,221,184,0.12)]">
+                    <div className="w-5 h-5 rounded-full bg-[rgba(200,221,184,0.2)] flex items-center justify-center shrink-0 mt-px">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-xs">
+                        <polyline points="2 5 4 8 8 2" />
+                      </svg>
+                    </div>
+                    <span className="text-sm text-white/80 leading-[1.5]">{text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================================
+          8. TESTIMONIAL
+          ================================================================ */}
+      <section className="max-w-[1260px] mx-auto px-6 md:px-20 py-24">
+        <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-16 items-center">
+          {/* Photo placeholder */}
+          <div className="relative bg-brand-cream dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700 rounded-[20px] overflow-hidden aspect-[3/4] flex flex-col items-center justify-center gap-3">
+            {/* Cross lines */}
+            <div aria-hidden="true" className="absolute left-1/2 top-0 w-px h-full bg-brand-cream-dark dark:bg-gray-700 opacity-50" />
+            <div aria-hidden="true" className="absolute top-1/2 left-0 h-px w-full bg-brand-cream-dark dark:bg-gray-700 opacity-50" />
+            <div className="relative z-10">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-xs">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+            <div className="relative z-10 text-[11px] text-brand-text-xs uppercase tracking-[0.06em]">Foto do paciente</div>
+            <div className="relative z-10 text-[9.5px] text-brand-text-xs/70 uppercase tracking-[0.06em]">380 × 510px · retrato</div>
+          </div>
+
+          {/* Testimonial content */}
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-[11.5px] text-brand-green-light dark:text-brand-green-xs uppercase tracking-[0.08em] font-medium mb-5">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-brand-green-light dark:text-brand-green-xs">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+              Relato real — Dor crônica
+            </div>
+
+            <blockquote className="font-serif text-[clamp(22px,3vw,32px)] text-brand-text dark:text-white leading-[1.35] tracking-[-0.01em] mb-8">
+              "Comprei por anos sem saber o que estava usando de verdade. Quando regularizei com a ajuda da CannHub, foi a primeira vez que entendi{' '}
+              <em className="text-brand-green-light dark:text-brand-green-xs italic">exatamente o que estava tomando</em>{' '}
+              — e o que esperar do tratamento."
+            </blockquote>
+
+            <div className="flex flex-wrap gap-6 mb-8">
+              <div>
+                <div className="font-serif text-4xl text-brand-green-deep dark:text-brand-green-light leading-none">3 anos</div>
+                <div className="text-[12.5px] text-brand-muted dark:text-gray-400 mt-1">comprando sem prescrição</div>
+              </div>
+              <div>
+                <div className="font-serif text-4xl text-brand-green-deep dark:text-brand-green-light leading-none">18 dias</div>
+                <div className="text-[12.5px] text-brand-muted dark:text-gray-400 mt-1">para regularizar com a CannHub</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3.5 pt-6 border-t border-brand-cream-dark dark:border-gray-700">
+              <div className="w-11 h-11 rounded-full bg-brand-cream dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700 flex items-center justify-center shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" className="text-brand-text-xs">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-sm font-medium text-brand-text dark:text-white">C.F., 41 anos — São Paulo, SP</div>
+                <div className="text-[12.5px] text-brand-muted dark:text-gray-400 mt-0.5">Dor crônica neuropática · Paciente desde 2023</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================================
+          9. WHY CANNHUB — bg-brand-cream
+          ================================================================ */}
+      <section id="seguranca" className="bg-brand-cream dark:bg-surface-dark-card py-24 px-6 md:px-20">
+        <div className="max-w-[1100px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            {/* Left — text + photo */}
+            <div>
+              <div className="text-[11.5px] text-brand-green-light dark:text-brand-green-xs uppercase tracking-[0.1em] font-medium mb-3.5">
+                Por que a CannHub
+              </div>
+              <h2 className="font-serif text-[clamp(30px,4vw,44px)] text-brand-text dark:text-white leading-[1.1] tracking-[-0.02em] mb-3 max-w-[540px]">
+                Mais do que um diretório. Um guia para o caminho certo.
+              </h2>
+              <p className="text-sm text-brand-muted dark:text-gray-400 leading-[1.7] font-light mt-3">
+                A CannHub não vende. A CannHub orienta — conectando você à prescrição, à documentação e às associações credenciadas certas para o seu caso.
+              </p>
+
+              {/* Photo placeholder */}
+              <div className="relative mt-6 rounded-card overflow-hidden bg-brand-cream-dark dark:bg-surface-dark aspect-[4/3] flex flex-col items-center justify-center gap-2.5">
+                <div aria-hidden="true" className="absolute left-1/2 top-0 w-px h-full bg-brand-cream-darker dark:bg-gray-700 opacity-40" />
+                <div aria-hidden="true" className="absolute top-1/2 left-0 h-px w-full bg-brand-cream-darker dark:bg-gray-700 opacity-40" />
+                <div className="relative z-10">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-xs">
+                    <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
+                  </svg>
+                </div>
+                <div className="relative z-10 text-[11px] text-brand-text-xs text-center leading-[1.5]">
+                  Foto editorial — médico, paciente<br />ou ambiente de acolhimento
+                </div>
+                <div className="relative z-10 text-[9.5px] text-brand-cream-darker uppercase tracking-[0.06em]">520 × 390px</div>
+              </div>
+            </div>
+
+            {/* Right — 3 stacked cards */}
+            <div className="flex flex-col gap-3.5">
+              {[
+                {
+                  title: 'Segurança jurídica em cada etapa',
+                  body: 'Habeas corpus preventivo, conformidade com a RDC 660/2022 e suporte em caso de questionamentos. Você nunca anda sozinho.',
+                  icon: (
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep dark:text-brand-green-light">
+                      <path d="M12 2L4 6V12C4 16.42 7.56 20.57 12 22C16.44 20.57 20 16.42 20 12V6L12 2Z" /><path d="M9 12l2 2 4-4" />
+                    </svg>
+                  ),
+                },
+                {
+                  title: 'Curadoria de associações credenciadas',
+                  body: 'Só indicamos associações verificadas que seguem padrão Anvisa — com laudo analítico, rastreabilidade e conformidade legal. Quem vende é a associação, não a CannHub.',
+                  icon: (
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep dark:text-brand-green-light">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                  ),
+                },
+                {
+                  title: 'Acolhimento humano, do começo ao fim',
+                  body: 'Uma equipe real que avalia seu perfil clínico, orienta a prescrição e acompanha o resultado do tratamento ao longo do tempo.',
+                  icon: (
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep dark:text-brand-green-light">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                  ),
+                },
+              ].map((card) => (
+                <div
+                  key={card.title}
+                  className="bg-brand-off dark:bg-surface-dark border border-brand-cream-dark dark:border-gray-700 rounded-[16px] px-7 py-6 grid grid-cols-[44px_1fr] gap-[18px] items-start hover:border-brand-green-light transition-colors"
+                >
+                  <div className="w-11 h-11 bg-brand-green-pale dark:bg-gray-700 rounded-xl flex items-center justify-center shrink-0">
+                    {card.icon}
+                  </div>
+                  <div>
+                    <div className="text-[15px] font-medium text-brand-text dark:text-white mb-1.5">{card.title}</div>
+                    <div className="text-[13px] text-brand-muted dark:text-gray-400 leading-[1.6]">{card.body}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================================
+          10. FINAL CTA
+          ================================================================ */}
+      <div className="px-6 md:px-20 pb-24 md:pb-[120px]">
+        <div className="relative max-w-[1100px] mx-auto bg-brand-green-deep rounded-banner py-[72px] px-8 md:px-20 overflow-hidden">
+          {/* Decorative circle */}
+          <div aria-hidden="true" className="pointer-events-none absolute -top-20 right-[120px] w-[300px] h-[300px] rounded-full bg-white/[0.025]" />
+
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 md:gap-20 items-center">
+            <div>
+              <div className="text-[11.5px] text-white/40 uppercase tracking-[0.1em] font-medium mb-3.5">
+                Pronto para o primeiro passo?
+              </div>
+              <h2 className="font-serif text-[clamp(28px,3.5vw,42px)] text-white leading-[1.1] tracking-[-0.02em] mb-3">
+                O caminho seguro começa <em className="italic text-brand-green-xs">agora.</em>
+              </h2>
+              <p className="text-[15px] text-white/50 leading-[1.65] font-light">
+                Leva menos de 5 minutos para iniciar o acolhimento. Sua equipe analisa o seu caso em até 48 horas.
+              </p>
+              {/* Trust items */}
+              <div className="flex flex-wrap gap-5 mt-1.5">
+                {['Sigiloso', 'Sem julgamento', '100% gratuito para começar'].map((item) => (
+                  <div key={item} className="flex items-center gap-1.5 text-xs text-white/[0.35]">
+                    <div className="w-3.5 h-3.5 rounded-full bg-white/[0.08] flex items-center justify-center shrink-0">
+                      <svg width="8" height="8" viewBox="0 0 10 10" fill="none" stroke="rgba(255,255,255,.5)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="2 5 4 8 8 2" />
+                      </svg>
+                    </div>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — CTA buttons */}
+            <div className="flex flex-col gap-3 min-w-[220px]">
+              <Link
+                to={acolhimentoLink}
+                className="px-7 py-3.5 bg-white text-brand-green-deep rounded-lg text-[15px] font-medium text-center whitespace-nowrap hover:opacity-[0.92] transition-opacity no-underline w-full"
+              >
+                Iniciar acolhimento
+              </Link>
+              <a
+                href="#como-funciona"
+                className="px-7 py-[13px] bg-transparent text-white/60 border border-white/[0.18] rounded-lg text-sm text-center whitespace-nowrap hover:border-white/40 hover:text-white/[0.85] transition-all no-underline w-full"
+              >
+                Entender o processo primeiro
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* ─── LGPD ─────────────────────────────────────────── */}
-      <div id="seguranca" className="px-6 max-w-[1100px] mx-auto">
-        <div className="bg-brand-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700 rounded-[14px] px-6 py-[18px] flex items-start gap-3.5">
-          <span className="text-[17px] mt-px shrink-0 opacity-65">🔒</span>
-          <p className="text-[12.5px] text-brand-muted dark:text-gray-400 font-light leading-[1.65]">
-            <strong className="text-brand-green-deep dark:text-white font-semibold">LGPD Protection:</strong> Todos os documentos são armazenados com criptografia e acessados apenas pela equipe de validação da CannHub. Seus dados clínicos nunca são compartilhados com terceiros sem seu consentimento expresso.
-          </p>
-        </div>
-      </div>
+      {/* ================================================================
+          11. FOOTER
+          ================================================================ */}
+      <footer className="bg-brand-cream dark:bg-surface-dark-card border-t border-brand-cream-dark dark:border-gray-700 px-6 md:px-20 py-10">
+        <div className="max-w-[1100px] mx-auto grid grid-cols-1 md:grid-cols-[auto_1fr_auto] items-center gap-4 md:gap-10">
+          {/* Logo */}
+          <div className="font-serif text-[19px] text-brand-green-deep dark:text-white flex items-center gap-2">
+            <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+              <path d="M16 3C16 3 5 9 5 19C5 24.52 10.48 29 16 29C21.52 29 27 24.52 27 19C27 9 16 3 16 3Z" fill="#192F1A" opacity=".8" />
+            </svg>
+            CannHub
+          </div>
 
-      {/* ─── FOOTER ───────────────────────────────────────── */}
-      <footer className="px-6 py-11 max-w-[1100px] mx-auto mt-[72px] flex flex-col md:flex-row items-center justify-between gap-4 border-t border-brand-cream-dark dark:border-gray-800">
-        <span className="font-serif text-xl text-brand-green-deep dark:text-white">CannHub</span>
-        <ul className="flex gap-6 list-none">
-          <li><a href="#" className="text-[13px] text-brand-sand dark:text-gray-500 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">Termos de uso</a></li>
-          <li><a href="#" className="text-[13px] text-brand-sand dark:text-gray-500 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">Privacidade</a></li>
-          <li><a href="#" className="text-[13px] text-brand-sand dark:text-gray-500 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline">Contato</a></li>
-        </ul>
-        <span className="text-xs text-brand-sand dark:text-gray-600">© 2025 CannHub</span>
+          {/* Links */}
+          <div className="flex flex-wrap gap-6 md:justify-center">
+            <a href="#" className="text-[13px] text-brand-muted dark:text-gray-400 hover:text-brand-text dark:hover:text-white hover:underline transition-colors no-underline">Termos de uso</a>
+            <a href="#" className="text-[13px] text-brand-muted dark:text-gray-400 hover:text-brand-text dark:hover:text-white hover:underline transition-colors no-underline">Privacidade</a>
+            <a href="#" className="text-[13px] text-brand-muted dark:text-gray-400 hover:text-brand-text dark:hover:text-white hover:underline transition-colors no-underline">Contato</a>
+            <Link to="/legislacao" className="text-[13px] text-brand-muted dark:text-gray-400 hover:text-brand-text dark:hover:text-white hover:underline transition-colors no-underline">Legislação</Link>
+          </div>
+
+          {/* Copyright */}
+          <div className="text-[12.5px] text-brand-text-xs dark:text-gray-500">© 2025 CannHub</div>
+        </div>
+
+        {/* Legal disclaimer */}
+        <div className="max-w-[1100px] mx-auto mt-5 pt-5 border-t border-brand-cream-dark dark:border-gray-700 text-xs text-brand-text-xs dark:text-gray-500 leading-[1.6]">
+          Este site tem caráter exclusivamente informativo e educacional. As informações aqui contidas não substituem consulta médica. O uso de cannabis medicinal no Brasil requer prescrição de profissional habilitado. Todos os documentos são armazenados com criptografia e acessados apenas pela equipe de validação da CannHub. Seus dados clínicos nunca são compartilhados com terceiros sem seu consentimento expresso.
+        </div>
       </footer>
     </div>
   )
 }
-
