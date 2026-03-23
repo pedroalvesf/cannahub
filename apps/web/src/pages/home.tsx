@@ -80,30 +80,14 @@ export function HomePage() {
           2. PHOTO SECTION — still bg-brand-green-deep
           ================================================================ */}
       <section className="bg-brand-green-deep px-6 md:px-20 pb-20">
-        <div className="relative max-w-[1100px] mx-auto rounded-[20px] overflow-hidden bg-brand-green-mid border border-white/[0.06] h-[280px] md:h-[480px] flex flex-col items-center justify-center gap-3.5">
-          {/* Grid pattern overlay */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0"
-            style={{
-              backgroundImage:
-                'linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px)',
-              backgroundSize: '60px 60px',
-            }}
+        <div className="relative max-w-[1100px] mx-auto rounded-[20px] overflow-hidden bg-brand-green-mid border border-white/[0.06] h-[280px] md:h-[480px]">
+          {/* Hero image */}
+          <img
+            src="/treatments/hero-geral.png"
+            alt="Cannabis medicinal — ciência e acolhimento"
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="eager"
           />
-
-          {/* Photo placeholder */}
-          <div className="relative z-10 flex flex-col items-center gap-2.5">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.2)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <polyline points="21 15 16 10 5 21" />
-            </svg>
-            <div className="text-xs text-white/25 text-center leading-[1.5]">
-              Foto editorial — paciente real, ambiente de acolhimento<br />ou médico prescritor
-            </div>
-            <div className="text-[10px] text-white/[0.15] uppercase tracking-[0.08em]">1100 × 480px · paisagem</div>
-          </div>
 
           {/* Floating stats bar */}
           <div className="absolute bottom-4 md:bottom-7 left-4 md:left-7 right-4 md:right-7 z-20 grid grid-cols-1 md:grid-cols-3 gap-px bg-white/[0.07] rounded-xl overflow-hidden border border-white/[0.08]">

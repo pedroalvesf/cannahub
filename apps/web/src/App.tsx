@@ -21,6 +21,7 @@ const RegisterPage = lazy(() => import('@/pages/register').then(m => ({ default:
 const DashboardPage = lazy(() => import('@/pages/dashboard').then(m => ({ default: m.DashboardPage })))
 const TreatmentsPage = lazy(() => import('@/pages/treatments').then(m => ({ default: m.TreatmentsPage })))
 const TreatmentDetailPage = lazy(() => import('@/pages/treatment-detail').then(m => ({ default: m.TreatmentDetailPage })))
+const TreatmentCategoryPage = lazy(() => import('@/pages/treatment-category').then(m => ({ default: m.TreatmentCategoryPage })))
 const LegislationPage = lazy(() => import('@/pages/legislation').then(m => ({ default: m.LegislationPage })))
 const AdminUsersPage = lazy(() => import('@/pages/admin/users').then(m => ({ default: m.AdminUsersPage })))
 const AdminUserDetailPage = lazy(() => import('@/pages/admin/user-detail').then(m => ({ default: m.AdminUserDetailPage })))
@@ -98,6 +99,7 @@ function AppContent() {
       <Route path="/documentos" element={<ProtectedRoute><DocumentsPage /></ProtectedRoute>} />
       <Route path="/catalogo" element={<CatalogPage />} />
       <Route path="/tratamentos" element={<TreatmentsPage />} />
+      <Route path="/tratamentos/categoria/:slug" element={<TreatmentCategoryPage />} />
       <Route path="/tratamentos/:slug" element={<TreatmentDetailPage />} />
       <Route path="/legislacao" element={<LegislationPage />} />
       <Route path="/associacoes" element={<AssociationsPage />} />

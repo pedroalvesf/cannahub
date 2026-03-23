@@ -18,11 +18,13 @@ interface ConditionCard {
   category: Exclude<CategoryKey, 'all'>
   icon: React.ReactNode
   large?: boolean
+  /** imagem real para substituir o ícone SVG no card featured */
+  heroImage?: string
 }
 
 // ─── Helper: slug → route ───────────────────────────────────
 const slugToPath = (slug: string): string => {
-  const existing = ['epilepsia', 'parkinson', 'esclerose-multipla', 'ansiedade', 'insonia', 'autismo', 'dor-cronica', 'oncologia']
+  const existing = ['epilepsia', 'parkinson', 'esclerose-multipla', 'ansiedade', 'insonia', 'autismo', 'dor-cronica', 'oncologia', 'artrite', 'endometriose', 'nauseas-quimio', 'dor-oncologica']
   return existing.includes(slug) ? `/tratamentos/${slug}` : '/tratamentos'
 }
 
@@ -186,26 +188,27 @@ const heroCatIcons: Record<string, React.ReactNode> = {
 // ─── Conditions data ────────────────────────────────────────
 const conditions: ConditionCard[] = [
   // ── Neurológicas ──
-  { slug: 'epilepsia', tag: 'Maior evidência científica', name: 'Epilepsia refratária', tagline: 'Pacientes que não respondem a anticonvulsivantes convencionais podem ter redução de até 50% nas crises com CBD — o primeiro medicamento à base de cannabis aprovado pela Anvisa.', compound: 'isolado · Óleo sublingual', compoundBadge: 'CBD', variant: 'featured', category: 'neuro', icon: icons.epilepsia, large: true },
-  { slug: 'parkinson', tag: 'Neuroproteção', name: 'Parkinson e neurodegenerativas', tagline: 'Melhora de tremores, sono REM e qualidade de vida com CBD+THC balanceado.', compound: 'balanceado', compoundBadge: 'CBD+THC', variant: 'simple', category: 'neuro', icon: icons.parkinson },
-  { slug: 'esclerose-multipla', tag: 'Autoimune', name: 'Esclerose múltipla', tagline: 'Redução de espasticidade e dor neuropática.', compound: '', compoundBadge: 'CBD+THC', variant: 'row', category: 'neuro', icon: icons.esclerose },
+  { slug: 'epilepsia', tag: 'Maior evidência científica', name: 'Epilepsia refratária', tagline: 'Pacientes que não respondem a anticonvulsivantes convencionais podem ter redução de até 50% nas crises com CBD — o primeiro medicamento à base de cannabis aprovado pela Anvisa.', compound: 'isolado · Óleo sublingual', compoundBadge: 'CBD', variant: 'featured', category: 'neuro', icon: icons.epilepsia, large: true, heroImage: '/treatments/epilepsia-hero.webp' },
+  { slug: 'parkinson', tag: 'Neuroproteção', name: 'Parkinson e neurodegenerativas', tagline: 'Melhora de tremores, sono REM e qualidade de vida com CBD+THC balanceado.', compound: 'balanceado', compoundBadge: 'CBD+THC', variant: 'simple', category: 'neuro', icon: icons.parkinson, heroImage: '/treatments/parkinson-card.webp' },
+  { slug: 'esclerose-multipla', tag: 'Autoimune', name: 'Esclerose múltipla', tagline: 'Redução de espasticidade e dor neuropática.', compound: '', compoundBadge: 'CBD+THC', variant: 'row', category: 'neuro', icon: icons.esclerose, heroImage: '/treatments/esclerose-multipla-card.webp' },
   // ── Saúde mental ──
-  { slug: 'ansiedade', tag: 'Alta evidência', name: 'Ansiedade e TEPT', tagline: 'CBD em 300–600 mg demonstrou efeito ansiolítico superior ao placebo em estudos randomizados. Uma das condições mais frequentes entre quem usa cannabis sem prescrição.', compound: 'predominante · Cápsula ou sublingual', compoundBadge: 'CBD', variant: 'featured', category: 'mental', icon: icons.ansiedade, large: true },
-  { slug: 'insonia', tag: 'Sono e humor', name: 'Depressão e insônia', tagline: 'Modulação do ciclo sono-vigília e do eixo HPA com CBD noturno em baixas doses.', compound: 'baixa dose noturna', compoundBadge: 'CBD', variant: 'simple', category: 'mental', icon: icons.insonia },
-  { slug: 'autismo', tag: 'Neurodesenvolvimento', name: 'Autismo / TEA', tagline: 'Redução de comportamentos disruptivos e melhora do sono.', compound: '', compoundBadge: 'CBD+THC', variant: 'row', category: 'mental', icon: icons.autismo },
+  { slug: 'ansiedade', tag: 'Alta evidência', name: 'Ansiedade e TEPT', tagline: 'CBD em 300–600 mg demonstrou efeito ansiolítico superior ao placebo em estudos randomizados. Uma das condições mais frequentes entre quem usa cannabis sem prescrição.', compound: 'predominante · Cápsula ou sublingual', compoundBadge: 'CBD', variant: 'featured', category: 'mental', icon: icons.ansiedade, large: true, heroImage: '/treatments/ansiedade-hero.webp' },
+  { slug: 'insonia', tag: 'Sono e humor', name: 'Depressão e insônia', tagline: 'Modulação do ciclo sono-vigília e do eixo HPA com CBD noturno em baixas doses.', compound: 'baixa dose noturna', compoundBadge: 'CBD', variant: 'simple', category: 'mental', icon: icons.insonia, heroImage: '/treatments/insonia-card.webp' },
+  { slug: 'autismo', tag: 'Neurodesenvolvimento', name: 'Autismo / TEA', tagline: 'Redução de comportamentos disruptivos e melhora do sono.', compound: '', compoundBadge: 'CBD+THC', variant: 'row', category: 'mental', icon: icons.autismo, heroImage: '/treatments/autismo-card.webp' },
   // ── Dor e inflamação ──
-  { slug: 'dor-cronica', tag: 'Dor crônica', name: 'Dor crônica e neuropática', tagline: 'Neuropatia diabética, fibromialgia, dor pós-cirúrgica — CBD+THC como adjuvante aos tratamentos convencionais. Uma das condições mais tratadas de forma irregular no Brasil.', compound: 'balanceado ou noturno', compoundBadge: 'CBD+THC', variant: 'featured', category: 'pain', icon: icons.dorCronica, large: true },
-  { slug: 'artrite', tag: 'Autoimune', name: 'Artrite e artrose', tagline: 'Redução da inflamação articular e melhora da mobilidade com CBD tópico e oral.', compound: 'tópico + oral', compoundBadge: 'CBD', variant: 'simple', category: 'pain', icon: icons.artrite },
-  { slug: 'endometriose', tag: 'Hormonal', name: 'Endometriose', tagline: 'Modulação da dor pélvica crônica e redução de crises inflamatórias.', compound: '', compoundBadge: 'CBD', variant: 'row', category: 'pain', icon: icons.endometriose },
+  { slug: 'dor-cronica', tag: 'Dor crônica', name: 'Dor crônica e neuropática', tagline: 'Neuropatia diabética, fibromialgia, dor pós-cirúrgica — CBD+THC como adjuvante aos tratamentos convencionais. Uma das condições mais tratadas de forma irregular no Brasil.', compound: 'balanceado ou noturno', compoundBadge: 'CBD+THC', variant: 'featured', category: 'pain', icon: icons.dorCronica, large: true, heroImage: '/treatments/dor-cronica-hero.webp' },
+  { slug: 'artrite', tag: 'Autoimune', name: 'Artrite e artrose', tagline: 'Redução da inflamação articular e melhora da mobilidade com CBD tópico e oral.', compound: 'tópico + oral', compoundBadge: 'CBD', variant: 'simple', category: 'pain', icon: icons.artrite, heroImage: '/treatments/artrite-hero.webp' },
+  { slug: 'endometriose', tag: 'Hormonal', name: 'Endometriose', tagline: 'Modulação da dor pélvica crônica e redução de crises inflamatórias.', compound: '', compoundBadge: 'CBD', variant: 'row', category: 'pain', icon: icons.endometriose, heroImage: '/treatments/endometriose-hero.webp' },
   // ── Oncologia ──
-  { slug: 'oncologia', tag: 'Paliativo', name: 'Cuidados paliativos oncológicos', tagline: 'Redução de náuseas por quimioterapia, manejo da dor e melhora do apetite com THC+CBD individualizado. Indicação reconhecida internacionalmente.', compound: 'dose individualizada', compoundBadge: 'THC+CBD', variant: 'featured', category: 'onco', icon: icons.paliativos, large: true },
-  { slug: 'nauseas-quimio', tag: 'Adjuvante', name: 'Náuseas e vômito quimio', tagline: 'Dronabinol e nabilona aprovados internacionalmente como antieméticos oncológicos.', compound: 'sintético reg.', compoundBadge: 'THC', variant: 'simple', category: 'onco', icon: icons.nauseas },
-  { slug: 'dor-oncologica', tag: 'Pesquisa avançada', name: 'Dor oncológica crônica', tagline: 'Adjuvante a opioides, reduzindo a dose necessária.', compound: '', compoundBadge: 'CBD+THC', variant: 'row', category: 'onco', icon: icons.dorOncologica },
+  { slug: 'oncologia', tag: 'Paliativo', name: 'Cuidados paliativos oncológicos', tagline: 'Redução de náuseas por quimioterapia, manejo da dor e melhora do apetite com THC+CBD individualizado. Indicação reconhecida internacionalmente.', compound: 'dose individualizada', compoundBadge: 'THC+CBD', variant: 'featured', category: 'onco', icon: icons.paliativos, large: true, heroImage: '/treatments/oncologia-hero.webp' },
+  { slug: 'nauseas-quimio', tag: 'Adjuvante', name: 'Náuseas e vômito quimio', tagline: 'Dronabinol e nabilona aprovados internacionalmente como antieméticos oncológicos.', compound: 'sintético reg.', compoundBadge: 'THC', variant: 'simple', category: 'onco', icon: icons.nauseas, heroImage: '/treatments/nauseas-quimio-hero.webp' },
+  { slug: 'dor-oncologica', tag: 'Pesquisa avançada', name: 'Dor oncológica crônica', tagline: 'Adjuvante a opioides, reduzindo a dose necessária.', compound: '', compoundBadge: 'CBD+THC', variant: 'row', category: 'onco', icon: icons.dorOncologica, heroImage: '/treatments/dor-oncologica-hero.webp' },
 ]
 
 // ─── Category metadata ──────────────────────────────────────
 interface CategoryMeta {
   key: Exclude<CategoryKey, 'all'>
+  categorySlug: string
   num: string
   title: string
   description: string
@@ -218,6 +221,7 @@ interface CategoryMeta {
 const categories: CategoryMeta[] = [
   {
     key: 'neuro',
+    categorySlug: 'neurologicas',
     num: '01 / 04',
     title: 'Condições neurológicas',
     description: 'CBD e THC atuam como neuroprotetores e moduladores da neurotransmissão — epilepsia, Parkinson e esclerose múltipla.',
@@ -228,6 +232,7 @@ const categories: CategoryMeta[] = [
   },
   {
     key: 'mental',
+    categorySlug: 'saude-mental',
     num: '02 / 04',
     title: 'Saúde mental',
     description: 'CBD modula receptores de serotonina e endocanabinoides — efeito ansiolítico e neuroprotetor documentado em humanos.',
@@ -238,6 +243,7 @@ const categories: CategoryMeta[] = [
   },
   {
     key: 'pain',
+    categorySlug: 'dor-inflamacao',
     num: '03 / 04',
     title: 'Dor e inflamação',
     description: 'Canabinoides interagem com receptores CB1 e CB2 reduzindo a percepção de dor e modulando a resposta inflamatória crônica.',
@@ -248,6 +254,7 @@ const categories: CategoryMeta[] = [
   },
   {
     key: 'onco',
+    categorySlug: 'oncologia-paliativos',
     num: '04 / 04',
     title: 'Oncologia e cuidados paliativos',
     description: 'Cannabis medicinal como adjuvante ao tratamento oncológico — controle de náuseas, dor e qualidade de vida.',
@@ -316,10 +323,14 @@ function FeaturedCard({ card, illusBg, illusBgDark }: { card: ConditionCard; ill
       to={slugToPath(card.slug)}
       className="group col-span-2 max-md:col-span-1 bg-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-[20px] overflow-hidden cursor-pointer transition-all duration-200 hover:border-brand-green-light hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(20,31,20,0.07)] no-underline text-inherit grid grid-cols-2 max-md:grid-cols-1"
     >
-      <div className={`flex items-center justify-center p-10 max-md:p-7 min-h-[220px] max-md:min-h-[160px] ${illusBg} ${illusBgDark}`}>
-        <div className="w-[88px] h-[88px] rounded-full bg-white/80 dark:bg-white/10 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.05)] [&>svg]:w-10 [&>svg]:h-10">
-          {card.icon}
-        </div>
+      <div className={`flex items-center justify-center min-h-[220px] max-md:min-h-[160px] overflow-hidden ${card.heroImage ? '' : `p-10 max-md:p-7 ${illusBg} ${illusBgDark}`}`}>
+        {card.heroImage ? (
+          <img src={card.heroImage} alt={card.name} className="w-full h-full object-cover" loading="lazy" width={480} height={320} />
+        ) : (
+          <div className="w-[88px] h-[88px] rounded-full bg-white/80 dark:bg-white/10 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.05)] [&>svg]:w-10 [&>svg]:h-10">
+            {card.icon}
+          </div>
+        )}
       </div>
       <div className="p-7 flex flex-col justify-between">
         <div>
@@ -342,10 +353,14 @@ function SimpleCard({ card, illusBg, illusBgDark }: { card: ConditionCard; illus
       to={slugToPath(card.slug)}
       className="group bg-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-[20px] overflow-hidden cursor-pointer transition-all duration-200 hover:border-brand-green-light hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(20,31,20,0.07)] no-underline text-inherit block"
     >
-      <div className={`flex items-center justify-center p-7 min-h-[150px] ${illusBg} ${illusBgDark}`}>
-        <div className="w-[56px] h-[56px] rounded-full bg-white/80 dark:bg-white/10 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.05)] [&>svg]:w-[26px] [&>svg]:h-[26px]">
-          {card.icon}
-        </div>
+      <div className={`flex items-center justify-center min-h-[150px] overflow-hidden ${card.heroImage ? '' : `p-7 ${illusBg} ${illusBgDark}`}`}>
+        {card.heroImage ? (
+          <img src={card.heroImage} alt={card.name} className="w-full h-full object-cover" loading="lazy" width={320} height={200} />
+        ) : (
+          <div className="w-[56px] h-[56px] rounded-full bg-white/80 dark:bg-white/10 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.05)] [&>svg]:w-[26px] [&>svg]:h-[26px]">
+            {card.icon}
+          </div>
+        )}
       </div>
       <div className="p-5 flex flex-col justify-between">
         <div>
@@ -369,10 +384,14 @@ function RowCard({ card, illusBg, illusBgDark }: { card: ConditionCard; illusBg:
       className="group col-span-full bg-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-[20px] overflow-hidden cursor-pointer transition-all duration-200 hover:border-brand-green-light hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(20,31,20,0.07)] no-underline text-inherit block"
     >
       <div className="grid grid-cols-[100px_1fr] max-md:grid-cols-1 min-h-[90px]">
-        <div className={`flex items-center justify-center p-[18px] max-md:py-6 ${illusBg} ${illusBgDark}`}>
-          <div className="w-[56px] h-[56px] rounded-full bg-white/80 dark:bg-white/10 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.05)] [&>svg]:w-[26px] [&>svg]:h-[26px]">
-            {card.icon}
-          </div>
+        <div className={`flex items-center justify-center overflow-hidden ${card.heroImage ? '' : `p-[18px] max-md:py-6 ${illusBg} ${illusBgDark}`}`}>
+          {card.heroImage ? (
+            <img src={card.heroImage} alt={card.name} className="w-full h-full object-cover" loading="lazy" width={100} height={100} />
+          ) : (
+            <div className="w-[56px] h-[56px] rounded-full bg-white/80 dark:bg-white/10 flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.05)] [&>svg]:w-[26px] [&>svg]:h-[26px]">
+              {card.icon}
+            </div>
+          )}
         </div>
         <div className="p-4 px-5 flex flex-row max-md:flex-col justify-between items-center max-md:items-start gap-4">
           <div>
@@ -528,9 +547,9 @@ export function TreatmentsPage() {
                       <h2 className="font-serif text-[28px] text-brand-text dark:text-white">{cat.title}</h2>
                       <p className="text-[13.5px] text-brand-muted dark:text-gray-400 max-w-[440px] leading-relaxed mt-1.5">{cat.description}</p>
                     </div>
-                    <span className="text-[13px] text-brand-green-deep dark:text-brand-green-light font-medium whitespace-nowrap hidden md:flex items-center gap-1.5 cursor-default">
+                    <Link to={`/tratamentos/categoria/${cat.categorySlug}`} className="text-[13px] text-brand-green-deep dark:text-brand-green-light font-medium whitespace-nowrap hidden md:flex items-center gap-1.5 no-underline hover:underline">
                       Ver todas →
-                    </span>
+                    </Link>
                   </div>
 
                   {/* Conditions grid */}

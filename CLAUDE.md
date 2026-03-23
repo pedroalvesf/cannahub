@@ -249,26 +249,36 @@ Fluxo de login:
 | useAddress, useSaveAddress | use-address.ts | GET/PUT /auth/address |
 | useAdminUsers, useAdminUserDetail, useApproveDocument, useRejectDocument, useUpdateUserStatus, useDeleteUsers | use-admin.ts | GET/PATCH/DELETE /admin/* |
 
-## Design System — "Rota 1 Lightized"
+## Design System — v2 (redesign março 2026)
 
 ### Fontes
 - **Headlines/Logo**: DM Serif Display (serif)
 - **Body/UI**: DM Sans
 
-### Paleta
+### Paleta (atualizada — tons mais escuros e firmes)
 ```
-green-deep: #243D2C    green-mid: #3A6647    green-light: #5A9468    green-pale: #D4E8DA
-cream: #F4EFE4         cream-dark: #E5DDC9   sand: #C8BFA8
-text: #1C2B21          text-muted: #607060   white: #FDFCF9
+green-deep: #192F1A    green-mid: #25461E    green-light: #3D6A27
+green-pale: #E6F0DA    green-xs: #B8D09A
+cream: #EDE7DA         cream-dark: #DDD4C3   cream-darker/sand: #BDB2A0
+off/white: #F7F3EC
+text: #141F14          text-md: #314230      muted: #5C7260     text-xs: #8A9C8C
+```
+
+### Tints por categoria (tratamentos)
+```
+Neurológicas: #EBF2E1    Saúde mental: #E8EEF7
+Dor: #F5EDEA             Oncologia: #EEE9F5
 ```
 
 ### Padrões visuais
-- Navbar full-width fixa, `backdrop-blur`, `max-w-[1100px]`
-- Logo: folha rotacionada (`rounded-[80%_0_80%_0] rotate-[15deg]`) + serif
-- Ícones: SVG inline `strokeWidth="1.3"` (Feather/Lucide)
-- Botões: `rounded-btn` (pill), sombras leves
-- Páginas com Header: `pt-[80px]`, Home: `pt-[100px]`
-- Cards list-style para seleção (não cards coloridos individuais)
+- Navbar full-width fixa, `backdrop-blur-[16px]`, `max-w-[1100px]`
+- Logo: folha SVG preenchida (#192F1A) + serif "CannHub"
+- Ícones: SVG inline `strokeWidth="1.5-1.7"` (Feather/Lucide)
+- Botões: `rounded-[8px]` (primary) e `rounded-btn` (pill), sombras leves
+- Hero sections: `bg-brand-green-deep` com texto decorativo em opacity 3-4%
+- Seções alternadas: bg-off → bg-cream → bg-verde → bg-off
+- Cards com rounded-card (18px), hover com translateY e shadow
+- Lazy loading em todas as páginas (code splitting)
 
 ## Regras de negócio importantes
 
@@ -329,8 +339,19 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] Painel admin de aprovação (/admin/usuarios)
 - [x] Exclusão de usuários em massa (admin)
 - [x] Labels centralizados (constants/labels.ts)
+- [x] Lazy loading / code splitting (todas as páginas)
+- [x] Redesign v2 — Home (hero dark, reconhecimento, antes/depois, depoimento)
+- [x] Redesign v2 — Tratamentos hub (hero 2 colunas, filter chips, grid assimétrico, proof cards)
+- [x] Redesign v2 — Tratamento detalhe (barra de condições, hero com stat, sidebar TOC)
+- [x] Redesign v2 — Legislação (timeline editorial, FAQ accordion, sidebar)
+- [x] Redesign v2 — Associações (search bar, sidebar filtros, cards expandidos)
+- [x] Dados de tratamentos centralizados (src/data/treatments.ts — 8 condições)
+- [x] SVGs ilustrativos por condição (public/treatments/)
 - [ ] Upload real de documentos (S3)
 - [ ] Integrar catálogo com API real (substituir sample-products.ts)
+- [ ] Imagens definitivas para tratamentos (usar prompts em docs/image-generation-prompts.md)
+- [ ] Diretório de médicos (/medicos) + perfil (/medicos/:slug)
+- [ ] Páginas de detalhe para novas condições (artrite, endometriose, náuseas quimio, dor oncológica)
 
 ### Backend
 - [x] Controllers: associations (list, get by id), documents (list), update profile
@@ -339,6 +360,7 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] Seed de permissões e user admin
 - [ ] Módulos completos: strains, products, memberships
 - [ ] Endpoint de vínculo com associação (POST /associations/:id/link)
+- [ ] Endpoints de médicos (GET /doctors, GET /doctors/:id)
 - [ ] Notificações por e-mail (Resend)
 - [ ] Upload S3 com URLs assinadas
 - [ ] Seed de dados (associações reais: Aliança Medicinal, AMME Medicinal)

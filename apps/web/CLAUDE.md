@@ -12,17 +12,21 @@ pnpm preview      # Preview production build
 
 ```
 src/
-├── App.tsx                     # Router (12 rotas), ScrollToTop
+├── App.tsx                     # Router (17 rotas), ScrollToTop, lazy loading
 ├── index.css                   # Tailwind base + animações custom
 ├── components/
 │   ├── layout/header.tsx       # Navbar fixa (full-width, backdrop-blur)
 │   ├── onboarding/             # OptionCard, StepProgress, OnboardingFlow (multi-select)
 │   └── ui/theme-toggle.tsx     # Cycle light/dark/system
+├── constants/
+│   └── labels.ts               # Labels centralizados (status, tipos, condições, formatMultiSelect)
 ├── data/
 │   ├── sample-associations.ts  # 11 associações (inclui Aliança Medicinal + AMME Medicinal)
-│   └── sample-products.ts      # Produtos por associação (Aliança: 12, AMME: 19)
+│   ├── sample-products.ts      # Produtos por associação (Aliança: 12, AMME: 19)
+│   └── treatments.ts           # 8 condições com dados completos (about, symptoms, evidence, protocols)
 ├── hooks/
-│   ├── use-auth.ts             # useLogin(), useRegister() (React Query mutations)
+│   ├── use-auth.ts             # useLogin(), useRegister() — faz login + GET /auth/me em sequência
+│   ├── use-admin.ts            # useAdminUsers(), useDeleteUsers(), etc.
 │   ├── use-onboarding.ts       # useOnboardingSummary(), useStartOnboarding(), useSubmitStep(), etc.
 │   └── use-profile.ts          # useUpdateProfile() mutation
 ├── lib/
@@ -38,18 +42,22 @@ src/
 
 | Rota | Componente | Auth | Descrição |
 |------|-----------|------|-----------|
-| `/` | HomePage | Não | Landing (hero + cards SVG + CTA + LGPD + footer) |
+| `/` | HomePage | Não | Landing redesign v2 (hero dark, reconhecimento, antes/depois, depoimento, por que CannHub) |
 | `/quiz` | QuizPage | Não | Triagem (4 perfis 2x2) |
 | `/cadastro` | RegisterPage | Não | Registro 2 steps (tipo de conta + dados) |
 | `/login` | LoginPage | Não | Email + senha |
 | `/acolhimento` | OnboardingPage | Sim | 5-6 steps clínicos (multi-select condições/formas, step condicional: acesso atual) |
 | `/documentos` | DocumentsPage | Sim | Upload 4 documentos |
 | `/painel` | DashboardPage | Sim | Dashboard do paciente (edição inline, perfil clínico, docs, associações) |
-| `/tratamentos` | TreatmentsPage | Não | Info científica sobre cannabis medicinal (referências Fiocruz, JAMA, NEJM) |
+| `/tratamentos` | TreatmentsPage | Não | Hub de tratamentos v2 (hero 2 cols, filter chips, grid assimétrico, proof cards) |
+| `/tratamentos/:slug` | TreatmentDetailPage | Não | Detalhe por condição (barra nav, hero com stat, sidebar TOC, conteúdo editorial) |
+| `/legislacao` | LegislationPage | Não | Legislação v2 (hero claro, timeline, FAQ accordion, sidebar) |
 | `/catalogo` | CatalogPage | Não | Catálogo unificado (cepas + produtos) |
-| `/associacoes` | AssociationsPage | Não | 11 associações (Aliança e AMME no topo) |
+| `/associacoes` | AssociationsPage | Não | Associações v2 (search bar, sidebar filtros, cards expandidos) |
 | `/associacoes/:slug` | AssociationDetailPage | Não | Detalhe com CTA contextual (4 estados auth) |
 | `/associacoes/:slug/catalogo` | AssociationCatalogPage | Não | Catálogo da associação (preços restritos a conta aprovada) |
+| `/admin/usuarios` | AdminUsersPage | Admin | Painel de aprovação (tabela, filtros, bulk delete) |
+| `/admin/usuarios/:id` | AdminUserDetailPage | Admin | Detalhe do user (dados, onboarding, docs, ações) |
 
 ## API client (`lib/api.ts`)
 
@@ -84,24 +92,33 @@ src/
 - `useExtractFromText()` — `POST /onboarding/extract`
 - `useEscalate()` — `POST /onboarding/escalate`
 
-## Design System — "Rota 1 Lightized"
+## Design System — v2 (redesign março 2026)
 
 ### Fontes
 - **Headlines/Logo**: DM Serif Display (serif) — itálico para ênfase
 - **Body/UI**: DM Sans
 
-### Paleta (Tailwind tokens `brand-*`)
+### Paleta (Tailwind tokens `brand-*` — atualizada v2)
 ```
-green-deep: #243D2C    → Cor principal (CTAs, headings, logo)
-green-mid:  #3A6647    → Hover de botões
-green-light:#5A9468    → Labels, accents, progress
-green-pale: #D4E8DA    → Badges, hover backgrounds
-cream:      #F4EFE4    → Background principal
-cream-dark: #E5DDC9    → Bordas, dividers
-sand:       #C8BFA8    → Footer links, textos terciários
-text:       #1C2B21    → Texto principal
-muted:      #607060    → Textos secundários
-white:      #FDFCF9    → Cards, superfícies elevadas
+green-deep:    #192F1A    → Cor principal, hero backgrounds, CTAs
+green-mid:     #25461E    → Hover de botões
+green-light:   #3D6A27    → Labels, accents, eyebrows
+green-pale:    #E6F0DA    → Badges, hover backgrounds, tints
+green-xs:      #B8D09A    → Destaques em fundos escuros
+cream:         #EDE7DA    → Background alternativo, seções
+cream-dark:    #DDD4C3    → Bordas, dividers
+cream-darker:  #BDB2A0    → Textos terciários, separadores
+off/white:     #F7F3EC    → Background principal
+text:          #141F14    → Texto principal (mais denso)
+text-md:       #314230    → Texto secundário forte
+muted:         #5C7260    → Texto secundário
+text-xs:       #8A9C8C    → Labels, metadados, datas
+```
+
+### Tints por categoria (páginas de tratamento)
+```
+Neurológicas: #EBF2E1    Saúde mental: #E8EEF7
+Dor: #F5EDEA             Oncologia: #EEE9F5
 ```
 
 ### Dark mode tokens

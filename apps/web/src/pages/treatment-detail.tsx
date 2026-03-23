@@ -191,32 +191,32 @@ export function TreatmentDetailPage() {
               </div>
             </div>
 
-            {/* Right: illustration placeholder */}
-            <div className="hidden lg:flex flex-col items-center justify-center gap-3.5 p-10 bg-white/[0.04] border-l border-white/[0.06] relative">
-              {/* Grid pattern */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  backgroundImage:
-                    'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
-                  backgroundSize: '40px 40px',
-                }}
-              />
-              <div className="w-[120px] h-[120px] rounded-full bg-white/[0.06] border border-white/10 flex flex-col items-center justify-center gap-2 relative z-[1]">
-                <svg className="w-9 h-9 stroke-white/25 fill-none" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <polyline points="21 15 16 10 5 21" />
-                </svg>
-                <span className="text-[10px] text-white/20 uppercase tracking-wide text-center leading-snug">
-                  Ilustração<br />da condição
-                </span>
-              </div>
-              <span className="text-[10px] text-white/15 uppercase tracking-wide relative z-[1]">320 x 320px</span>
-              <div className="bg-white/[0.06] border border-white/[0.08] rounded-[10px] px-4 py-2.5 text-center w-full relative z-[1]">
-                <div className="text-[14px] font-medium text-white mb-0.5">{treatment.name}</div>
-                <div className="text-[12px] text-white/[0.38]">{treatment.shortDescription.slice(0, 60)}...</div>
-              </div>
+            {/* Right: illustration */}
+            <div className="hidden lg:flex items-center justify-center bg-white/[0.04] border-l border-white/[0.06] relative overflow-hidden">
+              {treatment.heroImage ? (
+                <img src={treatment.heroImage} alt={treatment.name} className="w-full h-full object-cover" loading="eager" width={360} height={380} />
+              ) : (
+                <div className="flex flex-col items-center justify-center gap-3.5 p-10 relative">
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      backgroundImage:
+                        'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
+                      backgroundSize: '40px 40px',
+                    }}
+                  />
+                  <div className="w-[120px] h-[120px] rounded-full bg-white/[0.06] border border-white/10 flex flex-col items-center justify-center gap-2 relative z-[1]">
+                    <svg className="w-9 h-9 stroke-white/25 fill-none" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <span className="text-[10px] text-white/20 uppercase tracking-wide text-center leading-snug">
+                      Ilustração<br />da condição
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -324,11 +324,11 @@ export function TreatmentDetailPage() {
                 Os sintomas associados a essa condição variam em intensidade. A cannabis medicinal atua no alívio de vários deles.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 items-stretch">
                 {sections.symptoms.map((symptom, i) => (
                   <div
                     key={i}
-                    className="flex items-start gap-2.5 p-3.5 px-4 bg-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-white/10 rounded-xl text-[13.5px] text-brand-text-md dark:text-gray-300 leading-snug"
+                    className="flex items-start gap-2.5 p-3.5 px-4 bg-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-white/10 rounded-xl text-[13.5px] text-brand-text-md dark:text-gray-300 leading-snug min-h-[56px]"
                   >
                     <div className="w-7 h-7 rounded-lg bg-brand-green-pale dark:bg-brand-green-deep/30 flex items-center justify-center shrink-0">
                       <svg className="w-3.5 h-3.5 stroke-brand-green-deep dark:stroke-brand-green-xs fill-none" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
