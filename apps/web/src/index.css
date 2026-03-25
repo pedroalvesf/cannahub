@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-surface text-brand-text antialiased;
     font-family: 'DM Sans', system-ui, sans-serif;

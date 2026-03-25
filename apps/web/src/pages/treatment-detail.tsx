@@ -295,20 +295,25 @@ export function TreatmentDetailPage() {
                 {sections.howCannabisHelps}
               </p>
 
-              {/* Mechanism illustration placeholder */}
-              <div className="bg-brand-cream-dark dark:bg-white/5 rounded-[14px] h-[220px] flex flex-col items-center justify-center gap-2.5 mt-6 relative overflow-hidden">
-                <div className="absolute w-px h-full left-1/2 bg-brand-sand/40 dark:bg-white/5" />
-                <div className="absolute h-px w-full top-1/2 bg-brand-sand/40 dark:bg-white/5" />
-                <svg className="w-7 h-7 stroke-brand-text-xs fill-none relative z-[1]" strokeWidth="1.3" strokeLinecap="round" viewBox="0 0 24 24">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <polyline points="21 15 16 10 5 21" />
-                </svg>
-                <span className="text-[11px] text-brand-text-xs text-center leading-snug relative z-[1]">
-                  Diagrama do mecanismo de ação<br />ou infográfico explicativo
-                </span>
-                <span className="text-[10px] text-brand-sand uppercase tracking-wide relative z-[1]">680 x 220px</span>
-              </div>
+              {/* Mechanism illustration */}
+              {treatment.mechanismImage ? (
+                <div className="rounded-[14px] overflow-hidden mt-6">
+                  <img src={treatment.mechanismImage} alt={`Mecanismo de ação — ${treatment.name}`} className="w-full h-auto" loading="lazy" />
+                </div>
+              ) : (
+                <div className="bg-brand-cream-dark dark:bg-white/5 rounded-[14px] h-[220px] flex flex-col items-center justify-center gap-2.5 mt-6 relative overflow-hidden">
+                  <div className="absolute w-px h-full left-1/2 bg-brand-sand/40 dark:bg-white/5" />
+                  <div className="absolute h-px w-full top-1/2 bg-brand-sand/40 dark:bg-white/5" />
+                  <svg className="w-7 h-7 stroke-brand-text-xs fill-none relative z-[1]" strokeWidth="1.3" strokeLinecap="round" viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21 15 16 10 5 21" />
+                  </svg>
+                  <span className="text-[11px] text-brand-text-xs text-center leading-snug relative z-[1]">
+                    Diagrama do mecanismo de ação<br />ou infográfico explicativo
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* SECTION: Sintomas */}

@@ -8,7 +8,8 @@ export interface Treatment {
   icon: string
   iconImage: string  // ícone SVG compacto para menu (80x80)
   image: string      // ilustração SVG grande para página de detalhe
-  heroImage?: string  // imagem real (png/webp) para hero e cards — substitui SVG quando disponível
+  heroImage?: string       // imagem real (webp) para hero e cards
+  mechanismImage?: string  // imagem horizontal (webp) para seção "Como a cannabis ajuda"
   sections: {
     about: string
     symptoms: string[]
@@ -41,6 +42,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/epilepsia.svg',
     image: '/treatments/epilepsia.svg',
     heroImage: '/treatments/epilepsia-hero.webp',
+    mechanismImage: '/treatments/epilepsia-mecanismo.webp',
     sections: {
       about: 'A epilepsia refratária é a condição com maior respaldo científico para uso de cannabis medicinal. Pacientes que não respondem adequadamente a dois ou mais anticonvulsivantes convencionais podem se beneficiar do canabidiol (CBD). O Epidiolex (CBD 100mg/ml) foi o primeiro medicamento à base de cannabis registrado pela Anvisa no Brasil.',
       symptoms: [
@@ -74,6 +76,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/dor-cronica.svg',
     image: '/treatments/dor-cronica.svg',
     heroImage: '/treatments/dor-cronica-hero.webp',
+    mechanismImage: '/treatments/dor-cronica-mecanismo.webp',
     sections: {
       about: 'A dor crônica afeta cerca de 37% da população brasileira. Canabinoides atuam nos receptores CB1 (sistema nervoso central) e CB2 (sistema imunológico) modulando a transmissão nociceptiva. A combinação THC:CBD mostra resultados superiores ao uso isolado de cada composto — o chamado efeito entourage.',
       symptoms: [
@@ -108,6 +111,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/ansiedade.svg',
     image: '/treatments/ansiedade.svg',
     heroImage: '/treatments/ansiedade-hero.webp',
+    mechanismImage: '/treatments/ansiedade-mecanismo.webp',
     sections: {
       about: 'Transtornos de ansiedade afetam 18,6 milhões de brasileiros — o país com maior prevalência no mundo segundo a OMS. O CBD oferece uma alternativa aos benzodiazepínicos, com efeito ansiolítico comprovado e sem os riscos de dependência, tolerância e comprometimento cognitivo associados a esses medicamentos.',
       symptoms: [
@@ -142,6 +146,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/autismo.svg',
     image: '/treatments/autismo.svg',
     heroImage: '/treatments/autismo-hero.webp',
+    mechanismImage: '/treatments/autismo-mecanismo.webp',
     sections: {
       about: 'O Transtorno do Espectro Autista (TEA) é uma condição neurológica que afeta cerca de 2 milhões de brasileiros. Embora não haja cura, canabinoides têm demonstrado melhora significativa em sintomas como irritabilidade, agressividade, distúrbios do sono e dificuldade de interação social — sintomas que impactam diretamente a qualidade de vida do paciente e da família.',
       symptoms: [
@@ -176,6 +181,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/oncologia.svg',
     image: '/treatments/oncologia.svg',
     heroImage: '/treatments/oncologia-hero.webp',
+    mechanismImage: '/treatments/oncologia-mecanismo.webp',
     sections: {
       about: 'Em oncologia, canabinoides atuam em múltiplas frentes: controle de náusea e vômito induzidos por quimioterapia, estimulação de apetite em pacientes com caquexia, manejo de dor oncológica e melhora da qualidade de vida em cuidados paliativos. O THC foi um dos primeiros canabinoides a ter uso médico reconhecido, justamente nesse contexto.',
       symptoms: [
@@ -210,6 +216,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/parkinson.svg',
     image: '/treatments/parkinson.svg',
     heroImage: '/treatments/parkinson-hero.webp',
+    mechanismImage: '/treatments/parkinson-mecanismo.webp',
     sections: {
       about: 'Doenças neurodegenerativas como Parkinson e Alzheimer envolvem perda progressiva de neurônios e neuroinflamação crônica. O CBD demonstra propriedades neuroprotetoras e antioxidantes que podem não apenas aliviar sintomas, mas potencialmente retardar a progressão da doença. Pesquisas brasileiras lideradas por Zuardi (USP) foram pioneiras nessa área.',
       symptoms: [
@@ -244,6 +251,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/esclerose-multipla.svg',
     image: '/treatments/esclerose-multipla.svg',
     heroImage: '/treatments/esclerose-multipla-hero.webp',
+    mechanismImage: '/treatments/esclerose-multipla-mecanismo.webp',
     sections: {
       about: 'A esclerose múltipla (EM) é uma doença autoimune que ataca a mielina dos neurônios, causando espasticidade muscular, dor e fadiga. O nabiximols (Sativex), spray oromucoso com THC:CBD 1:1, é o primeiro medicamento à base de cannabis aprovado em vários países europeus especificamente para EM. No Brasil, o acesso é possível via importação autorizada pela Anvisa.',
       symptoms: [
@@ -278,6 +286,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/insonia.svg',
     image: '/treatments/insonia.svg',
     heroImage: '/treatments/insonia-hero.webp',
+    mechanismImage: '/treatments/insonia-mecanismo.webp',
     sections: {
       about: 'Distúrbios do sono afetam 73 milhões de brasileiros. Hipnóticos tradicionais (zolpidem, benzodiazepínicos) apresentam riscos de dependência, tolerância e efeitos residuais diurnos. Canabinoides oferecem alternativa com perfil de segurança diferenciado, especialmente quando a insônia é secundária a dor, ansiedade ou TEPT.',
       symptoms: [
@@ -312,6 +321,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/dor-cronica.svg',
     image: '/treatments/artrite-hero.webp',
     heroImage: '/treatments/artrite-hero.webp',
+    mechanismImage: '/treatments/artrite-mecanismo.webp',
     sections: {
       about: 'Artrite e artrose afetam mais de 15 milhões de brasileiros, causando dor crônica, rigidez e perda de mobilidade. Anti-inflamatórios não esteroidais (AINEs) são o tratamento padrão, mas apresentam riscos gastrointestinais e cardiovasculares no uso prolongado. O CBD oferece uma alternativa anti-inflamatória com perfil de segurança diferenciado, atuando tanto por via tópica (diretamente na articulação) quanto sistêmica.',
       symptoms: [
@@ -346,6 +356,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/dor-cronica.svg',
     image: '/treatments/endometriose-hero.webp',
     heroImage: '/treatments/endometriose-hero.webp',
+    mechanismImage: '/treatments/endometriose-mecanismo.webp',
     sections: {
       about: 'A endometriose afeta cerca de 7 milhões de brasileiras, causando dor pélvica crônica intensa que impacta diretamente a qualidade de vida. O tratamento convencional envolve hormônios e cirurgias, mas muitas pacientes não respondem adequadamente ou sofrem com efeitos colaterais. O sistema endocanabinoide está presente no tecido endometrial e desempenha papel na regulação da dor e inflamação local.',
       symptoms: [
@@ -380,6 +391,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/oncologia.svg',
     image: '/treatments/nauseas-quimio-hero.webp',
     heroImage: '/treatments/nauseas-quimio-hero.webp',
+    mechanismImage: '/treatments/nauseas-quimio-mecanismo.webp',
     sections: {
       about: 'Náuseas e vômitos induzidos por quimioterapia (NVIQ) afetam até 80% dos pacientes oncológicos e são a principal causa de abandono do tratamento. Antieméticos convencionais (ondansetrona, metoclopramida) não são eficazes em todos os casos. O THC foi um dos primeiros canabinoides a ter uso médico reconhecido, justamente nesse contexto — dronabinol (THC sintético) e nabilona são aprovados pela FDA desde os anos 1980.',
       symptoms: [
@@ -414,6 +426,7 @@ export const treatments: Treatment[] = [
     iconImage: '/treatments/icons/oncologia.svg',
     image: '/treatments/dor-oncologica-hero.webp',
     heroImage: '/treatments/dor-oncologica-hero.webp',
+    mechanismImage: '/treatments/dor-oncologica-mecanismo.webp',
     sections: {
       about: 'A dor oncológica afeta 55-70% dos pacientes com câncer e é frequentemente subtratada. Opioides são o padrão, mas causam tolerância, constipação, sedação e risco de dependência. Canabinoides atuam como adjuvantes — não substituem opioides, mas permitem reduzir a dose necessária, diminuindo efeitos adversos e melhorando a qualidade de vida.',
       symptoms: [

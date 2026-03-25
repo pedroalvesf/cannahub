@@ -420,10 +420,10 @@ export function TreatmentsPage() {
     : categories.filter((c) => c.key === activeFilter)
 
   const heroCats = [
-    { key: 'neuro', name: 'Neurológicas', count: 'Epilepsia · Parkinson · EM' },
-    { key: 'mental', name: 'Saúde mental', count: 'Ansiedade · Insônia · TEA' },
-    { key: 'pain', name: 'Dor e inflamação', count: 'Dor crônica · Artrite · Endo' },
-    { key: 'onco', name: 'Oncologia', count: 'Paliativos · Náuseas · Dor' },
+    { key: 'neuro', slug: 'neurologicas', name: 'Neurológicas', count: 'Epilepsia · Parkinson · EM' },
+    { key: 'mental', slug: 'saude-mental', name: 'Saúde mental', count: 'Ansiedade · Insônia · TEA' },
+    { key: 'pain', slug: 'dor-inflamacao', name: 'Dor e inflamação', count: 'Dor crônica · Artrite · Endo' },
+    { key: 'onco', slug: 'oncologia-paliativos', name: 'Oncologia', count: 'Paliativos · Náuseas · Dor' },
   ]
 
   return (
@@ -486,16 +486,17 @@ export function TreatmentsPage() {
           {/* Right column: 2x2 category preview cards */}
           <div className="grid grid-cols-2 gap-2.5">
             {heroCats.map((cat) => (
-              <div
+              <a
                 key={cat.key}
-                className="bg-white/[0.06] border border-white/10 rounded-[14px] p-4 cursor-pointer transition-all hover:bg-white/[0.11] hover:border-white/20 block"
+                href={`#cat-${cat.key}`}
+                className="bg-white/[0.06] border border-white/10 rounded-[14px] p-4 cursor-pointer transition-all hover:bg-white/[0.11] hover:border-white/20 block no-underline"
               >
                 <div className="w-8 h-8 rounded-lg bg-white/[0.08] flex items-center justify-center mb-2.5">
                   {heroCatIcons[cat.key]}
                 </div>
                 <div className="text-[13px] font-medium text-white/75 leading-tight mb-0.5">{cat.name}</div>
                 <div className="text-[11px] text-white/30 leading-snug">{cat.count}</div>
-              </div>
+              </a>
             ))}
           </div>
         </div>
@@ -536,7 +537,7 @@ export function TreatmentsPage() {
           const showHowToStart = cat.key === 'pain' && (activeFilter === 'all' || activeFilter === 'pain')
 
           return (
-            <div key={cat.key}>
+            <div key={cat.key} id={`cat-${cat.key}`} className="scroll-mt-24">
               {/* Category tinted block */}
               <div className={`${cat.tintBg} ${cat.tintBgDark} rounded-[22px] max-md:rounded-none p-10 max-md:px-4 max-md:py-6 mb-20 max-md:mb-10`}>
                 <section>

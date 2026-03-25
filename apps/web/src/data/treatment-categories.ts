@@ -20,6 +20,8 @@ export interface TreatmentCategory {
   tintBgDark: string
   /** número decorativo no hero */
   decorativeText: string
+  /** imagem do hero da página de categoria */
+  heroImage?: string
 }
 
 export const treatmentCategories: TreatmentCategory[] = [
@@ -47,6 +49,7 @@ export const treatmentCategories: TreatmentCategory[] = [
     tintBg: 'bg-[#EBF2E1]',
     tintBgDark: 'dark:bg-[#1a2e1a]',
     decorativeText: 'Neuro',
+    heroImage: '/treatments/categoria-neurologicas.webp',
   },
   {
     slug: 'saude-mental',
@@ -72,6 +75,7 @@ export const treatmentCategories: TreatmentCategory[] = [
     tintBg: 'bg-[#E8EEF7]',
     tintBgDark: 'dark:bg-[#1a1e2e]',
     decorativeText: 'Mental',
+    heroImage: '/treatments/categoria-saude-mental.webp',
   },
   {
     slug: 'dor-inflamacao',
@@ -97,6 +101,7 @@ export const treatmentCategories: TreatmentCategory[] = [
     tintBg: 'bg-[#F5EDEA]',
     tintBgDark: 'dark:bg-[#2e1a1a]',
     decorativeText: 'Dor',
+    heroImage: '/treatments/categoria-dor-inflamacao.webp',
   },
   {
     slug: 'oncologia-paliativos',
@@ -122,6 +127,7 @@ export const treatmentCategories: TreatmentCategory[] = [
     tintBg: 'bg-[#EEE9F5]',
     tintBgDark: 'dark:bg-[#1e1a2e]',
     decorativeText: 'Onco',
+    heroImage: '/treatments/categoria-oncologia.webp',
   },
 ]
 
