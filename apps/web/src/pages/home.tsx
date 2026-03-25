@@ -221,7 +221,7 @@ export function HomePage() {
           </div>
 
           {/* 4 step cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
             {[
               {
                 step: '01',
@@ -267,10 +267,21 @@ export function HomePage() {
                   </svg>
                 ),
               },
+              {
+                step: '05',
+                title: 'Autonomia do paciente',
+                desc: 'Quer ir além? A CannHub orienta sobre cultivo próprio, habeas corpus, acompanhamento jurídico e importação — para quem busca independência no tratamento.',
+                icon: (
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className="text-brand-green-deep dark:text-brand-green-light">
+                    <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20c4 0 8.68-3.52 9-12z" />
+                    <path d="M2 2c0 6 4 8.5 6 10" />
+                  </svg>
+                ),
+              },
             ].map((item, i) => (
               <div key={item.step} className="relative">
                 {/* Connector line */}
-                {i < 3 && (
+                {i < 4 && (
                   <div className="hidden lg:block absolute top-[48px] right-[-13px] w-[26px] h-px bg-brand-cream-dark dark:bg-gray-700 z-10" />
                 )}
                 <div className="bg-brand-off dark:bg-surface-dark border border-brand-cream-dark dark:border-gray-700 rounded-[16px] p-6 h-full">
@@ -316,56 +327,39 @@ export function HomePage() {
             {[
               {
                 color: 'bg-[#E8F0E0]',
-                hint: 'foto · adulto',
+                image: '/treatments/mulher-careca-calma-plena-respirando.webp',
+                imgPosition: 'object-[center_20%]',
                 name: 'Paciente adulto',
                 desc: 'Já usa ou quer começar. Quer ter segurança jurídica, orientação médica e acesso legal ao tratamento certo para sua condição.',
-                icon: (
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-xs">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-                  </svg>
-                ),
               },
               {
                 color: 'bg-[#E8EEF5]',
-                hint: 'foto · família',
+                image: '/treatments/filho-com-mae-exercicios-autismo.webp',
+                imgPosition: 'object-center',
                 name: 'Responsável legal',
                 desc: 'Cuida de criança ou dependente. Precisa de segurança, laudo e orientação médica especializada.',
-                icon: (
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-xs">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                  </svg>
-                ),
               },
               {
                 color: 'bg-[#F5EDE8]',
-                hint: 'foto · médico',
+                image: '/treatments/casal-idoso-feliz-natureza.webp',
+                imgPosition: 'object-center',
                 name: 'Médico e veterinário',
                 desc: 'Quer prescrever com segurança. Acesso à literatura científica, protocolos e rede de associações.',
-                icon: (
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-xs">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                  </svg>
-                ),
               },
               {
                 color: 'bg-[#F0ECF8]',
-                hint: 'foto · iniciante',
+                image: '/treatments/medico-sorrindo-com-paciente-atendimento.webp',
+                imgPosition: 'object-center',
                 name: 'Iniciante',
                 desc: 'Nunca usou, mas quer entender. A CannHub orienta do zero, sem jargão e sem pressa.',
-                icon: (
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="text-brand-text-xs">
-                    <circle cx="12" cy="12" r="10" /><path d="M12 8v4l3 3" />
-                  </svg>
-                ),
               },
             ].map((profile) => (
               <div
                 key={profile.name}
                 className="bg-brand-off dark:bg-surface-dark border border-brand-cream-dark dark:border-gray-700 rounded-[16px] overflow-hidden cursor-pointer transition-all hover:border-brand-green-light hover:-translate-y-0.5"
               >
-                <div className={`${profile.color} dark:bg-surface-dark-card h-[120px] flex flex-col items-center justify-center gap-2 border-b border-brand-cream-dark dark:border-gray-700`}>
-                  {profile.icon}
-                  <div className="text-[9.5px] text-brand-text-xs uppercase tracking-[0.06em]">{profile.hint}</div>
+                <div className={`${profile.color} dark:bg-surface-dark-card h-[160px] border-b border-brand-cream-dark dark:border-gray-700 overflow-hidden`}>
+                  <img src={profile.image} alt={profile.name} className={`w-full h-full object-cover ${profile.imgPosition}`} />
                 </div>
                 <div className="px-5 py-[18px]">
                   <div className="text-[15px] font-medium text-brand-text dark:text-white mb-1">{profile.name}</div>

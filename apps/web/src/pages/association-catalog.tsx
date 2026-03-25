@@ -20,12 +20,12 @@ const TYPE_COLORS: Record<string, { bg: string; text: string; badge: string }> =
   'Flor': { bg: 'from-lime-50 to-lime-100/50 dark:from-lime-900/10 dark:to-lime-900/5', text: 'text-lime-700 dark:text-lime-400', badge: 'bg-lime-100 text-lime-700 dark:bg-lime-900/30 dark:text-lime-400' },
 }
 
-const TYPE_ICONS: Record<string, string> = {
-  'Óleo': '💧',
-  'Tópico': '🧴',
-  'Cápsula': '💊',
-  'Gummy': '🍬',
-  'Flor': '🌿',
+const TYPE_ICONS: Record<string, React.ReactNode> = {
+  'Óleo': <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-amber-600 dark:text-amber-400"><path d="M12 2v6" /><path d="M6.8 14a5.2 5.2 0 0 0 10.4 0c0-3-2.4-5.2-4-8h-2.4c-1.6 2.8-4 5-4 8z" /></svg>,
+  'Tópico': <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600 dark:text-purple-400"><path d="M2 12h10" /><path d="M9 4v16" /><path d="M14 4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2" /><path d="M20 4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2" /></svg>,
+  'Cápsula': <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400"><path d="M10.5 2.1a2.4 2.4 0 0 1 3 0l6.4 5.2a2.4 2.4 0 0 1 .6 3l-5.2 8a2.4 2.4 0 0 1-3 .9L5.5 16a2.4 2.4 0 0 1-.9-3z" /><path d="M8.5 14l7-10" /></svg>,
+  'Gummy': <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-orange-600 dark:text-orange-400"><circle cx="12" cy="12" r="8" /><path d="M9.5 9a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" /><path d="M14.5 12a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" /></svg>,
+  'Flor': <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-green-600 dark:text-green-400"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20c4 0 8.68-3.52 9-12z" /><path d="M2 2c0 6 4 8.5 6 10" /></svg>,
 }
 
 function formatPrice(price: number) {
@@ -213,7 +213,7 @@ export function AssociationCatalogPage() {
             {groupedProducts.map((group) => (
               <section key={group.category}>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-lg">{TYPE_ICONS[products.find((p) => p.category === group.category)?.type ?? ''] ?? '📦'}</span>
+                  <span className="flex items-center">{TYPE_ICONS[products.find((p) => p.category === group.category)?.type ?? ''] ?? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-muted"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg>}</span>
                   <h2 className="text-[16px] font-bold text-brand-green-deep dark:text-white">
                     {group.category}
                   </h2>

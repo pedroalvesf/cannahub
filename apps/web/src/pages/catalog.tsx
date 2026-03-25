@@ -479,21 +479,21 @@ function StrainCard({ strain }: { strain: Strain }) {
 function ProductCard({ product }: { product: Product }) {
   const user = useAuthStore((s) => s.user)
   const isApproved = user?.accountStatus === 'approved'
-  const typeConfig: Record<string, { bg: string; icon: string }> = {
-    'Óleo': { bg: 'from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-surface-dark-card', icon: '💧' },
-    'Gummy': { bg: 'from-pink-50 to-pink-100/50 dark:from-pink-900/20 dark:to-surface-dark-card', icon: '🍬' },
-    'Cápsula': { bg: 'from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-surface-dark-card', icon: '💊' },
-    'Flor': { bg: 'from-green-50 to-green-100/50 dark:from-green-900/20 dark:to-surface-dark-card', icon: '🌿' },
-    'Tópico': { bg: 'from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-surface-dark-card', icon: '🧴' },
+  const typeConfig: Record<string, { bg: string; icon: React.ReactNode }> = {
+    'Óleo': { bg: 'from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-surface-dark-card', icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-amber-600 dark:text-amber-400"><path d="M12 2v6" /><path d="M6.8 14a5.2 5.2 0 0 0 10.4 0c0-3-2.4-5.2-4-8h-2.4c-1.6 2.8-4 5-4 8z" /></svg> },
+    'Gummy': { bg: 'from-pink-50 to-pink-100/50 dark:from-pink-900/20 dark:to-surface-dark-card', icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-pink-600 dark:text-pink-400"><circle cx="12" cy="12" r="8" /><path d="M9.5 9a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" /><path d="M14.5 12a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" /></svg> },
+    'Cápsula': { bg: 'from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-surface-dark-card', icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600 dark:text-blue-400"><path d="M10.5 2.1a2.4 2.4 0 0 1 3 0l6.4 5.2a2.4 2.4 0 0 1 .6 3l-5.2 8a2.4 2.4 0 0 1-3 .9L5.5 16a2.4 2.4 0 0 1-.9-3z" /><path d="M8.5 14l7-10" /></svg> },
+    'Flor': { bg: 'from-green-50 to-green-100/50 dark:from-green-900/20 dark:to-surface-dark-card', icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-green-600 dark:text-green-400"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20c4 0 8.68-3.52 9-12z" /><path d="M2 2c0 6 4 8.5 6 10" /></svg> },
+    'Tópico': { bg: 'from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-surface-dark-card', icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-purple-600 dark:text-purple-400"><path d="M2 12h10" /><path d="M9 4v16" /><path d="M14 4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2" /><path d="M20 4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2" /></svg> },
   }
 
-  const config = typeConfig[product.type] ?? { bg: 'from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-surface-dark-card', icon: '💧' }
+  const config = typeConfig[product.type] ?? { bg: 'from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-surface-dark-card', icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-amber-600 dark:text-amber-400"><path d="M12 2v6" /><path d="M6.8 14a5.2 5.2 0 0 0 10.4 0c0-3-2.4-5.2-4-8h-2.4c-1.6 2.8-4 5-4 8z" /></svg> }
 
   return (
     <div className="rounded-card border border-brand-cream-dark dark:border-gray-800 bg-surface-card dark:bg-surface-dark-card overflow-hidden hover:border-brand-green-deep/30 dark:hover:border-brand-green-deep/30 transition-colors shadow-soft group">
       {/* Header area */}
       <div className={`relative h-32 bg-gradient-to-br ${config.bg} flex items-center justify-center`}>
-        <span className="text-4xl">{config.icon}</span>
+        {config.icon}
 
         {/* Type badge */}
         <span className="absolute top-2 left-2 px-2.5 py-1 rounded-btn text-[10px] font-semibold bg-brand-white/80 dark:bg-surface-dark/80 text-brand-green-deep dark:text-gray-300 backdrop-blur-sm">

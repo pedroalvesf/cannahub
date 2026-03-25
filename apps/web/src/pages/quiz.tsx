@@ -6,8 +6,7 @@ import { useAuthStore } from '@/stores/auth-store'
 const PROFILES = [
   {
     type: 'patient',
-    emoji: '✦',
-    emojiSize: '20px',
+    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>,
     tag: 'Uso próprio',
     tagColor: 'text-brand-green-light',
     title: 'Paciente Adulto',
@@ -15,11 +14,11 @@ const PROFILES = [
     bg: 'bg-brand-white border border-brand-cream-dark',
     titleColor: 'text-brand-green-deep',
     textColor: 'text-brand-muted',
+    iconColor: 'text-brand-green-deep',
   },
   {
     type: 'guardian',
-    emoji: '👨‍👩‍👧',
-    emojiSize: '26px',
+    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>,
     tag: 'Dependentes',
     tagColor: 'text-brand-green-mid',
     title: 'Responsável Legal',
@@ -27,11 +26,11 @@ const PROFILES = [
     bg: 'bg-brand-green-pale border border-brand-green-light/20',
     titleColor: 'text-brand-green-deep',
     textColor: 'text-brand-muted',
+    iconColor: 'text-brand-green-deep',
   },
   {
     type: 'prescriber',
-    emoji: '⚕️',
-    emojiSize: '26px',
+    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>,
     tag: 'Prescritores',
     tagColor: 'text-brand-green-pale/60',
     title: 'Médicos e Veterinários',
@@ -39,11 +38,11 @@ const PROFILES = [
     bg: 'bg-brand-green-deep',
     titleColor: 'text-brand-white',
     textColor: 'text-brand-white/[0.62]',
+    iconColor: 'text-brand-white/80',
   },
   {
     type: 'caregiver',
-    emoji: '🌱',
-    emojiSize: '26px',
+    icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20c4 0 8.68-3.52 9-12z" /><path d="M2 2c0 6 4 8.5 6 10" /></svg>,
     tag: 'Primeiro acesso',
     tagColor: 'text-brand-green-light',
     title: 'Iniciantes',
@@ -51,6 +50,7 @@ const PROFILES = [
     bg: 'bg-brand-white border border-brand-cream-dark',
     titleColor: 'text-brand-green-deep',
     textColor: 'text-brand-muted',
+    iconColor: 'text-brand-green-deep',
   },
 ]
 
@@ -95,7 +95,7 @@ export function QuizPage() {
             >
               <div className="absolute -bottom-8 -right-8 w-[100px] h-[100px] rounded-full bg-brand-green-light/[0.06] pointer-events-none" />
               <div className="flex items-center gap-3 mb-3">
-                <span className={`leading-none`} style={{ fontSize: profile.emojiSize }}>{profile.emoji}</span>
+                <span className={`leading-none ${profile.iconColor}`}>{profile.icon}</span>
                 <span className={`text-[11px] font-bold tracking-[0.08em] uppercase ${profile.tagColor}`}>{profile.tag}</span>
               </div>
               <h3 className={`font-serif text-[19px] leading-[1.25] ${profile.titleColor} mb-2`}>
