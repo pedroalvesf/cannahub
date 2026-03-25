@@ -22,8 +22,9 @@ src/
 │   └── labels.ts               # Labels centralizados (status, tipos, condições, formatMultiSelect)
 ├── data/
 │   ├── sample-associations.ts  # 11 associações (inclui Aliança Medicinal + AMME Medicinal)
-│   ├── sample-products.ts      # Produtos por associação (Aliança: 12, AMME: 19)
-│   └── treatments.ts           # 8 condições com dados completos (about, symptoms, evidence, protocols)
+│   ├── sample-products.ts      # 31 produtos por associação (Aliança: 12, AMME: 19)
+│   ├── treatments.ts           # 8 condições com dados completos (about, symptoms, evidence, protocols)
+│   └── treatment-categories.ts # 4 categorias (neurológicas, saúde mental, dor, oncologia)
 ├── hooks/
 │   ├── use-auth.ts             # useLogin(), useRegister() — faz login + GET /auth/me em sequência
 │   ├── use-admin.ts            # useAdminUsers(), useDeleteUsers(), etc.
@@ -32,7 +33,7 @@ src/
 ├── lib/
 │   ├── api.ts                  # Axios com interceptors (Bearer, device headers, refresh token)
 │   └── query-client.ts         # QueryClient centralizado (shared entre App e stores)
-├── pages/                      # 12 páginas (ver rotas abaixo)
+├── pages/                      # 17 páginas (ver rotas abaixo)
 └── stores/
     ├── auth-store.ts           # Zustand: isAuthenticated, user, login/logout/hydrate
     └── theme-store.ts          # Zustand: light/dark/system cycle
@@ -50,6 +51,7 @@ src/
 | `/documentos` | DocumentsPage | Sim | Upload 4 documentos |
 | `/painel` | DashboardPage | Sim | Dashboard do paciente (edição inline, perfil clínico, docs, associações) |
 | `/tratamentos` | TreatmentsPage | Não | Hub de tratamentos v2 (hero 2 cols, filter chips, grid assimétrico, proof cards) |
+| `/tratamentos/categoria/:slug` | TreatmentCategoryPage | Não | Categoria (neurológicas, saúde mental, dor, oncologia) com tint, endocannabinoid context |
 | `/tratamentos/:slug` | TreatmentDetailPage | Não | Detalhe por condição (barra nav, hero com stat, sidebar TOC, conteúdo editorial) |
 | `/legislacao` | LegislationPage | Não | Legislação v2 (hero claro, timeline, FAQ accordion, sidebar) |
 | `/catalogo` | CatalogPage | Não | Catálogo unificado (cepas + produtos) |
@@ -127,7 +129,7 @@ Dor: #F5EDEA             Oncologia: #EEE9F5
 ### Padrões visuais
 - **Navbar**: `fixed top-0 left-0 w-full`, `backdrop-blur-[12px]`, conteúdo `max-w-[1100px] mx-auto`
 - **Logo**: div com `rounded-[80%_0_80%_0] rotate-[15deg]` + "CannHub" em serif
-- **Ícones**: SVG inline com `strokeWidth="1.3"` (estilo Feather/Lucide)
+- **Ícones**: SVG inline com `strokeWidth="1.3-1.6"` (estilo Feather/Lucide) — sem emojis em nenhum lugar
 - **Botões**: `rounded-btn` (pill 100px), hover com transition
 - **Sombras**: leves (`rgba(36,61,44, 0.04)` a `0.12`)
 - **Animações**: `animate-fade-up-{1..4}`, `animate-fade-down` na nav
@@ -140,6 +142,7 @@ Dor: #F5EDEA             Oncologia: #EEE9F5
 - **Seleção (register, quiz)**: list-style horizontal (avatar circle + ícone SVG + texto + chevron). Não usar cards coloridos individuais
 - **Produto**: `rounded-card`, gradiente por tipo, badge, pill concentração, indicadores THC/CBD
 - **SVG ilustrativos**: `public/cards/` (7 arquivos para landing)
+- **Fotos WebP**: `public/treatments/` (imagens convertidas de PNG → WebP com cwebp -q 80, ~95% de redução)
 
 ## Controle de acesso
 

@@ -32,6 +32,8 @@ cannahub/
 - **Sempre rodar testes antes de finalizar alterações**: `pnpm test` (unit) e `pnpm test:e2e` (e2e) no apps/api, `pnpm build` no apps/web
 - **Labels centralizados**: toda label de exibição (status, tipos, condições) vive em `apps/web/src/constants/labels.ts` — nunca duplicar em páginas
 - **Sem hacks**: não usar `hydrate()` como workaround, não duplicar campos (ex: `status` + `accountStatus`), não usar `as any`
+- **Sem emojis**: usar SVG inline (Feather/Lucide, strokeWidth 1.3-1.6) em vez de emojis — evitar aparência de IA
+- **Imagens em WebP**: converter toda imagem para WebP (cwebp -q 80) antes de usar no frontend
 - **RBAC no backend**: segurança vem de `@UseGuards(JwtAuthGuard, PermissionsGuard)` + `@RequirePermission()`, não de separação de projetos
 - **Either pattern**: use cases retornam `Either<Error, Result>`, nunca lançam exceções
 
@@ -108,23 +110,25 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 * Step condicional: "Como você acessa cannabis atualmente?" — aparece só quando experiência !== 'never'
 ```
 
-## Rotas do frontend (16 páginas)
+## Rotas do frontend (17 páginas)
 
 | Rota | Página | Auth | Guard |
 |------|--------|------|-------|
-| `/` | Home (landing) | Não | — |
-| `/quiz` | Triagem (4 perfis) | Não | — |
+| `/` | Home (landing v2 — hero dark, 5 etapas, cards com fotos WebP) | Não | — |
+| `/quiz` | Triagem (4 perfis com ícones SVG) | Não | — |
 | `/cadastro` | Registro (2 steps: tipo + dados) | Não | — |
 | `/login` | Login | Não | — |
 | `/acolhimento` | Onboarding (5-6 steps, multi-select, condicional) | Sim | ProtectedRoute |
 | `/documentos` | Upload de documentos | Sim | ProtectedRoute |
 | `/painel` | Dashboard do paciente | Sim | ProtectedRoute |
-| `/tratamentos` | Info científica sobre cannabis medicinal | Não | — |
-| `/legislacao` | Legislação brasileira sobre cannabis medicinal | Não | — |
-| `/catalogo` | Catálogo unificado (cepas + produtos) | Não | — |
-| `/associacoes` | Associações credenciadas (11) | Não | — |
-| `/associacoes/:slug` | Detalhe da associação | Não | — |
-| `/associacoes/:slug/catalogo` | Catálogo da associação (preço restrito a aprovados) | Não | — |
+| `/tratamentos` | Hub de tratamentos v2 (filter chips, grid assimétrico, proof cards) | Não | — |
+| `/tratamentos/categoria/:slug` | Categoria de tratamento (neurológicas, saúde mental, dor, oncologia) | Não | — |
+| `/tratamentos/:slug` | Detalhe por condição (barra nav, hero com stat, sidebar TOC) | Não | — |
+| `/legislacao` | Legislação v2 (timeline editorial, FAQ accordion, sidebar) | Não | — |
+| `/catalogo` | Catálogo unificado (ícones SVG por tipo, sem emojis) | Não | — |
+| `/associacoes` | Associações v2 (search bar, sidebar filtros, cards expandidos) | Não | — |
+| `/associacoes/:slug` | Detalhe da associação (4 estados auth) | Não | — |
+| `/associacoes/:slug/catalogo` | Catálogo da associação (preço restrito a aprovados, ícones SVG) | Não | — |
 | `/admin/usuarios` | Painel admin — lista de usuários | Sim | AdminRoute (role: admin) |
 | `/admin/usuarios/:id` | Painel admin — detalhe do usuário | Sim | AdminRoute (role: admin) |
 
@@ -214,13 +218,15 @@ User → accountType, accountStatus, onboardingStatus, documentsStatus
        documentsStatus: not_submitted | pending_review | approved | rejected
 OnboardingSession → perfil clínico (condition, experience, currentAccessMethod, preferredForm, hasPrescription, assistedAccess)
 Document → tipo, URL S3, status (pending/approved/rejected), motivo rejeição, reviewedBy
-Association → perfil, região, produtos, acesso assistido
+Association → name, cnpj, status, description, region, state, city, profileTypes[], hasAssistedAccess, contact, logoUrl, claimedAt
+AssociationMember → associationId + userId, role (staff/manager/director), status
+PatientAssociationLink → associationId + patientId, requestedBy/approvedBy, startDate/endDate, status (requested/approved/rejected)
 Patient, Dependent, ProfessionalProfile → domínio de pacientes
-PatientAssociationLink → vínculo paciente-associação
 Role → name, slug, level, assignableRoles
 Permission → name, slug, resource, action
 UserRole → userId + roleId (junction)
 RolePermission → roleId + permissionId (junction)
+Device, LoginHistory, AuditLog → tracking de segurança
 ```
 
 ## Frontend — Arquitetura
@@ -314,16 +320,27 @@ cd apps/web && pnpm build    # Type-check + Vite build (verifica compilação)
 
 ## Roadmap
 
-### Fase 1 — MVP (atual)
-Auth, cadastro, onboarding, documentos, catálogo por associação, tratamentos, legislação, dashboard paciente, painel admin de aprovação
+### Fase 1 — MVP (concluída)
+Auth, cadastro, onboarding, documentos, catálogo por associação, tratamentos (8 condições + 4 categorias), legislação, dashboard paciente, painel admin de aprovação, redesign v2 completo (home, tratamentos, legislação, associações)
+
+### Fase 1.5 — Painel da Associação (próxima)
+Painel de gestão para associações: textos, imagens, catálogo (produtos/preços/estoque), gestão de associados (vínculo, aprovação, exclusão), cobrança de anuidade, controle de membros
 
 ### Fase 2 — Conteúdo
-Blog, diretório advogados, eventos, SEO, auto-cadastro associações
+Blog, diretório médicos/advogados, eventos, SEO, auto-cadastro associações
 
 ### Fase 3 — Transação
 Pagamento com split (iugu), pedidos, inteligência de mercado
 
 ## Próximos passos
+
+### Painel da Associação (prioridade)
+- [ ] Painel da associação (`/associacao/painel`) — dashboard com métricas
+- [ ] Gestão de catálogo — CRUD de produtos (nome, descrição, preço, estoque, imagens, concentração, tipo)
+- [ ] Gestão de associados — listar, aprovar/rejeitar vínculo, excluir associado
+- [ ] Cobrança de vínculo — anuidade configurável por associação (valor, periodicidade, status pagamento)
+- [ ] Edição de perfil da associação — textos, imagens, contato, descrição
+- [ ] Role `association` no RBAC — guard para `/associacao/*`
 
 ### Frontend
 - [x] Perfil individual da Associação — `/associacoes/:slug`
@@ -340,16 +357,17 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] Exclusão de usuários em massa (admin)
 - [x] Labels centralizados (constants/labels.ts)
 - [x] Lazy loading / code splitting (todas as páginas)
-- [x] Redesign v2 — Home (hero dark, reconhecimento, antes/depois, depoimento)
+- [x] Redesign v2 — Home (hero dark, 5 etapas, cards com fotos WebP, sem emojis)
 - [x] Redesign v2 — Tratamentos hub (hero 2 colunas, filter chips, grid assimétrico, proof cards)
 - [x] Redesign v2 — Tratamento detalhe (barra de condições, hero com stat, sidebar TOC)
+- [x] Redesign v2 — Tratamento categoria (4 categorias, hero com tint, endocannabinoid context)
 - [x] Redesign v2 — Legislação (timeline editorial, FAQ accordion, sidebar)
 - [x] Redesign v2 — Associações (search bar, sidebar filtros, cards expandidos)
-- [x] Dados de tratamentos centralizados (src/data/treatments.ts — 8 condições)
-- [x] SVGs ilustrativos por condição (public/treatments/)
+- [x] Dados de tratamentos centralizados (src/data/treatments.ts — 8 condições + treatment-categories.ts — 4 categorias)
+- [x] SVGs ilustrativos por condição (public/treatments/) + imagens WebP nos cards
+- [x] Ícones SVG no catálogo e quiz (substituiu emojis)
 - [ ] Upload real de documentos (S3)
 - [ ] Integrar catálogo com API real (substituir sample-products.ts)
-- [ ] Imagens definitivas para tratamentos (usar prompts em docs/image-generation-prompts.md)
 - [ ] Diretório de médicos (/medicos) + perfil (/medicos/:slug)
 - [ ] Páginas de detalhe para novas condições (artrite, endometriose, náuseas quimio, dor oncológica)
 
@@ -358,9 +376,10 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] Status granulares: onboardingStatus, documentsStatus no User
 - [x] Painel admin: list, detail, approve/reject docs, approve/reject user, delete
 - [x] Seed de permissões e user admin
-- [ ] Módulos completos: strains, products, memberships
+- [ ] Módulo completo de associações: CRUD produtos, gestão de membros, configuração de anuidade
 - [ ] Endpoint de vínculo com associação (POST /associations/:id/link)
 - [ ] Endpoints de médicos (GET /doctors, GET /doctors/:id)
 - [ ] Notificações por e-mail (Resend)
 - [ ] Upload S3 com URLs assinadas
 - [ ] Seed de dados (associações reais: Aliança Medicinal, AMME Medicinal)
+- [ ] Role `association` + permissões (association_catalog:*, association_members:*, association_profile:*)
