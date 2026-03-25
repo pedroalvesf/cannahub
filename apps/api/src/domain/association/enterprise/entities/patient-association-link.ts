@@ -10,6 +10,9 @@ export interface PatientAssociationLinkProps {
   approvedByUserId?: UniqueEntityID;
   startDate?: Date;
   endDate?: Date;
+  feeStatus?: string; // pending | paid | overdue | exempt
+  feeExpiresAt?: Date;
+  feePaidAt?: Date;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -41,6 +44,18 @@ export class PatientAssociationLink extends Entity<PatientAssociationLinkProps> 
 
   get endDate() {
     return this.props.endDate;
+  }
+
+  get feeStatus() {
+    return this.props.feeStatus;
+  }
+
+  get feeExpiresAt() {
+    return this.props.feeExpiresAt;
+  }
+
+  get feePaidAt() {
+    return this.props.feePaidAt;
   }
 
   get createdAt() {

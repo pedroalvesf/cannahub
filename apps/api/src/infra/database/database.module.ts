@@ -46,6 +46,10 @@ import { AssociationMembersRepository } from '@/domain/association/application/r
 import { PrismaAssociationMembersRepository } from './prisma/repositories/prisma-association-members-repository';
 import { PatientAssociationLinksRepository } from '@/domain/association/application/repositories/patient-association-links-repository';
 import { PrismaPatientAssociationLinksRepository } from './prisma/repositories/prisma-patient-association-links-repository';
+import { ProductsRepository } from '@/domain/association/application/repositories/products-repository';
+import { PrismaProductsRepository } from './prisma/repositories/prisma-products-repository';
+import { ProductVariantsRepository } from '@/domain/association/application/repositories/product-variants-repository';
+import { PrismaProductVariantsRepository } from './prisma/repositories/prisma-product-variants-repository';
 
 @Global()
 @Module({
@@ -126,6 +130,14 @@ import { PrismaPatientAssociationLinksRepository } from './prisma/repositories/p
       provide: PatientAssociationLinksRepository,
       useClass: PrismaPatientAssociationLinksRepository,
     },
+    {
+      provide: ProductsRepository,
+      useClass: PrismaProductsRepository,
+    },
+    {
+      provide: ProductVariantsRepository,
+      useClass: PrismaProductVariantsRepository,
+    },
     // Address
     {
       provide: AddressesRepository,
@@ -155,6 +167,8 @@ import { PrismaPatientAssociationLinksRepository } from './prisma/repositories/p
     AssociationsRepository,
     AssociationMembersRepository,
     PatientAssociationLinksRepository,
+    ProductsRepository,
+    ProductVariantsRepository,
     // Address
     AddressesRepository,
   ],

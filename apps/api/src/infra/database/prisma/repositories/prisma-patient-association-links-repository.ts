@@ -49,6 +49,18 @@ export class PrismaPatientAssociationLinksRepository
       : null;
   }
 
+  async countByAssociationId(
+    associationId: string,
+    status?: string,
+  ): Promise<number> {
+    return this.prisma.patientAssociationLink.count({
+      where: {
+        associationId,
+        ...(status ? { status } : {}),
+      },
+    });
+  }
+
   async create(link: PatientAssociationLink): Promise<void> {
     const data = PrismaPatientAssociationLinkMapper.toPrisma(link);
     await this.prisma.patientAssociationLink.create({ data });

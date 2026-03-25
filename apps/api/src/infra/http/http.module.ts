@@ -28,9 +28,23 @@ import { ListPermissionsController } from './controllers/auth/list-permissions.c
 // Controllers - Profile
 import { UpdateProfileController } from './controllers/auth/update-profile.controller';
 
-// Controllers - Associations
+// Controllers - Associations (public)
 import { ListAssociationsController } from './controllers/association/list-associations.controller';
 import { GetAssociationController } from './controllers/association/get-association.controller';
+import { RequestAssociationLinkController } from './controllers/association/request-link.controller';
+
+// Controllers - Association Panel
+import { AssociationDashboardController } from './controllers/association/association-dashboard.controller';
+import { AssociationListProductsController } from './controllers/association/list-products.controller';
+import { AssociationCreateProductController } from './controllers/association/create-product.controller';
+import { AssociationUpdateProductController } from './controllers/association/update-product.controller';
+import { AssociationDeleteProductController } from './controllers/association/delete-product.controller';
+import { AssociationListMembersController } from './controllers/association/list-members.controller';
+import { AssociationApproveLinkController } from './controllers/association/approve-link.controller';
+import { AssociationRejectLinkController } from './controllers/association/reject-link.controller';
+import { AssociationRemoveMemberController } from './controllers/association/remove-member.controller';
+import { AssociationGetProfileController } from './controllers/association/get-profile.controller';
+import { AssociationUpdateProfileController } from './controllers/association/update-profile.controller';
 
 // Controllers - Documents
 import { ListDocumentsController } from './controllers/patient/list-documents.controller';
@@ -79,6 +93,19 @@ import { UpdateProfileUseCase } from '@/domain/auth/application/use-cases/update
 // Use Cases - Associations
 import { ListAssociationsUseCase } from '@/domain/association/application/use-cases/list-associations';
 import { GetAssociationByIdUseCase } from '@/domain/association/application/use-cases/get-association-by-id';
+import { GetUserAssociationUseCase } from '@/domain/association/application/use-cases/get-user-association';
+import { ListAssociationProductsUseCase } from '@/domain/association/application/use-cases/list-association-products';
+import { CreateProductUseCase } from '@/domain/association/application/use-cases/create-product';
+import { UpdateProductUseCase } from '@/domain/association/application/use-cases/update-product';
+import { DeleteProductUseCase } from '@/domain/association/application/use-cases/delete-product';
+import { ListAssociationLinksUseCase } from '@/domain/association/application/use-cases/list-association-links';
+import { ApproveLinkRequestUseCase } from '@/domain/association/application/use-cases/approve-link-request';
+import { RejectLinkRequestUseCase } from '@/domain/association/application/use-cases/reject-link-request';
+import { RemoveMemberUseCase } from '@/domain/association/application/use-cases/remove-member';
+import { GetAssociationProfileUseCase } from '@/domain/association/application/use-cases/get-association-profile';
+import { UpdateAssociationProfileUseCase } from '@/domain/association/application/use-cases/update-association-profile';
+import { GetAssociationDashboardUseCase } from '@/domain/association/application/use-cases/get-association-dashboard';
+import { RequestAssociationLinkUseCase } from '@/domain/association/application/use-cases/request-association-link';
 
 // Use Cases - Documents
 import { ListUserDocumentsUseCase } from '@/domain/patient/application/use-cases/list-user-documents';
@@ -126,9 +153,23 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     // Profile Controllers
     UpdateProfileController,
 
-    // Association Controllers
+    // Association Controllers (public)
     ListAssociationsController,
     GetAssociationController,
+    RequestAssociationLinkController,
+
+    // Association Panel Controllers
+    AssociationDashboardController,
+    AssociationListProductsController,
+    AssociationCreateProductController,
+    AssociationUpdateProductController,
+    AssociationDeleteProductController,
+    AssociationListMembersController,
+    AssociationApproveLinkController,
+    AssociationRejectLinkController,
+    AssociationRemoveMemberController,
+    AssociationGetProfileController,
+    AssociationUpdateProfileController,
 
     // Admin Controllers
     AdminListUsersController,
@@ -178,6 +219,19 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     // Association Use Cases
     ListAssociationsUseCase,
     GetAssociationByIdUseCase,
+    GetUserAssociationUseCase,
+    ListAssociationProductsUseCase,
+    CreateProductUseCase,
+    UpdateProductUseCase,
+    DeleteProductUseCase,
+    ListAssociationLinksUseCase,
+    ApproveLinkRequestUseCase,
+    RejectLinkRequestUseCase,
+    RemoveMemberUseCase,
+    GetAssociationProfileUseCase,
+    UpdateAssociationProfileUseCase,
+    GetAssociationDashboardUseCase,
+    RequestAssociationLinkUseCase,
 
     // Admin Use Cases
     ListUsersUseCase,

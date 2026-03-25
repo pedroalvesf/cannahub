@@ -39,6 +39,17 @@ export class InMemoryPatientAssociationLinksRepository
     return item ?? null;
   }
 
+  async countByAssociationId(
+    associationId: string,
+    status?: string,
+  ): Promise<number> {
+    return this.items.filter(
+      (i) =>
+        i.associationId.toString() === associationId &&
+        (status ? i.status === status : true),
+    ).length;
+  }
+
   async create(link: PatientAssociationLink): Promise<void> {
     this.items.push(link);
   }

@@ -23,6 +23,9 @@ export class PrismaAssociationMapper {
         website: raw.website ?? undefined,
         logoUrl: raw.logoUrl ?? undefined,
         claimedAt: raw.claimedAt ?? undefined,
+        membershipFee: raw.membershipFee ? Number(raw.membershipFee) : undefined,
+        membershipPeriod: raw.membershipPeriod ?? undefined,
+        membershipDescription: raw.membershipDescription ?? undefined,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -49,6 +52,9 @@ export class PrismaAssociationMapper {
       website: association.website,
       logoUrl: association.logoUrl,
       claimedAt: association.claimedAt,
+      membershipFee: association.membershipFee,
+      membershipPeriod: association.membershipPeriod,
+      membershipDescription: association.membershipDescription,
       createdAt: association.createdAt,
       updatedAt: association.updatedAt,
     };
@@ -72,6 +78,9 @@ export class PrismaAssociationMapper {
       website: association.website,
       logoUrl: association.logoUrl,
       claimedAt: association.claimedAt,
+      membershipFee: association.membershipFee,
+      membershipPeriod: association.membershipPeriod,
+      membershipDescription: association.membershipDescription,
       updatedAt: association.updatedAt,
     };
   }

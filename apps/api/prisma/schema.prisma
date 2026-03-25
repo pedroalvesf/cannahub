@@ -383,26 +383,30 @@ model ProfessionalProfile {
 // --- Association Domain ---
 
 model Association {
-  id                String    @id @default(uuid())
-  name              String
-  cnpj              String    @unique
-  status            String    @default("pending_verification") // AssociationStatus enum
-  description       String?
-  region            String
-  state             String
-  city              String
-  profileTypes      String[]  // AccountType enums this association serves
-  hasAssistedAccess Boolean   @default(false)
-  contactEmail      String
-  contactPhone      String?
-  website           String?
-  logoUrl           String?
-  claimedAt         DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  id                    String    @id @default(uuid())
+  name                  String
+  cnpj                  String    @unique
+  status                String    @default("pending_verification") // AssociationStatus enum
+  description           String?
+  region                String
+  state                 String
+  city                  String
+  profileTypes          String[]  // AccountType enums this association serves
+  hasAssistedAccess     Boolean   @default(false)
+  contactEmail          String
+  contactPhone          String?
+  website               String?
+  logoUrl               String?
+  claimedAt             DateTime?
+  membershipFee         Decimal?  @db.Decimal(10, 2)
+  membershipPeriod      String?   // annual | semiannual | monthly | none
+  membershipDescription String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   Members           AssociationMember[]
   PatientLinks      PatientAssociationLink[]
+  Products          Product[]
 
   @@index([cnpj])
   @@index([region])
@@ -435,6 +439,9 @@ model PatientAssociationLink {
   approvedByUserId  String?
   startDate         DateTime?
   endDate           DateTime?
+  feeStatus         String?   // pending | paid | overdue | exempt
+  feeExpiresAt      DateTime?
+  feePaidAt         DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -446,4 +453,43 @@ model PatientAssociationLink {
   @@index([associationId])
   @@index([patientId])
   @@index([status])
+}
+
+// --- Product Domain ---
+
+model Product {
+  id              String   @id @default(uuid())
+  associationId   String
+  name            String
+  description     String?
+  type            String   // Oleo, Topico, Capsula, Gummy, Flor
+  category        String   // Oleo CBD, Oleo THC, Oleo Misto, Oleo Especial, Pomada, Creme, Capsula, Gummy, Flor
+  concentration   String?  // e.g. "15mg/ml"
+  cbd             Float    @default(0)
+  thc             Float    @default(0)
+  dosagePerDrop   String?
+  inStock         Boolean  @default(true)
+  imageUrl        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  Association     Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  Variants        ProductVariant[]
+
+  @@index([associationId])
+  @@index([type])
+  @@index([category])
+}
+
+model ProductVariant {
+  id        String   @id @default(uuid())
+  productId String
+  volume    String   // e.g. "30ml", "10ml"
+  price     Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
 }

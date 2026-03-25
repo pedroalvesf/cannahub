@@ -12,6 +12,10 @@ export abstract class PatientAssociationLinksRepository {
     associationId: string,
     patientId: string,
   ): Promise<PatientAssociationLink | null>;
+  abstract countByAssociationId(
+    associationId: string,
+    status?: string,
+  ): Promise<number>;
   abstract create(link: PatientAssociationLink): Promise<void>;
   abstract save(link: PatientAssociationLink): Promise<void>;
 }

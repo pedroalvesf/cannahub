@@ -17,6 +17,9 @@ export interface AssociationProps {
   website?: string;
   logoUrl?: string;
   claimedAt?: Date;
+  membershipFee?: number;
+  membershipPeriod?: string; // annual | semiannual | monthly | none
+  membershipDescription?: string;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -78,6 +81,18 @@ export class Association extends AggregateRoot<AssociationProps> {
     return this.props.claimedAt;
   }
 
+  get membershipFee() {
+    return this.props.membershipFee;
+  }
+
+  get membershipPeriod() {
+    return this.props.membershipPeriod;
+  }
+
+  get membershipDescription() {
+    return this.props.membershipDescription;
+  }
+
   get createdAt() {
     return this.props.createdAt;
   }
@@ -98,6 +113,25 @@ export class Association extends AggregateRoot<AssociationProps> {
 
   claim() {
     this.props.claimedAt = new Date();
+    this.touch();
+  }
+
+  updateProfile(
+    fields: Partial<
+      Pick<
+        AssociationProps,
+        | 'description'
+        | 'contactEmail'
+        | 'contactPhone'
+        | 'website'
+        | 'logoUrl'
+        | 'membershipFee'
+        | 'membershipPeriod'
+        | 'membershipDescription'
+      >
+    >,
+  ) {
+    Object.assign(this.props, fields);
     this.touch();
   }
 

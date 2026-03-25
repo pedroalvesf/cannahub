@@ -18,6 +18,9 @@ export class PrismaPatientAssociationLinkMapper {
           : undefined,
         startDate: raw.startDate ?? undefined,
         endDate: raw.endDate ?? undefined,
+        feeStatus: raw.feeStatus ?? undefined,
+        feeExpiresAt: raw.feeExpiresAt ?? undefined,
+        feePaidAt: raw.feePaidAt ?? undefined,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -37,6 +40,9 @@ export class PrismaPatientAssociationLinkMapper {
       approvedByUserId: link.approvedByUserId?.toString(),
       startDate: link.startDate,
       endDate: link.endDate,
+      feeStatus: link.feeStatus,
+      feeExpiresAt: link.feeExpiresAt,
+      feePaidAt: link.feePaidAt,
       createdAt: link.createdAt,
       updatedAt: link.updatedAt,
     };
@@ -50,6 +56,9 @@ export class PrismaPatientAssociationLinkMapper {
       approvedByUserId: link.approvedByUserId?.toString(),
       startDate: link.startDate,
       endDate: link.endDate,
+      feeStatus: link.feeStatus,
+      feeExpiresAt: link.feeExpiresAt,
+      feePaidAt: link.feePaidAt,
       updatedAt: link.updatedAt,
     };
   }
