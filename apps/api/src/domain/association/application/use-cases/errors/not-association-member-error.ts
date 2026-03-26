@@ -1,5 +1,5 @@
 export class NotAnAssociationMemberError extends Error {
   constructor() {
-    super('User is not a member of any association.');
+    super('Usuário não é membro de nenhuma associação.');
   }
 }

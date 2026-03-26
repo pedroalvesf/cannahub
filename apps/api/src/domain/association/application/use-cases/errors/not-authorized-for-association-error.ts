@@ -1,5 +1,5 @@
 export class NotAuthorizedForAssociationError extends Error {
   constructor() {
-    super('You are not authorized to perform this action on this association.');
+    super('Você não tem permissão para realizar esta ação nesta associação.');
   }
 }

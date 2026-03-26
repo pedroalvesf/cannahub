@@ -1,5 +1,9 @@
 export class AssociationNotFoundError extends Error {
   constructor(id?: string) {
-    super(id ? `Association "${id}" not found.` : 'Association not found.');
+    super(
+      id
+        ? `Associação não encontrada (ID: ${id}). Verifique se a associação está cadastrada no sistema.`
+        : 'Associação não encontrada.',
+    );
   }
 }

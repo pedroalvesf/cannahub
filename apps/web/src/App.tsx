@@ -25,6 +25,10 @@ const TreatmentCategoryPage = lazy(() => import('@/pages/treatment-category').th
 const LegislationPage = lazy(() => import('@/pages/legislation').then(m => ({ default: m.LegislationPage })))
 const AdminUsersPage = lazy(() => import('@/pages/admin/users').then(m => ({ default: m.AdminUsersPage })))
 const AdminUserDetailPage = lazy(() => import('@/pages/admin/user-detail').then(m => ({ default: m.AdminUserDetailPage })))
+const AssociationDashboardPage = lazy(() => import('@/pages/association-panel/dashboard').then(m => ({ default: m.AssociationDashboardPage })))
+const AssociationProductsPage = lazy(() => import('@/pages/association-panel/products').then(m => ({ default: m.AssociationProductsPage })))
+const AssociationMembersPage = lazy(() => import('@/pages/association-panel/members').then(m => ({ default: m.AssociationMembersPage })))
+const AssociationProfilePage = lazy(() => import('@/pages/association-panel/profile').then(m => ({ default: m.AssociationProfilePage })))
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -32,6 +36,23 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!isAuthenticated) {
     return <Navigate to={`/cadastro?redirect=${encodeURIComponent(location.pathname)}`} replace />
+  }
+
+  return <>{children}</>
+}
+
+function AssociationRoute({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const user = useAuthStore((s) => s.user)
+  const location = useLocation()
+
+  if (!isAuthenticated) {
+    return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />
+  }
+
+  const isAssociation = user?.roles?.includes('association')
+  if (!isAssociation) {
+    return <Navigate to="/painel" replace />
   }
 
   return <>{children}</>
@@ -108,6 +129,10 @@ function AppContent() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<RegisterPage />} />
       <Route path="/painel" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path="/associacao/painel" element={<AssociationRoute><AssociationDashboardPage /></AssociationRoute>} />
+      <Route path="/associacao/produtos" element={<AssociationRoute><AssociationProductsPage /></AssociationRoute>} />
+      <Route path="/associacao/associados" element={<AssociationRoute><AssociationMembersPage /></AssociationRoute>} />
+      <Route path="/associacao/perfil" element={<AssociationRoute><AssociationProfilePage /></AssociationRoute>} />
       <Route path="/admin/usuarios" element={<AdminRoute><AdminUsersPage /></AdminRoute>} />
       <Route path="/admin/usuarios/:id" element={<AdminRoute><AdminUserDetailPage /></AdminRoute>} />
     </Routes>

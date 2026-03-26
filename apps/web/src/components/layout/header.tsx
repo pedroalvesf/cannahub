@@ -7,6 +7,7 @@ export function Header() {
   const { isAuthenticated, logout, user } = useAuthStore()
   const [mobileOpen, setMobileOpen] = useState(false)
   const isAdmin = user?.roles?.includes('admin')
+  const isAssociation = user?.roles?.includes('association')
 
   function handleLogout() {
     logout()
@@ -74,6 +75,14 @@ export function Header() {
                 className="text-sm font-medium text-amber-700 dark:text-amber-400 px-4 py-2 rounded-btn hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors no-underline"
               >
                 Admin
+              </Link>
+            )}
+            {isAssociation && (
+              <Link
+                to="/associacao/painel"
+                className="text-sm font-medium text-brand-green-deep dark:text-brand-green-light px-4 py-2 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors no-underline"
+              >
+                Associação
               </Link>
             )}
             <Link
@@ -165,6 +174,15 @@ export function Header() {
                     className="text-[15px] font-medium text-amber-700 dark:text-amber-400 py-2 no-underline"
                   >
                     Admin
+                  </Link>
+                )}
+                {isAssociation && (
+                  <Link
+                    to="/associacao/painel"
+                    onClick={() => setMobileOpen(false)}
+                    className="text-[15px] font-medium text-brand-green-deep dark:text-brand-green-light py-2 no-underline"
+                  >
+                    Painel Associação
                   </Link>
                 )}
                 <Link

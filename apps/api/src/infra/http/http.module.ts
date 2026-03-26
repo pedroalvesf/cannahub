@@ -32,6 +32,8 @@ import { UpdateProfileController } from './controllers/auth/update-profile.contr
 import { ListAssociationsController } from './controllers/association/list-associations.controller';
 import { GetAssociationController } from './controllers/association/get-association.controller';
 import { RequestAssociationLinkController } from './controllers/association/request-link.controller';
+import { ListMyLinksController } from './controllers/association/list-my-links.controller';
+import { GetAssociationProductTypesController } from './controllers/association/get-association-product-types.controller';
 
 // Controllers - Association Panel
 import { AssociationDashboardController } from './controllers/association/association-dashboard.controller';
@@ -106,6 +108,7 @@ import { GetAssociationProfileUseCase } from '@/domain/association/application/u
 import { UpdateAssociationProfileUseCase } from '@/domain/association/application/use-cases/update-association-profile';
 import { GetAssociationDashboardUseCase } from '@/domain/association/application/use-cases/get-association-dashboard';
 import { RequestAssociationLinkUseCase } from '@/domain/association/application/use-cases/request-association-link';
+import { ListMyLinksUseCase } from '@/domain/association/application/use-cases/list-my-links';
 
 // Use Cases - Documents
 import { ListUserDocumentsUseCase } from '@/domain/patient/application/use-cases/list-user-documents';
@@ -157,6 +160,8 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     ListAssociationsController,
     GetAssociationController,
     RequestAssociationLinkController,
+    ListMyLinksController,
+    GetAssociationProductTypesController,
 
     // Association Panel Controllers
     AssociationDashboardController,
@@ -232,6 +237,7 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     UpdateAssociationProfileUseCase,
     GetAssociationDashboardUseCase,
     RequestAssociationLinkUseCase,
+    ListMyLinksUseCase,
 
     // Admin Use Cases
     ListUsersUseCase,

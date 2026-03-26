@@ -131,10 +131,14 @@ async function main() {
     })
     console.log(`\nUser created: ${user.id} (${user.email})`)
 
+    // ID must match sample-associations.ts for frontend compatibility
+    const ALIANCA_ID = 'a1b2c3d4-9999-4000-8000-000000000009'
+
     const association = await prisma.association.upsert({
       where: { cnpj: '12345678000101' },
-      update: {},
+      update: { id: ALIANCA_ID },
       create: {
+        id: ALIANCA_ID,
         name: 'Aliança Medicinal',
         cnpj: '12345678000101',
         status: 'verified',

@@ -1,16 +1,32 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Header } from '@/components/layout/header'
 import { useAuthStore } from '@/stores/auth-store'
 import { sampleAssociations } from '@/data/sample-associations'
 import { sampleProducts } from '@/data/sample-products'
+import { useRequestAssociationLink, useMyLinks, useAssociationProductTypes } from '@/hooks/use-association-link'
 
 export function AssociationDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const { user, isAuthenticated } = useAuthStore()
   const accountStatus = user?.accountStatus ?? 'pending'
+  const requestLink = useRequestAssociationLink()
+  const { data: myLinksData } = useMyLinks()
+  const [linkError, setLinkError] = useState('')
 
   const association = sampleAssociations.find((a) => a.slug === slug)
   const hasCatalog = sampleProducts.some((p) => p.associationSlug === slug)
+
+  // Fetch real product types from API (falls back to sample data)
+  const { data: productTypesData } = useAssociationProductTypes(association?.id)
+  const productTypes = productTypesData?.types ?? association?.productTypes ?? []
+  const hasRealProducts = (productTypesData?.totalProducts ?? 0) > 0
+
+  // Check if user already has a link with this association
+  const existingLink = myLinksData?.links.find(
+    (l) => l.associationId === association?.id,
+  )
+  const linkStatus = existingLink?.status // requested | active | rejected | cancelled
 
   if (!association) {
     return (
@@ -122,49 +138,74 @@ export function AssociationDetailPage() {
               <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-brand-green-mid dark:text-brand-green-light">
                 Serviços CannHub
               </p>
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-brand-green-deep flex items-center justify-center shrink-0 mt-0.5">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-white">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-[13px] font-medium text-brand-green-deep dark:text-white leading-tight">
-                    Não tem receita médica?
-                  </p>
-                  <p className="text-[12px] text-brand-muted dark:text-gray-400 leading-relaxed mt-0.5">
-                    A CannHub conecta você a médicos prescritores parceiros. Teleconsulta disponível para todo o Brasil.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-brand-green-deep flex items-center justify-center shrink-0 mt-0.5">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-white">
-                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-[13px] font-medium text-brand-green-deep dark:text-white leading-tight">
-                    Primeiro contato com cannabis medicinal?
-                  </p>
-                  <p className="text-[12px] text-brand-muted dark:text-gray-400 leading-relaxed mt-0.5">
-                    Nosso acolhimento guiado avalia seu perfil clínico e orienta o melhor caminho para o seu tratamento.
-                  </p>
-                </div>
-              </div>
-              <Link
-                to="/acolhimento"
-                className="inline-flex text-[13px] font-semibold text-brand-green-deep dark:text-brand-green-light hover:underline no-underline mt-1"
-              >
-                Iniciar acolhimento →
-              </Link>
+
+              {accountStatus === 'approved' ? (
+                <>
+                  {/* Advanced services for approved patients */}
+                  <ServiceItem
+                    icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-white"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>}
+                    title="Acompanhamento jurídico"
+                    description="Orientação legal para habeas corpus, cultivo próprio e importação via Anvisa."
+                  />
+                  <ServiceItem
+                    icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-white"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20c4 0 8.68-3.52 9-12z" /><path d="M2 2c0 6 4 8.5 6 10" /></svg>}
+                    title="Cultivo próprio"
+                    description="Suporte para obtenção de autorização judicial de cultivo para uso medicinal."
+                  />
+                  <ServiceItem
+                    icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-white"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /></svg>}
+                    title="Importação via Anvisa"
+                    description="Orientação completa para importar produtos de cannabis com autorização sanitária."
+                  />
+                  <Link
+                    to="/legislacao"
+                    className="inline-flex text-[13px] font-semibold text-brand-green-deep dark:text-brand-green-light hover:underline no-underline mt-1"
+                  >
+                    Saiba mais sobre seus direitos →
+                  </Link>
+                </>
+              ) : isAuthenticated && user?.onboardingStatus === 'completed' ? (
+                <>
+                  {/* Onboarding done, needs docs */}
+                  <ServiceItem
+                    icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-white"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>}
+                    title="Envie seus documentos"
+                    description="Falta pouco! Envie receita, laudo e identidade para concluir seu cadastro."
+                  />
+                  <Link
+                    to="/documentos"
+                    className="inline-flex text-[13px] font-semibold text-brand-green-deep dark:text-brand-green-light hover:underline no-underline mt-1"
+                  >
+                    Enviar documentos →
+                  </Link>
+                </>
+              ) : (
+                <>
+                  {/* New user or onboarding not done */}
+                  <ServiceItem
+                    icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-white"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>}
+                    title="Não tem receita médica?"
+                    description="A CannHub conecta você a médicos prescritores parceiros. Teleconsulta disponível para todo o Brasil."
+                  />
+                  <ServiceItem
+                    icon={<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-brand-white"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg>}
+                    title="Primeiro contato com cannabis medicinal?"
+                    description="Nosso acolhimento guiado avalia seu perfil clínico e orienta o melhor caminho para o seu tratamento."
+                  />
+                  <Link
+                    to={isAuthenticated ? '/acolhimento' : '/cadastro'}
+                    className="inline-flex text-[13px] font-semibold text-brand-green-deep dark:text-brand-green-light hover:underline no-underline mt-1"
+                  >
+                    {isAuthenticated ? 'Iniciar acolhimento →' : 'Criar conta →'}
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Products */}
-            <Card title="Produtos disponíveis">
+            <Card title={`Produtos disponíveis${hasRealProducts ? ` (${productTypesData?.totalProducts})` : ''}`}>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {association.productTypes.map((product) => (
+                {productTypes.map((product) => (
                   <div key={product} className="flex items-center gap-3 px-4 py-3 rounded-xl bg-brand-cream/50 dark:bg-gray-800/50 border border-brand-cream-dark/30 dark:border-gray-700/30">
                     <div className="w-8 h-8 rounded-full bg-brand-green-pale dark:bg-gray-700 flex items-center justify-center shrink-0">
                       <ProductIcon type={product} />
@@ -175,7 +216,7 @@ export function AssociationDetailPage() {
                   </div>
                 ))}
               </div>
-              {hasCatalog && (
+              {(hasCatalog || hasRealProducts) && (
                 <div className="mt-4 pt-4 border-t border-brand-cream-dark/30 dark:border-gray-800/50">
                   <Link
                     to={`/associacoes/${slug}/catalogo`}
@@ -238,12 +279,63 @@ export function AssociationDetailPage() {
                       <polyline points="22 4 12 14.01 9 11.01" />
                     </svg>
                   </div>
-                  <p className="text-[13px] text-brand-muted dark:text-gray-500 mb-4">
-                    Seu cadastro está aprovado. Solicite vínculo para ter acesso aos produtos.
-                  </p>
-                  <button className="w-full text-[14px] font-semibold text-brand-white bg-brand-green-deep py-3 rounded-btn hover:bg-brand-green-mid transition-colors">
-                    Solicitar Vínculo
-                  </button>
+
+                  {linkStatus === 'active' ? (
+                    <>
+                      <p className="text-[13px] text-brand-green-deep dark:text-brand-green-light font-medium mb-3">
+                        Você está vinculado a esta associação
+                      </p>
+                      {hasCatalog && (
+                        <Link
+                          to={`/associacoes/${slug}/catalogo`}
+                          className="block w-full text-center text-[14px] font-semibold text-brand-white bg-brand-green-deep py-3 rounded-btn hover:bg-brand-green-mid transition-colors no-underline"
+                        >
+                          Ver catálogo com preços
+                        </Link>
+                      )}
+                    </>
+                  ) : linkStatus === 'requested' ? (
+                    <div className="w-full text-[13px] text-amber-700 dark:text-amber-400 font-medium text-center py-3 bg-amber-50 dark:bg-amber-900/20 rounded-btn">
+                      Vínculo solicitado — aguardando aprovação
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-[13px] text-brand-muted dark:text-gray-500 mb-4">
+                        {linkStatus === 'rejected'
+                          ? 'Seu vínculo foi recusado. Você pode tentar novamente.'
+                          : 'Seu cadastro está aprovado. Solicite vínculo para ter acesso aos produtos.'}
+                      </p>
+                      <button
+                        onClick={() => {
+                          if (!association) return
+                          setLinkError('')
+                          requestLink.mutate(association.id, {
+                            onError: (err: any) => {
+                              const msg = err?.response?.data?.message ?? ''
+                              const status = err?.response?.status
+
+                              if (msg.includes('solicitação') || status === 409) {
+                                setLinkError('Você já possui uma solicitação de vínculo com esta associação.')
+                              } else if (status === 404) {
+                                setLinkError('Associação não encontrada. Tente novamente mais tarde.')
+                              } else if (status === 500) {
+                                setLinkError('Erro interno do servidor. Tente novamente mais tarde.')
+                              } else {
+                                setLinkError('Não foi possível solicitar o vínculo. Tente novamente.')
+                              }
+                            },
+                          })
+                        }}
+                        disabled={requestLink.isPending}
+                        className="w-full text-[14px] font-semibold text-brand-white bg-brand-green-deep py-3 rounded-btn hover:bg-brand-green-mid transition-colors disabled:opacity-50"
+                      >
+                        {requestLink.isPending ? 'Solicitando...' : 'Solicitar Vínculo'}
+                      </button>
+                    </>
+                  )}
+                  {linkError && (
+                    <p className="text-[12px] text-red-500 mt-2 text-center">{linkError}</p>
+                  )}
                 </div>
               ) : accountStatus === 'rejected' ? (
                 <div className="text-center">
@@ -428,6 +520,24 @@ function ContactRow({ icon, label, value }: { icon: string; label: string; value
         <p className="text-[11px] text-brand-muted dark:text-gray-500">{label}</p>
         <p className="text-[13px] font-medium text-brand-green-deep dark:text-gray-200 truncate">
           {value}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function ServiceItem({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="w-8 h-8 rounded-full bg-brand-green-deep flex items-center justify-center shrink-0 mt-0.5">
+        {icon}
+      </div>
+      <div>
+        <p className="text-[13px] font-medium text-brand-green-deep dark:text-white leading-tight">
+          {title}
+        </p>
+        <p className="text-[12px] text-brand-muted dark:text-gray-400 leading-relaxed mt-0.5">
+          {description}
         </p>
       </div>
     </div>

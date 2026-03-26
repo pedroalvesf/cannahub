@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/auth-store'
 import { useOnboardingSummary } from '@/hooks/use-onboarding'
 import { useAddress, useSaveAddress } from '@/hooks/use-address'
 import { useUpdateProfile } from '@/hooks/use-profile'
+import { useMyLinks } from '@/hooks/use-association-link'
 import type { AddressData } from '@/hooks/use-address'
 import {
   ACCOUNT_TYPE_LABELS,
@@ -364,6 +365,7 @@ export function DashboardPage() {
   const { data: address, isLoading: addressLoading } = useAddress()
   const saveAddressMutation = useSaveAddress()
   const updateProfileMutation = useUpdateProfile()
+  const { data: myLinksData, isLoading: linksLoading } = useMyLinks()
   const [editingAddress, setEditingAddress] = useState(false)
   const [editingProfile, setEditingProfile] = useState(false)
 
@@ -657,17 +659,58 @@ export function DashboardPage() {
 
           {/* Associations */}
           <SectionCard title="Associações vinculadas">
-            <div className="py-4 text-center">
-              <p className="text-[13.5px] text-brand-muted dark:text-gray-500 mb-4">
-                Após a aprovação dos documentos, você poderá solicitar vínculo com associações
-              </p>
-              <Link
-                to="/associacoes"
-                className="inline-flex text-[13px] font-semibold text-brand-green-deep border border-brand-green-deep dark:border-brand-green-light dark:text-brand-green-light px-6 py-2.5 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors no-underline"
-              >
-                Ver associações
-              </Link>
-            </div>
+            {linksLoading ? (
+              <div className="py-4 text-center text-brand-muted text-[13px]">Carregando...</div>
+            ) : myLinksData?.links && myLinksData.links.length > 0 ? (
+              <div className="space-y-3 py-2">
+                {myLinksData.links.map((link) => (
+                  <div
+                    key={link.id}
+                    className="flex items-center justify-between gap-3 px-4 py-3 bg-brand-off dark:bg-surface-dark rounded-[12px] border border-brand-cream-dark/50 dark:border-gray-700/50"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[14px] font-medium text-brand-text dark:text-white truncate">{link.associationName}</div>
+                      <div className="text-[11px] text-brand-text-xs dark:text-gray-500 mt-0.5">
+                        {link.status === 'active' && `Ativo desde ${new Date(link.startDate ?? link.createdAt).toLocaleDateString('pt-BR')}`}
+                        {link.status === 'requested' && `Solicitado em ${new Date(link.createdAt).toLocaleDateString('pt-BR')}`}
+                        {link.status === 'rejected' && 'Vínculo recusado'}
+                        {link.status === 'cancelled' && 'Vínculo cancelado'}
+                      </div>
+                    </div>
+                    <span className={`shrink-0 px-2.5 py-1 text-[10px] font-semibold rounded-btn ${
+                      link.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                      link.status === 'requested' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
+                      link.status === 'rejected' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' :
+                      'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                    }`}>
+                      {link.status === 'active' ? 'Ativo' : link.status === 'requested' ? 'Pendente' : link.status === 'rejected' ? 'Recusado' : 'Cancelado'}
+                    </span>
+                  </div>
+                ))}
+                <div className="pt-2 text-center">
+                  <Link
+                    to="/associacoes"
+                    className="text-[12px] text-brand-green-deep dark:text-brand-green-light font-medium no-underline hover:underline"
+                  >
+                    Ver mais associações
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="py-4 text-center">
+                <p className="text-[13.5px] text-brand-muted dark:text-gray-500 mb-4">
+                  {user.accountStatus === 'approved'
+                    ? 'Você ainda não possui vínculo com nenhuma associação.'
+                    : 'Após a aprovação dos documentos, você poderá solicitar vínculo com associações.'}
+                </p>
+                <Link
+                  to="/associacoes"
+                  className="inline-flex text-[13px] font-semibold text-brand-green-deep border border-brand-green-deep dark:border-brand-green-light dark:text-brand-green-light px-6 py-2.5 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors no-underline"
+                >
+                  Ver associações
+                </Link>
+              </div>
+            )}
           </SectionCard>
         </div>
       </main>

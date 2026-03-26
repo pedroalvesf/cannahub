@@ -1,5 +1,5 @@
 export class ProductNotFoundError extends Error {
   constructor(id?: string) {
-    super(id ? `Product "${id}" not found.` : 'Product not found.');
+    super(id ? `Produto não encontrado (ID: ${id}).` : 'Produto não encontrado.');
   }
 }
