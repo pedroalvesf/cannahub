@@ -52,7 +52,8 @@ const ACCOUNT_TYPES = [
 export function RegisterPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const redirectTo = searchParams.get('redirect') || '/painel'
+  const rawRedirect = searchParams.get('redirect') || '/painel'
+  const redirectTo = rawRedirect.startsWith('/') ? rawRedirect : '/painel'
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const registerMutation = useRegister()
 

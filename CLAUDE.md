@@ -110,7 +110,7 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 * Step condicional: "Como você acessa cannabis atualmente?" — aparece só quando experiência !== 'never'
 ```
 
-## Rotas do frontend (17 páginas)
+## Rotas do frontend (21 páginas)
 
 | Rota | Página | Auth | Guard |
 |------|--------|------|-------|
@@ -120,20 +120,25 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 | `/login` | Login | Não | — |
 | `/acolhimento` | Onboarding (5-6 steps, multi-select, condicional) | Sim | ProtectedRoute |
 | `/documentos` | Upload de documentos | Sim | ProtectedRoute |
-| `/painel` | Dashboard do paciente | Sim | ProtectedRoute |
+| `/painel` | Dashboard do paciente (associações vinculadas dinâmicas) | Sim | ProtectedRoute |
 | `/tratamentos` | Hub de tratamentos v2 (filter chips, grid assimétrico, proof cards) | Não | — |
 | `/tratamentos/categoria/:slug` | Categoria de tratamento (neurológicas, saúde mental, dor, oncologia) | Não | — |
 | `/tratamentos/:slug` | Detalhe por condição (barra nav, hero com stat, sidebar TOC) | Não | — |
 | `/legislacao` | Legislação v2 (timeline editorial, FAQ accordion, sidebar) | Não | — |
 | `/catalogo` | Catálogo unificado (ícones SVG por tipo, sem emojis) | Não | — |
 | `/associacoes` | Associações v2 (search bar, sidebar filtros, cards expandidos) | Não | — |
-| `/associacoes/:slug` | Detalhe da associação (4 estados auth) | Não | — |
+| `/associacoes/:slug` | Detalhe da associação (vínculo dinâmico, serviços contextuais, produtos da API) | Não | — |
 | `/associacoes/:slug/catalogo` | Catálogo da associação (preço restrito a aprovados, ícones SVG) | Não | — |
+| `/associacao/painel` | Painel associação — dashboard métricas | Sim | AssociationRoute (role: association) |
+| `/associacao/produtos` | Painel associação — CRUD produtos (cards por categoria, edição inline) | Sim | AssociationRoute |
+| `/associacao/associados` | Painel associação — gestão de vínculos (aprovar/rejeitar/remover) | Sim | AssociationRoute |
+| `/associacao/perfil` | Painel associação — edição perfil + config anuidade | Sim | AssociationRoute |
 | `/admin/usuarios` | Painel admin — lista de usuários | Sim | AdminRoute (role: admin) |
 | `/admin/usuarios/:id` | Painel admin — detalhe do usuário | Sim | AdminRoute (role: admin) |
 
 ### Guards do frontend
 - **ProtectedRoute**: verifica `isAuthenticated`, redireciona para `/cadastro`
+- **AssociationRoute**: verifica `isAuthenticated` + `user.roles.includes('association')`, redireciona para `/painel`
 - **AdminRoute**: verifica `isAuthenticated` + `user.roles.includes('admin')`, redireciona para `/painel`
 
 ## Endpoints da API
@@ -164,10 +169,26 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 - `POST /onboarding/escalate` — escalar pra humano
 - `POST /onboarding/extract` — extrair campos com IA
 
-### Associations & Documents
+### Associations & Documents (público)
 - `GET /associations` — listar associações (@Public, filtros: region, state, hasAssistedAccess)
 - `GET /associations/:id` — detalhe associação (@Public)
+- `GET /associations/:id/product-types` — tipos de produto da associação (@Public)
+- `POST /associations/:id/link` — paciente solicita vínculo (JWT, cria Patient se não existir)
+- `GET /my-links` — vínculos do paciente logado com nome da associação (JWT)
 - `GET /documents` — listar documentos do user (JWT)
+
+### Painel da Associação (requer role association + permissões)
+- `GET /association/dashboard` — métricas (membros, pendentes, produtos) — `association_profile:read`
+- `GET /association/products` — listar produtos com variantes — `association_catalog:read`
+- `POST /association/products` — criar produto + variantes — `association_catalog:create`
+- `PATCH /association/products/:id` — atualizar produto + substituir variantes — `association_catalog:update`
+- `DELETE /association/products/:id` — excluir produto — `association_catalog:delete`
+- `GET /association/members` — listar vínculos (filtro por status) — `association_members:read`
+- `PATCH /association/members/:id/approve` — aprovar vínculo — `association_members:update`
+- `PATCH /association/members/:id/reject` — rejeitar vínculo — `association_members:update`
+- `DELETE /association/members/:id` — cancelar membro ativo — `association_members:update`
+- `GET /association/profile` — perfil da associação — `association_profile:read`
+- `PATCH /association/profile` — atualizar perfil + config anuidade — `association_profile:update`
 
 ### Admin (requer role admin + permissões)
 - `GET /admin/users` — listar usuários (filtros, busca, paginação) — `admin_users:read`
@@ -183,6 +204,7 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 | Role | Slug | Level | Descrição |
 |------|------|-------|-----------|
 | Admin | `admin` | 100 | Acesso ao painel de aprovação |
+| Association | `association` | 50 | Acesso ao painel de gestão da associação |
 
 ### Permissões existentes
 | Permissão | Resource | Action |
@@ -191,23 +213,34 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 | `admin_users:update` | admin_users | update |
 | `admin_documents:read` | admin_documents | read |
 | `admin_documents:update` | admin_documents | update |
+| `association_catalog:read` | association_catalog | read |
+| `association_catalog:create` | association_catalog | create |
+| `association_catalog:update` | association_catalog | update |
+| `association_catalog:delete` | association_catalog | delete |
+| `association_members:read` | association_members | read |
+| `association_members:update` | association_members | update |
+| `association_profile:read` | association_profile | read |
+| `association_profile:update` | association_profile | update |
 
-### Seed do admin
+### Seeds
 ```bash
 cd apps/api
-npx tsx prisma/seed-admin-user.ts          # Cria user adm@teste.com + role + permissões
-npx tsx prisma/seed-admin.ts email@ex.com  # Promove user existente para admin
+npx tsx prisma/seed-admin-user.ts                    # Cria admin adm@teste.com + role + permissões
+npx tsx prisma/seed-admin.ts email@ex.com            # Promove user existente para admin
+npx tsx prisma/seed-association-user.ts               # Cria associacaoalianca@teste.com + Aliança Medicinal + role
+npx tsx prisma/seed-association-user.ts email assocId  # Promove user existente para association
+npx tsx prisma/seed-products.ts                       # Cria 12 produtos da Aliança Medicinal
 ```
 
-### Tipos de usuário (futuro RBAC)
-| Tipo | accountType | Role (futuro) | Acesso |
-|------|-------------|---------------|--------|
-| Paciente | patient | patient | /painel, /acolhimento, /documentos |
-| Responsável Legal | guardian | patient | Idem (gerencia dependentes) |
-| Cuidador | caregiver | patient | Idem |
-| Prescritor | prescriber | prescriber | Futuro: painel de prescrições |
-| Veterinário | veterinarian | prescriber | Futuro: painel veterinário |
-| Associação | — | association | Futuro: /associacao/painel |
+### Tipos de usuário
+| Tipo | accountType | Role | Acesso |
+|------|-------------|------|--------|
+| Paciente | patient | — | /painel, /acolhimento, /documentos |
+| Responsável Legal | guardian | — | Idem (gerencia dependentes) |
+| Cuidador | caregiver | — | Idem |
+| Prescritor | prescriber | — | Futuro: painel de prescrições |
+| Veterinário | veterinarian | — | Futuro: painel veterinário |
+| Associação | — | association | /associacao/* (painel, produtos, associados, perfil) |
 | Admin CannHub | — | admin | /admin/* |
 
 ## Entidades principais (Prisma)
@@ -218,9 +251,11 @@ User → accountType, accountStatus, onboardingStatus, documentsStatus
        documentsStatus: not_submitted | pending_review | approved | rejected
 OnboardingSession → perfil clínico (condition, experience, currentAccessMethod, preferredForm, hasPrescription, assistedAccess)
 Document → tipo, URL S3, status (pending/approved/rejected), motivo rejeição, reviewedBy
-Association → name, cnpj, status, description, region, state, city, profileTypes[], hasAssistedAccess, contact, logoUrl, claimedAt
+Association → name, cnpj, status, description, region, state, city, profileTypes[], hasAssistedAccess, contact, logoUrl, membershipFee, membershipPeriod, membershipDescription
 AssociationMember → associationId + userId, role (staff/manager/director), status
-PatientAssociationLink → associationId + patientId, requestedBy/approvedBy, startDate/endDate, status (requested/approved/rejected)
+PatientAssociationLink → associationId + patientId, requestedBy/approvedBy, startDate/endDate, status, feeStatus, feeExpiresAt, feePaidAt
+Product → associationId, name, description, type, category, concentration, cbd, thc, dosagePerDrop, inStock, imageUrl
+ProductVariant → productId, volume, price (Decimal 10,2)
 Patient, Dependent, ProfessionalProfile → domínio de pacientes
 Role → name, slug, level, assignableRoles
 Permission → name, slug, resource, action
@@ -299,7 +334,7 @@ Dor: #F5EDEA             Oncologia: #EEE9F5
 
 ## Testes
 
-### Unit tests (93 — Vitest)
+### Unit tests (123 — Vitest)
 ```bash
 cd apps/api && pnpm test
 ```
@@ -323,10 +358,10 @@ cd apps/web && pnpm build    # Type-check + Vite build (verifica compilação)
 ### Fase 1 — MVP (concluída)
 Auth, cadastro, onboarding, documentos, catálogo por associação, tratamentos (8 condições + 4 categorias), legislação, dashboard paciente, painel admin de aprovação, redesign v2 completo (home, tratamentos, legislação, associações)
 
-### Fase 1.5 — Painel da Associação (próxima)
-Painel de gestão para associações: textos, imagens, catálogo (produtos/preços/estoque), gestão de associados (vínculo, aprovação, exclusão), cobrança de anuidade, controle de membros
+### Fase 1.5 — Painel da Associação (concluída)
+Backend: 13 use cases, 14 controllers, 12 endpoints, role association + 8 permissões, Product/ProductVariant no Prisma, anuidade configurável. Frontend: 4 páginas (dashboard, produtos, associados, perfil), guard AssociationRoute, hooks React Query, botão Solicitar Vínculo funcional, dashboard paciente com vínculos, serviços CannHub contextuais. Seed: Aliança Medicinal com 12 produtos.
 
-### Fase 2 — Conteúdo
+### Fase 2 — Conteúdo (próxima)
 Blog, diretório médicos/advogados, eventos, SEO, auto-cadastro associações
 
 ### Fase 3 — Transação
@@ -334,13 +369,18 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 
 ## Próximos passos
 
-### Painel da Associação (prioridade)
-- [ ] Painel da associação (`/associacao/painel`) — dashboard com métricas
-- [ ] Gestão de catálogo — CRUD de produtos (nome, descrição, preço, estoque, imagens, concentração, tipo)
-- [ ] Gestão de associados — listar, aprovar/rejeitar vínculo, excluir associado
-- [ ] Cobrança de vínculo — anuidade configurável por associação (valor, periodicidade, status pagamento)
-- [ ] Edição de perfil da associação — textos, imagens, contato, descrição
-- [ ] Role `association` no RBAC — guard para `/associacao/*`
+### Painel da Associação (concluído)
+- [x] Painel da associação (`/associacao/painel`) — dashboard com métricas
+- [x] Gestão de catálogo — CRUD de produtos (cards por categoria, edição inline, variantes)
+- [x] Gestão de associados — listar, aprovar/rejeitar vínculo, remover associado, filtro por status
+- [x] Cobrança de vínculo — anuidade configurável por associação (valor, periodicidade, status pagamento)
+- [x] Edição de perfil da associação — textos, contato, descrição, config anuidade
+- [x] Role `association` no RBAC — guard AssociationRoute + 8 permissões
+- [x] Botão Solicitar Vínculo funcional (cria Patient + link, trata erros PT-BR)
+- [x] Dashboard paciente mostra associações vinculadas com status
+- [x] Produtos disponíveis dinâmicos (API, fallback sample data)
+- [x] Card Serviços CannHub contextual por status do paciente
+- [x] Seed: Aliança Medicinal (ID fixo) + 12 produtos + user associacaoalianca@teste.com
 
 ### Frontend
 - [x] Perfil individual da Associação — `/associacoes/:slug`
@@ -371,15 +411,28 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [ ] Diretório de médicos (/medicos) + perfil (/medicos/:slug)
 - [ ] Páginas de detalhe para novas condições (artrite, endometriose, náuseas quimio, dor oncológica)
 
+### Segurança (próximos passos)
+- [ ] CORS: trocar `origin: '*'` por whitelist de origens (`ALLOWED_ORIGINS` env var) — mantido aberto por ora para facilitar testes
+- [ ] Rate limiting: instalar `@nestjs/throttler` no login (5 tentativas/min) — adiado para não atrapalhar testes
+- [ ] Refresh token rotation: invalidar token antigo ao gerar novo
+- [ ] Migrar JWT de localStorage para httpOnly cookies (requer ajuste backend + frontend)
+- [ ] CSP headers no frontend (meta tag no index.html)
+- [ ] Account lockout após N tentativas falhadas
+- [ ] Upload S3: validar MIME type, limitar tamanho, gerar UUID como nome, URLs assinadas com expiração curta
+
 ### Backend
 - [x] Controllers: associations (list, get by id), documents (list), update profile
 - [x] Status granulares: onboardingStatus, documentsStatus no User
 - [x] Painel admin: list, detail, approve/reject docs, approve/reject user, delete
 - [x] Seed de permissões e user admin
-- [ ] Módulo completo de associações: CRUD produtos, gestão de membros, configuração de anuidade
-- [ ] Endpoint de vínculo com associação (POST /associations/:id/link)
+- [x] Módulo completo de associações: CRUD produtos, gestão de membros, configuração de anuidade
+- [x] Endpoint de vínculo com associação (POST /associations/:id/link) + GET /my-links
+- [x] Role `association` + 8 permissões (association_catalog:*, association_members:*, association_profile:*)
+- [x] Modelos Prisma: Product, ProductVariant, campos de anuidade/fee
+- [x] 13 use cases + 30 testes unitários novos (total: 123)
+- [x] Seed: Aliança Medicinal (12 produtos) + user associacaoalianca@teste.com
+- [x] Mensagens de erro em PT-BR
+- [ ] Seed de AMME Medicinal (19 produtos)
 - [ ] Endpoints de médicos (GET /doctors, GET /doctors/:id)
 - [ ] Notificações por e-mail (Resend)
 - [ ] Upload S3 com URLs assinadas
-- [ ] Seed de dados (associações reais: Aliança Medicinal, AMME Medicinal)
-- [ ] Role `association` + permissões (association_catalog:*, association_members:*, association_profile:*)

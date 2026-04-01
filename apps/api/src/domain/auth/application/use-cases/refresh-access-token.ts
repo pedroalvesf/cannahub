@@ -64,7 +64,7 @@ export class RefreshAccessTokenUseCase {
     const newAccessTokenEntity = AccessToken.create({
       userId: new UniqueEntityID(user.id.toString()),
       token: accessToken,
-      expiresAt: new Date(Date.now() + 900 * 1000),
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour — aligned with JwtEncrypter
       createdAt: new Date(),
       revoked: false,
     });

@@ -54,14 +54,16 @@ export class CreateUserController {
     if (result.isLeft()) {
       const error = result.value;
 
-      switch (error.constructor) {
-        case UserAlreadyExistsError:
-          throw new ConflictException(error.message);
-        case CpfAlreadyInUseError:
-          throw new ConflictException(error.message);
-        default:
-          throw new BadRequestException(error.message);
+      if (
+        error instanceof UserAlreadyExistsError ||
+        error instanceof CpfAlreadyInUseError
+      ) {
+        throw new ConflictException(
+          'Não foi possível criar a conta. Verifique os dados informados.',
+        );
       }
+
+      throw new BadRequestException('Erro ao criar usuário');
     }
 
     const deviceEntity = Device.create({
@@ -99,7 +101,7 @@ export class CreateUserController {
         accountStatus: createdUser.accountStatus,
         verificationStatus: createdUser.verificationStatus,
         phone: createdUser.phone,
-        cpf: createdUser.cpf,
+        cpf: createdUser.cpf ? `***.***.***-${createdUser.cpf.slice(-2)}` : null,
       },
     };
   }

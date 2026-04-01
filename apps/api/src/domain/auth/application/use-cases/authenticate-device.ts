@@ -114,7 +114,7 @@ export class AuthenticateDeviceUseCase {
       userId: new UniqueEntityID(user.id.toString()),
       token: accessToken,
       createdAt: new Date(),
-      expiresAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour — aligned with JwtEncrypter
       revoked: false,
     });
 

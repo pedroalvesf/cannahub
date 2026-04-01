@@ -95,7 +95,7 @@ export class AuthenticateDeviceController {
         accountStatus: user.accountStatus,
         verificationStatus: user.verificationStatus,
         phone: user.phone,
-        cpf: user.cpf,
+        cpf: user.cpf ? `***.***.***-${user.cpf.slice(-2)}` : null,
       },
     };
   }

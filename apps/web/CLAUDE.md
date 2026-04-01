@@ -12,7 +12,7 @@ pnpm preview      # Preview production build
 
 ```
 src/
-├── App.tsx                     # Router (17 rotas), ScrollToTop, lazy loading
+├── App.tsx                     # Router (21 rotas), ScrollToTop, lazy loading, 3 guards
 ├── index.css                   # Tailwind base + animações custom
 ├── components/
 │   ├── layout/header.tsx       # Navbar fixa (full-width, backdrop-blur)
@@ -28,12 +28,15 @@ src/
 ├── hooks/
 │   ├── use-auth.ts             # useLogin(), useRegister() — faz login + GET /auth/me em sequência
 │   ├── use-admin.ts            # useAdminUsers(), useDeleteUsers(), etc.
+│   ├── use-association-panel.ts # useAssociationDashboard(), products CRUD, members, profile (12 hooks)
+│   ├── use-association-link.ts  # useMyLinks(), useRequestAssociationLink(), useAssociationProductTypes()
 │   ├── use-onboarding.ts       # useOnboardingSummary(), useStartOnboarding(), useSubmitStep(), etc.
 │   └── use-profile.ts          # useUpdateProfile() mutation
 ├── lib/
 │   ├── api.ts                  # Axios com interceptors (Bearer, device headers, refresh token)
 │   └── query-client.ts         # QueryClient centralizado (shared entre App e stores)
-├── pages/                      # 17 páginas (ver rotas abaixo)
+├── pages/                      # 21 páginas (ver rotas abaixo)
+│   └── association-panel/      # dashboard, products, members, profile
 └── stores/
     ├── auth-store.ts           # Zustand: isAuthenticated, user, login/logout/hydrate
     └── theme-store.ts          # Zustand: light/dark/system cycle
@@ -56,8 +59,12 @@ src/
 | `/legislacao` | LegislationPage | Não | Legislação v2 (hero claro, timeline, FAQ accordion, sidebar) |
 | `/catalogo` | CatalogPage | Não | Catálogo unificado (cepas + produtos) |
 | `/associacoes` | AssociationsPage | Não | Associações v2 (search bar, sidebar filtros, cards expandidos) |
-| `/associacoes/:slug` | AssociationDetailPage | Não | Detalhe com CTA contextual (4 estados auth) |
+| `/associacoes/:slug` | AssociationDetailPage | Não | Detalhe com vínculo dinâmico, serviços contextuais, produtos da API |
 | `/associacoes/:slug/catalogo` | AssociationCatalogPage | Não | Catálogo da associação (preços restritos a conta aprovada) |
+| `/associacao/painel` | AssociationDashboardPage | Association | Dashboard métricas (membros, pendentes, produtos) |
+| `/associacao/produtos` | AssociationProductsPage | Association | CRUD produtos (cards por categoria, edição inline) |
+| `/associacao/associados` | AssociationMembersPage | Association | Gestão vínculos (aprovar/rejeitar/remover, filtro status) |
+| `/associacao/perfil` | AssociationProfilePage | Association | Edição perfil + config anuidade |
 | `/admin/usuarios` | AdminUsersPage | Admin | Painel de aprovação (tabela, filtros, bulk delete) |
 | `/admin/usuarios/:id` | AdminUserDetailPage | Admin | Detalhe do user (dados, onboarding, docs, ações) |
 
