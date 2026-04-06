@@ -3,7 +3,6 @@ import { Link, useParams } from 'react-router-dom'
 import { Header } from '@/components/layout/header'
 import { useAuthStore } from '@/stores/auth-store'
 import { sampleAssociations } from '@/data/sample-associations'
-import { sampleProducts } from '@/data/sample-products'
 import { useRequestAssociationLink, useMyLinks, useAssociationProductTypes } from '@/hooks/use-association-link'
 
 export function AssociationDetailPage() {
@@ -15,12 +14,12 @@ export function AssociationDetailPage() {
   const [linkError, setLinkError] = useState('')
 
   const association = sampleAssociations.find((a) => a.slug === slug)
-  const hasCatalog = sampleProducts.some((p) => p.associationSlug === slug)
 
   // Fetch real product types from API (falls back to sample data)
   const { data: productTypesData } = useAssociationProductTypes(association?.id)
   const productTypes = productTypesData?.types ?? association?.productTypes ?? []
   const hasRealProducts = (productTypesData?.totalProducts ?? 0) > 0
+  const hasCatalog = hasRealProducts
 
   // Check if user already has a link with this association
   const existingLink = myLinksData?.links.find(

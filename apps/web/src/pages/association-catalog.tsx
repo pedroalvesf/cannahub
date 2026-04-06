@@ -3,8 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { Header } from '@/components/layout/header'
 import { useAuthStore } from '@/stores/auth-store'
 import { sampleAssociations } from '@/data/sample-associations'
-import { sampleProducts } from '@/data/sample-products'
-import type { AssociationProduct } from '@/data/sample-products'
+import { useAssociationProducts } from '@/hooks/use-association-link'
+import type { AssociationProductAPI } from '@/hooks/use-association-link'
 
 const CATEGORY_ORDER = ['Óleo CBD', 'Óleo THC', 'Óleo Misto', 'Óleo Especial', 'Pomada', 'Creme', 'Cápsula', 'Gummy', 'Flor'] as const
 
@@ -42,7 +42,8 @@ export function AssociationCatalogPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
 
   const association = sampleAssociations.find((a) => a.slug === slug)
-  const products = sampleProducts.filter((p) => p.associationSlug === slug)
+  const { data: productsData, isLoading } = useAssociationProducts(association?.id)
+  const products = productsData?.products ?? []
 
   if (!association) {
     return (
@@ -55,6 +56,17 @@ export function AssociationCatalogPage() {
           <Link to="/associacoes" className="text-sm font-semibold text-brand-green-mid hover:underline no-underline">
             Voltar para associações
           </Link>
+        </main>
+      </div>
+    )
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-brand-cream dark:bg-surface-dark">
+        <Header />
+        <main className="px-6 pt-[80px] pb-20 max-w-[900px] mx-auto text-center py-20">
+          <p className="text-[15px] text-brand-muted dark:text-gray-500">Carregando produtos...</p>
         </main>
       </div>
     )
@@ -278,7 +290,7 @@ export function AssociationCatalogPage() {
 
 /* ─── Subcomponents ──────────────────────────────────────── */
 
-function ProductCard({ product, canSeePrices }: { product: AssociationProduct; canSeePrices: boolean }) {
+function ProductCard({ product, canSeePrices }: { product: AssociationProductAPI; canSeePrices: boolean }) {
   const [selectedVariant, setSelectedVariant] = useState(0)
   const colors = TYPE_COLORS[product.category] ?? TYPE_COLORS['Óleo CBD']!
   const variant = product.variants[selectedVariant]

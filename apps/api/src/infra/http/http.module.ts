@@ -34,6 +34,7 @@ import { GetAssociationController } from './controllers/association/get-associat
 import { RequestAssociationLinkController } from './controllers/association/request-link.controller';
 import { ListMyLinksController } from './controllers/association/list-my-links.controller';
 import { GetAssociationProductTypesController } from './controllers/association/get-association-product-types.controller';
+import { GetAssociationProductsController } from './controllers/association/get-association-products.controller';
 
 // Controllers - Association Panel
 import { AssociationDashboardController } from './controllers/association/association-dashboard.controller';
@@ -162,6 +163,7 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     RequestAssociationLinkController,
     ListMyLinksController,
     GetAssociationProductTypesController,
+    GetAssociationProductsController,
 
     // Association Panel Controllers
     AssociationDashboardController,
