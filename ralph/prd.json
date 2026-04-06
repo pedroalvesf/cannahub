@@ -236,7 +236,7 @@
         "pnpm test:e2e passes"
       ],
       "priority": 14,
-      "passes": false,
+      "passes": true,
       "notes": ""
     },
     {

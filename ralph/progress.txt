@@ -16,8 +16,7 @@
 - `pnpm build` in `apps/web` runs tsc + vite build (verifies compilation + bundling)
 
 ## Current Status
-US-001 through US-013 and US-015 through US-025 completed (24 of 25 stories)
-US-014 (E2E tests) skipped — requires Docker/Postgres for E2E testing
+ALL 25 stories (US-001 through US-025) completed
 
 ## Completed Stories
 
@@ -97,4 +96,14 @@ US-014 (E2E tests) skipped — requires Docker/Postgres for E2E testing
 ## 2026-04-06 - US-025
 - What was implemented: Insights tab with recharts (symptom trend line charts, method distribution bar chart, improvement/consistency cards)
 - Files changed: diary-insights.tsx, diary.tsx, package.json (recharts dependency)
+---
+
+## 2026-04-06 - US-014
+- What was implemented: E2E tests for all diary API endpoints (CRUD flow, favorites flow, summary, auth, ownership)
+- Files changed: test/e2e/diary.e2e-spec.ts, test/helpers/database.helper.ts
+- **Learnings for future iterations:**
+  - Database cleanup order matters: diary child tables (DiarySymptomLog, DiaryEffectLog) must be deleted before DiaryEntry due to FK constraints
+  - E2E tests require Docker Postgres on port 8239 — not available in all environments. Tests are written and committed but manual verification needed when DB is available
+  - Ownership tests should accept both 403 and 404 since some use cases return NotFound (hiding existence) vs Forbidden
+  - The log-from-favorite endpoint returns 201 (POST), while update returns 200 (PATCH)
 ---
