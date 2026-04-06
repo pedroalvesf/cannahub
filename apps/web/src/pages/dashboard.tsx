@@ -6,6 +6,7 @@ import { useOnboardingSummary } from '@/hooks/use-onboarding'
 import { useAddress, useSaveAddress } from '@/hooks/use-address'
 import { useUpdateProfile } from '@/hooks/use-profile'
 import { useMyLinks } from '@/hooks/use-association-link'
+import { useDiarySummary } from '@/hooks/use-diary'
 import type { AddressData } from '@/hooks/use-address'
 import {
   ACCOUNT_TYPE_LABELS,
@@ -13,6 +14,7 @@ import {
   EXPERIENCE_LABELS,
   FORM_LABELS,
   ACCESS_METHOD_LABELS,
+  SYMPTOM_LABELS,
   formatMultiSelect,
 } from '@/constants/labels'
 
@@ -712,8 +714,102 @@ export function DashboardPage() {
               </div>
             )}
           </SectionCard>
+
+          {/* Diary Summary */}
+          <DiarySummaryCard />
         </div>
       </main>
     </div>
+  )
+}
+
+function DiarySummaryCard() {
+  const now = new Date()
+  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
+  const { data, isLoading } = useDiarySummary(firstOfMonth)
+
+  if (isLoading) {
+    return (
+      <SectionCard title="Diario de Tratamento">
+        <div className="py-4 text-center text-brand-muted text-[13px]">Carregando...</div>
+      </SectionCard>
+    )
+  }
+
+  if (!data || data.totalEntries === 0) {
+    return (
+      <SectionCard title="Diario de Tratamento">
+        <div className="py-4 text-center">
+          <p className="text-[13.5px] text-brand-muted dark:text-gray-500 mb-4">
+            Comece seu diario
+          </p>
+          <Link
+            to="/diario"
+            className="inline-flex text-[13px] font-semibold text-brand-green-deep border border-brand-green-deep dark:border-brand-green-light dark:text-brand-green-light px-6 py-2.5 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors no-underline"
+          >
+            Ir para o diario
+          </Link>
+        </div>
+      </SectionCard>
+    )
+  }
+
+  const topSymptom = data.mostFrequentSymptoms[0]
+  const topSymptomLabel = topSymptom ? (SYMPTOM_LABELS[topSymptom.symptomKey] ?? topSymptom.symptomKey) : null
+
+  // Overall improvement
+  const deltas = data.symptomDeltas.filter((d) => d.avgSeverityAfter !== null)
+  const avgDelta = deltas.length > 0
+    ? deltas.reduce((sum, d) => sum + ((d.avgSeverityBefore - (d.avgSeverityAfter ?? 0))), 0) / deltas.length
+    : null
+
+  return (
+    <SectionCard title="Diario de Tratamento">
+      <div className="grid grid-cols-2 gap-4 py-2">
+        <div className="text-center">
+          <p className="text-2xl font-bold text-brand-green-deep dark:text-white">{data.totalEntries}</p>
+          <p className="text-[11px] text-brand-muted dark:text-gray-500 mt-0.5">registros este mes</p>
+        </div>
+        <div className="text-center">
+          <p className="text-2xl font-bold text-brand-green-deep dark:text-white">
+            {data.mostUsedProduct?.name ? (
+              <span className="text-sm">{data.mostUsedProduct.name}</span>
+            ) : '—'}
+          </p>
+          <p className="text-[11px] text-brand-muted dark:text-gray-500 mt-0.5">produto mais usado</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4 py-2">
+        <div className="text-center">
+          <p className="text-sm font-medium text-brand-green-deep dark:text-gray-200">
+            {topSymptomLabel ?? '—'}
+          </p>
+          <p className="text-[11px] text-brand-muted dark:text-gray-500 mt-0.5">sintoma mais rastreado</p>
+        </div>
+        <div className="text-center">
+          {avgDelta !== null ? (
+            <>
+              <p className={`text-sm font-medium ${avgDelta > 0 ? 'text-green-600 dark:text-green-400' : avgDelta < 0 ? 'text-red-500' : 'text-brand-muted'}`}>
+                {avgDelta > 0 ? 'Melhora' : avgDelta < 0 ? 'Piora' : 'Estavel'}
+              </p>
+              <p className="text-[11px] text-brand-muted dark:text-gray-500 mt-0.5">tendencia geral</p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-medium text-brand-muted dark:text-gray-400">—</p>
+              <p className="text-[11px] text-brand-muted dark:text-gray-500 mt-0.5">re-avalie para ver tendencia</p>
+            </>
+          )}
+        </div>
+      </div>
+      <div className="pt-3 text-center border-t border-brand-cream-dark/30 dark:border-gray-700/20 mt-2">
+        <Link
+          to="/diario"
+          className="text-[12px] text-brand-green-deep dark:text-brand-green-light font-medium no-underline hover:underline"
+        >
+          Ver diario completo
+        </Link>
+      </div>
+    </SectionCard>
   )
 }
