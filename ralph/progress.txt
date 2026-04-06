@@ -1,0 +1,100 @@
+# Ralph Progress — Treatment Diary
+
+## Codebase Patterns
+- Prisma generate requires `PRISMA_SCHEMA_ENGINE_BINARY=/dev/null` workaround when no network available (engine download blocked)
+- Prisma client output configured at `../src/generated/prisma` (gitignored), must run `prisma generate` before build/test
+- `package.json` root needs `pnpm.onlyBuiltDependencies` to allow prisma engine postinstall scripts
+- Use `npx tsc --noEmit` in `apps/api` or `apps/web` to typecheck
+- Domain entities use Entity base class with `static create()` factory, `UniqueEntityID`, and `Optional<>` type for optional props
+- Use cases are `@Injectable()` classes with `execute()` returning `Either<Error, Result>` — never throw
+- Abstract repository → concrete Prisma implementation registered in `DatabaseModule` with `provide/useClass` pattern
+- Controllers use `@UseGuards(JwtAuthGuard)`, `@CurrentUser()` for userId extraction via `user.sub`
+- DTOs use `class-validator` decorators; registered in `http.module.ts` controllers+providers arrays
+- Frontend hooks follow `useQuery`/`useMutation` pattern with `queryClient.invalidateQueries` on mutation success
+- Labels live in `apps/web/src/constants/labels.ts` — never duplicate
+- Shared package exports from `packages/shared/src/index.ts`
+- `pnpm build` in `apps/web` runs tsc + vite build (verifies compilation + bundling)
+
+## Current Status
+US-001 through US-013 and US-015 through US-025 completed (24 of 25 stories)
+US-014 (E2E tests) skipped — requires Docker/Postgres for E2E testing
+
+## Completed Stories
+
+## 2026-04-06 - US-001
+- What was implemented: Added DiaryEntry, DiarySymptomLog, DiaryEffectLog, and DiaryFavorite Prisma models
+- Files changed: apps/api/prisma/schema.prisma, package.json
+- **Learnings:** DiaryEntry has relations to User and Product (optional), cascade delete for Symptoms/Effects. Index on (userId, date).
+---
+
+## 2026-04-06 - US-002
+- What was implemented: Shared enums and predefined lists, PT-BR labels
+- Files changed: packages/shared/src/diary.ts, packages/shared/src/index.ts, apps/web/src/constants/labels.ts
+- **Learnings:** Use `as const` arrays with derived union types for type-safe predefined lists.
+---
+
+## 2026-04-06 - US-003
+- What was implemented: Domain entities and abstract repository interfaces
+- Files changed: 6 files in src/domain/diary/
+- **Learnings:** DiaryEntry stores symptoms/effects as arrays (not WatchedList — simpler pattern than User/Role).
+---
+
+## 2026-04-06 - US-004 through US-010
+- What was implemented: All 10 use cases (Create, Update, Delete, Get, List entries; CRUD favorites + log from favorite; Summary; Symptom trend)
+- Files changed: 14 use case files, 2 in-memory repos, 2 factories, 7 test files
+- **Learnings:** 32 new unit tests (total 155). Summary use case fetches all entries with perPage=10000 for in-memory aggregation.
+---
+
+## 2026-04-06 - US-011
+- What was implemented: Prisma repositories, mappers, DI registration
+- Files changed: 5 files in infra/database/
+- **Learnings:** Nested create for symptoms/effects in DiaryEntryMapper.toPrismaCreate(). Update uses $transaction for symptom severityAfter.
+---
+
+## 2026-04-06 - US-012/US-013
+- What was implemented: 12 HTTP controllers with DTOs covering all diary endpoints
+- Files changed: 17 files in infra/http/
+- **Learnings:** Favorites routes use `/diary/favorites` prefix. Summary at `/diary/summary`. Trend at `/diary/symptoms/:key/trend`.
+---
+
+## 2026-04-06 - US-015
+- What was implemented: 11 React Query hooks for all diary API endpoints
+- Files changed: apps/web/src/hooks/use-diary.ts
+---
+
+## 2026-04-06 - US-016
+- What was implemented: /diario route with lazy loading and nav links
+- Files changed: App.tsx, header.tsx, diary.tsx (placeholder)
+---
+
+## 2026-04-06 - US-017
+- What was implemented: SeveritySelector, SymptomChip, EffectChip, MethodSelector components
+- Files changed: 4 components in components/diary/
+- **Learnings:** All icons are inline SVG with strokeWidth 1.5 — no emojis per design system.
+---
+
+## 2026-04-06 - US-018/US-019
+- What was implemented: NewEntryModal with full form (date, time, product, method, dose, symptoms with severity, effects, notes)
+- Files changed: new-entry-modal.tsx, diary.tsx
+- **Learnings:** Modal responsive — full width bottom sheet on mobile, centered on desktop.
+---
+
+## 2026-04-06 - US-020
+- What was implemented: Timeline with DiaryEntryCard grouped by day, empty state, load more
+- Files changed: diary-entry-card.tsx, diary.tsx
+---
+
+## 2026-04-06 - US-021/US-022/US-023
+- What was implemented: Filters (period, method, symptom), entry detail expansion, re-evaluation modal, quick-log bar
+- Files changed: diary.tsx, re-evaluation-modal.tsx, quick-log-bar.tsx
+---
+
+## 2026-04-06 - US-024
+- What was implemented: DiarySummaryCard on patient dashboard
+- Files changed: dashboard.tsx
+---
+
+## 2026-04-06 - US-025
+- What was implemented: Insights tab with recharts (symptom trend line charts, method distribution bar chart, improvement/consistency cards)
+- Files changed: diary-insights.tsx, diary.tsx, package.json (recharts dependency)
+---
