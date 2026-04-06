@@ -60,6 +60,13 @@ import { AdminRejectDocumentController } from './controllers/admin/reject-docume
 import { AdminUpdateUserStatusController } from './controllers/admin/update-user-status.controller';
 import { AdminDeleteUsersController } from './controllers/admin/delete-users.controller';
 
+// Controllers - Diary
+import { CreateDiaryEntryController } from './controllers/diary/create-diary-entry.controller';
+import { ListDiaryEntriesController } from './controllers/diary/list-diary-entries.controller';
+import { GetDiaryEntryController } from './controllers/diary/get-diary-entry.controller';
+import { UpdateDiaryEntryController } from './controllers/diary/update-diary-entry.controller';
+import { DeleteDiaryEntryController } from './controllers/diary/delete-diary-entry.controller';
+
 // Controllers - Onboarding
 import { StartOnboardingController } from './controllers/onboarding/start-onboarding.controller';
 import { SubmitStepController } from './controllers/onboarding/submit-step.controller';
@@ -67,6 +74,13 @@ import { CompleteOnboardingController } from './controllers/onboarding/complete-
 import { GetOnboardingSummaryController } from './controllers/onboarding/get-onboarding-summary.controller';
 import { EscalateToHumanController } from './controllers/onboarding/escalate-to-human.controller';
 import { ExtractFromTextController } from './controllers/onboarding/extract-from-text.controller';
+
+// Use Cases - Diary
+import { CreateDiaryEntryUseCase } from '@/domain/diary/application/use-cases/create-diary-entry';
+import { ListDiaryEntriesUseCase } from '@/domain/diary/application/use-cases/list-diary-entries';
+import { GetDiaryEntryUseCase } from '@/domain/diary/application/use-cases/get-diary-entry';
+import { UpdateDiaryEntryUseCase } from '@/domain/diary/application/use-cases/update-diary-entry';
+import { DeleteDiaryEntryUseCase } from '@/domain/diary/application/use-cases/delete-diary-entry';
 
 // Use Cases - Auth
 import { CreateUserUseCase } from '@/domain/auth/application/use-cases/create-user';
@@ -189,6 +203,13 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     // Document Controllers
     ListDocumentsController,
 
+    // Diary Controllers
+    CreateDiaryEntryController,
+    ListDiaryEntriesController,
+    GetDiaryEntryController,
+    UpdateDiaryEntryController,
+    DeleteDiaryEntryController,
+
     // Onboarding Controllers
     StartOnboardingController,
     SubmitStepController,
@@ -252,6 +273,13 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     // Document Use Cases
     ListUserDocumentsUseCase,
     GetDocumentByIdUseCase,
+
+    // Diary Use Cases
+    CreateDiaryEntryUseCase,
+    ListDiaryEntriesUseCase,
+    GetDiaryEntryUseCase,
+    UpdateDiaryEntryUseCase,
+    DeleteDiaryEntryUseCase,
 
     // Onboarding Use Cases
     StartOnboardingUseCase,
