@@ -53,6 +53,8 @@ model User {
   RequestedLinks       PatientAssociationLink[] @relation("LinkRequester")
   ApprovedLinks        PatientAssociationLink[] @relation("LinkApprover")
   Address              Address?
+  DiaryEntries         DiaryEntry[]
+  DiaryFavorites       DiaryFavorite[]
 
   @@index([email])
   @@index([cpf])
@@ -475,6 +477,8 @@ model Product {
 
   Association     Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
   Variants        ProductVariant[]
+  DiaryEntries    DiaryEntry[]
+  DiaryFavorites  DiaryFavorite[]
 
   @@index([associationId])
   @@index([type])
@@ -492,4 +496,72 @@ model ProductVariant {
   Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
+}
+
+// --- Diary Domain ---
+
+model DiaryEntry {
+  id                   String   @id @default(uuid())
+  userId               String
+  date                 DateTime
+  time                 String
+  productId            String?
+  customProductName    String?
+  administrationMethod String   // oil | flower | vape | edible | topical | capsule | other
+  doseAmount           Decimal  @db.Decimal(10, 2)
+  doseUnit             String   // drops | ml | mg | g | puffs | units
+  notes                String?
+  isFavorite           Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  User       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Product    Product?          @relation(fields: [productId], references: [id])
+  Symptoms   DiarySymptomLog[]
+  Effects    DiaryEffectLog[]
+
+  @@index([userId, date])
+}
+
+model DiarySymptomLog {
+  id              String  @id @default(uuid())
+  diaryEntryId    String
+  symptomKey      String
+  customSymptomName String?
+  severityBefore  String  // none | mild | moderate | severe
+  severityAfter   String? // none | mild | moderate | severe
+
+  DiaryEntry DiaryEntry @relation(fields: [diaryEntryId], references: [id], onDelete: Cascade)
+
+  @@index([diaryEntryId])
+}
+
+model DiaryEffectLog {
+  id               String  @id @default(uuid())
+  diaryEntryId     String
+  effectKey        String
+  isPositive       Boolean
+  customEffectName String?
+
+  DiaryEntry DiaryEntry @relation(fields: [diaryEntryId], references: [id], onDelete: Cascade)
+
+  @@index([diaryEntryId])
+}
+
+model DiaryFavorite {
+  id                   String   @id @default(uuid())
+  userId               String
+  name                 String
+  productId            String?
+  customProductName    String?
+  administrationMethod String
+  doseAmount           Decimal  @db.Decimal(10, 2)
+  doseUnit             String
+  symptomKeys          String[]
+  createdAt            DateTime @default(now())
+
+  User    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Product Product? @relation(fields: [productId], references: [id])
+
+  @@index([userId])
 }
