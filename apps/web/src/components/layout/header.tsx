@@ -86,6 +86,12 @@ export function Header() {
               </Link>
             )}
             <Link
+              to="/diario"
+              className="text-sm font-medium text-brand-green-deep dark:text-brand-green-light px-4 py-2 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors no-underline"
+            >
+              Diario
+            </Link>
+            <Link
               to="/painel"
               className="text-sm font-medium text-brand-green-deep dark:text-brand-green-light px-4 py-2 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors no-underline"
             >
@@ -185,6 +191,13 @@ export function Header() {
                     Painel Associação
                   </Link>
                 )}
+                <Link
+                  to="/diario"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-[15px] font-medium text-brand-green-deep dark:text-brand-green-light py-2 no-underline"
+                >
+                  Diario
+                </Link>
                 <Link
                   to="/painel"
                   onClick={() => setMobileOpen(false)}

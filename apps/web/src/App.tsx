@@ -25,6 +25,7 @@ const TreatmentCategoryPage = lazy(() => import('@/pages/treatment-category').th
 const LegislationPage = lazy(() => import('@/pages/legislation').then(m => ({ default: m.LegislationPage })))
 const AdminUsersPage = lazy(() => import('@/pages/admin/users').then(m => ({ default: m.AdminUsersPage })))
 const AdminUserDetailPage = lazy(() => import('@/pages/admin/user-detail').then(m => ({ default: m.AdminUserDetailPage })))
+const DiaryPage = lazy(() => import('@/pages/diary').then(m => ({ default: m.DiaryPage })))
 const AssociationDashboardPage = lazy(() => import('@/pages/association-panel/dashboard').then(m => ({ default: m.AssociationDashboardPage })))
 const AssociationProductsPage = lazy(() => import('@/pages/association-panel/products').then(m => ({ default: m.AssociationProductsPage })))
 const AssociationMembersPage = lazy(() => import('@/pages/association-panel/members').then(m => ({ default: m.AssociationMembersPage })))
@@ -129,6 +130,7 @@ function AppContent() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<RegisterPage />} />
       <Route path="/painel" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path="/diario" element={<ProtectedRoute><DiaryPage /></ProtectedRoute>} />
       <Route path="/associacao/painel" element={<AssociationRoute><AssociationDashboardPage /></AssociationRoute>} />
       <Route path="/associacao/produtos" element={<AssociationRoute><AssociationProductsPage /></AssociationRoute>} />
       <Route path="/associacao/associados" element={<AssociationRoute><AssociationMembersPage /></AssociationRoute>} />
