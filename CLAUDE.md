@@ -25,7 +25,8 @@ cannahub/
 | Frontend | React 19 + Vite + Tailwind, Zustand + React Query |
 | Auth | JWT + Passport, RBAC com roles hierárquicas + PermissionsGuard |
 | AI | Anthropic Claude Haiku (extração de campos clínicos) |
-| Infra | Docker (Postgres + Redis), bcryptjs para hashing |
+| Segurança | Helmet (headers), bcryptjs para hashing |
+| Infra | Docker (Postgres + Redis) |
 
 ## Regras de desenvolvimento
 
@@ -172,6 +173,7 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 ### Associations & Documents (público)
 - `GET /associations` — listar associações (@Public, filtros: region, state, hasAssistedAccess)
 - `GET /associations/:id` — detalhe associação (@Public)
+- `GET /associations/:id/products` — produtos com variantes da associação (@Public)
 - `GET /associations/:id/product-types` — tipos de produto da associação (@Public)
 - `POST /associations/:id/link` — paciente solicita vínculo (JWT, cria Patient se não existir)
 - `GET /my-links` — vínculos do paciente logado com nome da associação (JWT)
@@ -230,6 +232,8 @@ npx tsx prisma/seed-admin.ts email@ex.com            # Promove user existente pa
 npx tsx prisma/seed-association-user.ts               # Cria associacaoalianca@teste.com + Aliança Medicinal + role
 npx tsx prisma/seed-association-user.ts email assocId  # Promove user existente para association
 npx tsx prisma/seed-products.ts                       # Cria 12 produtos da Aliança Medicinal
+npx tsx prisma/seed-amme-products.ts                  # Cria AMME Medicinal + 18 produtos
+npx tsx prisma/seed-amme-user.ts                      # Cria admamme@teste.com + director AMME
 ```
 
 ### Tipos de usuário
@@ -289,6 +293,7 @@ Fluxo de login:
 | useUpdateProfile | use-profile.ts | PUT /auth/profile |
 | useAddress, useSaveAddress | use-address.ts | GET/PUT /auth/address |
 | useAdminUsers, useAdminUserDetail, useApproveDocument, useRejectDocument, useUpdateUserStatus, useDeleteUsers | use-admin.ts | GET/PATCH/DELETE /admin/* |
+| useAssociationProducts, useAssociationProductTypes, useMyLinks, useRequestAssociationLink | use-association-link.ts | GET /associations/:id/products, /product-types, /my-links, POST /associations/:id/link |
 
 ## Design System — v2 (redesign março 2026)
 
@@ -407,11 +412,12 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] SVGs ilustrativos por condição (public/treatments/) + imagens WebP nos cards
 - [x] Ícones SVG no catálogo e quiz (substituiu emojis)
 - [ ] Upload real de documentos (S3)
-- [ ] Integrar catálogo com API real (substituir sample-products.ts)
+- [x] Integrar catálogo com API real (substituiu sample-products.ts → GET /associations/:id/products)
 - [ ] Diretório de médicos (/medicos) + perfil (/medicos/:slug)
 - [ ] Páginas de detalhe para novas condições (artrite, endometriose, náuseas quimio, dor oncológica)
 
 ### Segurança (próximos passos)
+- [x] Helmet: headers de segurança (HSTS, X-Frame-Options, X-Content-Type-Options, etc.) — CSP desativado em dev
 - [ ] CORS: trocar `origin: '*'` por whitelist de origens (`ALLOWED_ORIGINS` env var) — mantido aberto por ora para facilitar testes
 - [ ] Rate limiting: instalar `@nestjs/throttler` no login (5 tentativas/min) — adiado para não atrapalhar testes
 - [ ] Refresh token rotation: invalidar token antigo ao gerar novo
@@ -432,7 +438,7 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] 13 use cases + 30 testes unitários novos (total: 123)
 - [x] Seed: Aliança Medicinal (12 produtos) + user associacaoalianca@teste.com
 - [x] Mensagens de erro em PT-BR
-- [ ] Seed de AMME Medicinal (19 produtos)
+- [x] Seed: AMME Medicinal (18 produtos) + user admamme@teste.com
 - [ ] Endpoints de médicos (GET /doctors, GET /doctors/:id)
 - [ ] Notificações por e-mail (Resend)
 - [ ] Upload S3 com URLs assinadas

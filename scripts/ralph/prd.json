@@ -1,0 +1,436 @@
+{
+  "project": "CannHub",
+  "branchName": "ralph/treatment-diary",
+  "description": "Diario de Tratamento — area para pacientes registrarem uso de cannabis medicinal com modelo antes/depois de sintomas, favoritos para quick-log, timeline e dashboard de insights",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Prisma models for diary",
+      "description": "As a developer, I need the database models to persist diary entries, symptom logs, effect logs, and favorites.",
+      "acceptanceCriteria": [
+        "Add DiaryEntry model to Prisma schema with fields: id (uuid), userId (relation to User), date (DateTime), time (String), productId (optional relation to Product), customProductName (optional String), administrationMethod (String — oil/flower/vape/edible/topical/capsule/other), doseAmount (Decimal 10,2), doseUnit (String — drops/ml/mg/g/puffs/units), notes (optional String), isFavorite (Boolean default false), createdAt, updatedAt",
+        "Add DiarySymptomLog model: id, diaryEntryId (relation to DiaryEntry), symptomKey (String), customSymptomName (optional String), severityBefore (String — none/mild/moderate/severe), severityAfter (optional String — same enum)",
+        "Add DiaryEffectLog model: id, diaryEntryId (relation to DiaryEntry), effectKey (String), isPositive (Boolean), customEffectName (optional String)",
+        "Add DiaryFavorite model: id, userId (relation to User), name (String), productId (optional relation to Product), customProductName (optional String), administrationMethod (String), doseAmount (Decimal 10,2), doseUnit (String), symptomKeys (String[] array), createdAt",
+        "Add cascade delete on DiaryEntry for DiarySymptomLog and DiaryEffectLog",
+        "Add index on DiaryEntry(userId, date)",
+        "Run npx prisma db push successfully",
+        "Run pnpm prisma:generate successfully",
+        "Typecheck passes"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Shared enums and predefined lists for diary",
+      "description": "As a developer, I need shared constants for administration methods, dose units, severity levels, predefined symptoms, and predefined effects.",
+      "acceptanceCriteria": [
+        "Create file packages/shared/src/diary.ts (or add to existing shared types) with: AdministrationMethod enum (oil, flower, vape, edible, topical, capsule, other), DoseUnit enum (drops, ml, mg, g, puffs, units), SymptomSeverity enum (none, mild, moderate, severe)",
+        "Export PREDEFINED_SYMPTOMS array with keys: pain, anxiety, insomnia, nausea, inflammation, fatigue, depression, appetite_loss, headache, muscle_spasm, stress, ptsd",
+        "Export PREDEFINED_EFFECTS_POSITIVE array: relaxed, pain_relief, sleepy, calm, focused, euphoric, hungry, creative, energized",
+        "Export PREDEFINED_EFFECTS_NEGATIVE array: dry_mouth, dizzy, paranoia, anxious, headache, nausea, drowsy, red_eyes",
+        "Add PT-BR labels for all enums and predefined lists to apps/web/src/constants/labels.ts following the existing pattern (ADMINISTRATION_METHOD_LABELS, DOSE_UNIT_LABELS, SYMPTOM_SEVERITY_LABELS, SYMPTOM_LABELS, EFFECT_LABELS)",
+        "Export the new types from the shared package index",
+        "Typecheck passes in all packages"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Diary domain entities and repository interface",
+      "description": "As a developer, I need the domain entities and abstract repository for the diary module following the existing DDD pattern.",
+      "acceptanceCriteria": [
+        "Create DiaryEntry entity in src/domain/diary/enterprise/entities/diary-entry.ts extending Entity with props matching Prisma model, following the same pattern as existing entities (User, OnboardingSession)",
+        "Create DiarySymptomLog value object or entity in src/domain/diary/enterprise/entities/diary-symptom-log.ts",
+        "Create DiaryEffectLog value object or entity in src/domain/diary/enterprise/entities/diary-effect-log.ts",
+        "Create DiaryFavorite entity in src/domain/diary/enterprise/entities/diary-favorite.ts",
+        "Create abstract DiaryEntriesRepository in src/domain/diary/application/repositories/diary-entries-repository.ts with methods: create, findById, findManyByUserId (paginated with filters), update, delete, countByUserId",
+        "Create abstract DiaryFavoritesRepository with methods: create, findById, findManyByUserId, delete",
+        "Typecheck passes"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "CreateDiaryEntry use case",
+      "description": "As a patient, I want to create a diary entry with product, dose, symptoms (with severity), and effects.",
+      "acceptanceCriteria": [
+        "Create CreateDiaryEntry use case in src/domain/diary/application/use-cases/ that receives userId, date, time, productId (optional), customProductName (optional), administrationMethod, doseAmount, doseUnit, notes (optional), symptoms array (symptomKey + severityBefore), effects array (effectKey + isPositive)",
+        "Returns Either<Error, { entry: DiaryEntry }> following the project Either pattern",
+        "Validates that at least product or customProductName is provided",
+        "Create in-memory DiaryEntriesRepository in test/repositories/",
+        "Create makeDiaryEntry factory in test/factories/",
+        "Unit tests covering: successful creation, creation with custom product, creation without symptoms, validation errors",
+        "pnpm test passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "UpdateDiaryEntry use case (including symptom re-evaluation)",
+      "description": "As a patient, I want to update a diary entry and re-evaluate symptom severity after use.",
+      "acceptanceCriteria": [
+        "Create UpdateDiaryEntry use case that receives entryId, userId, and partial update fields including symptom severityAfter updates",
+        "Returns Either<NotFoundError | NotAllowedError, { entry: DiaryEntry }>",
+        "Validates that entry belongs to the requesting user",
+        "Allows updating severityAfter on existing DiarySymptomLog records",
+        "Unit tests covering: successful update, update severityAfter, entry not found, wrong user",
+        "pnpm test passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "DeleteDiaryEntry and GetDiaryEntry use cases",
+      "description": "As a patient, I want to view and delete my diary entries.",
+      "acceptanceCriteria": [
+        "Create DeleteDiaryEntry use case: receives entryId + userId, validates ownership, deletes entry (cascade deletes symptoms and effects)",
+        "Create GetDiaryEntry use case: receives entryId + userId, returns entry with symptoms and effects populated",
+        "Both return Either with appropriate errors (NotFound, NotAllowed)",
+        "Unit tests for both use cases",
+        "pnpm test passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "ListDiaryEntries use case with filters and pagination",
+      "description": "As a patient, I want to list my diary entries with filters by date range, product, method, and symptom.",
+      "acceptanceCriteria": [
+        "Create ListDiaryEntries use case: receives userId, page, perPage (default 20), dateFrom, dateTo, productId, administrationMethod, symptomKey (all filters optional)",
+        "Returns Either<Error, { entries: DiaryEntry[], total: number }>",
+        "Entries ordered by date desc, time desc",
+        "Each entry includes symptoms and effects populated",
+        "Unit tests covering: list with no filters, list with date range, list with symptom filter, pagination, empty results",
+        "pnpm test passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Diary favorites use cases (CRUD + log from favorite)",
+      "description": "As a patient, I want to save favorite combinations and create entries from them for quick logging.",
+      "acceptanceCriteria": [
+        "Create CreateDiaryFavorite use case: receives userId, name, productId/customProductName, administrationMethod, doseAmount, doseUnit, symptomKeys array",
+        "Create ListDiaryFavorites use case: receives userId, returns favorites list",
+        "Create DeleteDiaryFavorite use case: receives favoriteId + userId, validates ownership",
+        "Create CreateEntryFromFavorite use case: receives favoriteId + userId + date + time, creates DiaryEntry pre-filled from favorite data with symptoms pre-selected (severityBefore defaults to none)",
+        "Create in-memory DiaryFavoritesRepository in test/repositories/",
+        "Create makeDiaryFavorite factory in test/factories/",
+        "Unit tests for all four use cases",
+        "pnpm test passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "GetDiarySummary use case",
+      "description": "As a patient, I want to see a summary of my treatment diary for a given period.",
+      "acceptanceCriteria": [
+        "Create GetDiarySummary use case: receives userId, dateFrom (default 30 days ago), dateTo (default now)",
+        "Returns: totalEntries, mostFrequentSymptoms (top 5 with count), mostUsedProduct (name + count), averageSeverityBefore vs averageSeverityAfter per symptom (delta), methodDistribution (map of method to count)",
+        "Unit tests covering: summary with data, summary with no entries (returns zeros), summary with date range filter",
+        "pnpm test passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-010",
+      "title": "GetSymptomTrend use case",
+      "description": "As a patient, I want to see how a specific symptom evolves over time.",
+      "acceptanceCriteria": [
+        "Create GetSymptomTrend use case: receives userId, symptomKey, dateFrom, dateTo",
+        "Returns array of data points: { date, avgSeverityBefore (number 0-3 mapping none=0 mild=1 moderate=2 severe=3), avgSeverityAfter (number or null), entryCount }",
+        "Group by day, ordered by date asc",
+        "Unit tests covering: trend with multiple days, trend with gaps, symptom not found returns empty array",
+        "pnpm test passes"
+      ],
+      "priority": 10,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-011",
+      "title": "Prisma repository implementations and mappers",
+      "description": "As a developer, I need the Prisma implementations of the diary repositories with proper mappers.",
+      "acceptanceCriteria": [
+        "Create PrismaDiaryEntriesRepository in src/infra/database/prisma/repositories/ implementing DiaryEntriesRepository",
+        "Create PrismaDiaryFavoritesRepository implementing DiaryFavoritesRepository",
+        "Create DiaryEntryMapper with toDomain() and toPrismaCreate() methods, handling nested symptom logs and effect logs",
+        "Create DiaryFavoriteMapper with toDomain() and toPrismaCreate()",
+        "Include symptom and effect logs in findById and findManyByUserId queries (Prisma include)",
+        "Implement filters in findManyByUserId: dateFrom/dateTo (where date gte/lte), productId, administrationMethod, symptomKey (where symptoms.some.symptomKey equals)",
+        "Register repositories in http.module.ts DI (abstract class -> Prisma implementation)",
+        "Typecheck passes"
+      ],
+      "priority": 11,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-012",
+      "title": "Diary entry controllers (POST, GET list, GET detail, PATCH, DELETE)",
+      "description": "As a frontend developer, I need the HTTP endpoints for diary entry CRUD operations.",
+      "acceptanceCriteria": [
+        "Create POST /diary controller: @UseGuards(JwtAuthGuard), receives body with entry data + symptoms + effects, calls CreateDiaryEntry use case, returns 201",
+        "Create GET /diary controller: @UseGuards(JwtAuthGuard), query params for page, perPage, dateFrom, dateTo, productId, administrationMethod, symptomKey, calls ListDiaryEntries",
+        "Create GET /diary/:id controller: @UseGuards(JwtAuthGuard), calls GetDiaryEntry",
+        "Create PATCH /diary/:id controller: @UseGuards(JwtAuthGuard), calls UpdateDiaryEntry (supports severityAfter updates)",
+        "Create DELETE /diary/:id controller: @UseGuards(JwtAuthGuard), calls DeleteDiaryEntry",
+        "Create DTOs with class-validator decorators for all endpoints",
+        "Register controllers and use cases in http.module.ts",
+        "Typecheck passes"
+      ],
+      "priority": 12,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-013",
+      "title": "Diary favorites and insights controllers",
+      "description": "As a frontend developer, I need the HTTP endpoints for favorites, summary, and symptom trends.",
+      "acceptanceCriteria": [
+        "Create POST /diary/favorites controller: @UseGuards(JwtAuthGuard), calls CreateDiaryFavorite",
+        "Create GET /diary/favorites controller: @UseGuards(JwtAuthGuard), calls ListDiaryFavorites",
+        "Create DELETE /diary/favorites/:id controller: @UseGuards(JwtAuthGuard), calls DeleteDiaryFavorite",
+        "Create POST /diary/favorites/:id/log controller: @UseGuards(JwtAuthGuard), calls CreateEntryFromFavorite",
+        "Create GET /diary/summary controller: @UseGuards(JwtAuthGuard), query params dateFrom/dateTo, calls GetDiarySummary",
+        "Create GET /diary/symptoms/:key/trend controller: @UseGuards(JwtAuthGuard), query params dateFrom/dateTo, calls GetSymptomTrend",
+        "Create DTOs with class-validator for all endpoints",
+        "Register in http.module.ts",
+        "Typecheck passes"
+      ],
+      "priority": 13,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-014",
+      "title": "E2E tests for diary API",
+      "description": "As a developer, I need E2E tests to verify the diary endpoints work end-to-end with a real database.",
+      "acceptanceCriteria": [
+        "Create diary.e2e-spec.ts in test/e2e/",
+        "Test flow: create entry with symptoms and effects -> list entries -> get entry detail -> update entry with severityAfter -> verify delta -> delete entry -> verify deleted",
+        "Test favorites flow: create favorite -> list favorites -> log from favorite -> verify entry created",
+        "Test summary endpoint returns correct aggregated data",
+        "Test auth: verify all endpoints return 401 without JWT",
+        "Test ownership: verify user cannot access/modify another user's entries",
+        "pnpm test:e2e passes"
+      ],
+      "priority": 14,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-015",
+      "title": "React Query hooks for diary API",
+      "description": "As a frontend developer, I need hooks to consume all diary API endpoints.",
+      "acceptanceCriteria": [
+        "Create src/hooks/use-diary.ts with all hooks",
+        "useDiaryEntries(filters) — GET /diary with query params, returns paginated data",
+        "useDiaryEntry(id) — GET /diary/:id",
+        "useCreateDiaryEntry() — POST /diary mutation, invalidates diary list query",
+        "useUpdateDiaryEntry() — PATCH /diary/:id mutation, invalidates list and detail queries",
+        "useDeleteDiaryEntry() — DELETE /diary/:id mutation, invalidates list query",
+        "useDiaryFavorites() — GET /diary/favorites",
+        "useCreateDiaryFavorite() — POST /diary/favorites mutation",
+        "useDeleteDiaryFavorite() — DELETE /diary/favorites/:id mutation",
+        "useLogFromFavorite() — POST /diary/favorites/:id/log mutation, invalidates diary list",
+        "useDiarySummary(dateFrom, dateTo) — GET /diary/summary",
+        "useSymptomTrend(key, dateFrom, dateTo) — GET /diary/symptoms/:key/trend",
+        "Typecheck passes"
+      ],
+      "priority": 15,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-016",
+      "title": "Diary route, lazy loading, and navigation links",
+      "description": "As a patient, I need to access the diary page from the navbar and dashboard.",
+      "acceptanceCriteria": [
+        "Add /diario route to App.tsx with React.lazy import, wrapped in ProtectedRoute",
+        "Add 'Diario' link to the header/navbar, visible only when user is authenticated (follow existing pattern for authenticated links)",
+        "Create placeholder DiaryPage component in src/pages/diary.tsx with page title 'Diario de Tratamento'",
+        "Typecheck passes",
+        "pnpm build passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 16,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-017",
+      "title": "Diary reusable UI components (SeveritySelector, SymptomChip, EffectChip, MethodSelector)",
+      "description": "As a developer, I need the reusable UI components for the diary forms and timeline.",
+      "acceptanceCriteria": [
+        "Create SeveritySelector component: 4 circles (gray=none, yellow=mild, orange=moderate, red=severe) with PT-BR labels, click to select, shows current selection, accepts onChange callback",
+        "Create SymptomChip component: chip showing symptom name (from SYMPTOM_LABELS) + SeveritySelector inline, support for custom symptom name",
+        "Create EffectChip component: chip with green background (positive) or red background (negative), showing effect name from EFFECT_LABELS, toggleable",
+        "Create MethodSelector component: horizontal chips with inline SVG icons (droplet for oil, flower for flower, wind for vape, cookie for edible, hand for topical, pill for capsule) — no emojis, strokeWidth 1.5",
+        "All components follow CannHub design system v2 (brand-green palette, DM Sans, rounded corners)",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 17,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-018",
+      "title": "New diary entry form — product, method, and dose section",
+      "description": "As a patient, I want to open a form to log a new diary entry with product selection, method, and dose.",
+      "acceptanceCriteria": [
+        "Add 'Novo registro' button to DiaryPage header that opens a modal/drawer",
+        "Modal has sections: 'Quando' with date picker (default today) and time input (default now), 'O que' with product dropdown (fetches products from linked associations via existing useAssociationProducts hooks + 'Outro' option with text input for custom product), 'Metodo' using MethodSelector component, 'Quanto' with numeric input + DoseUnit selector dropdown",
+        "Form state managed with controlled components",
+        "Responsive: modal on desktop, bottom-sheet drawer on mobile",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 18,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-019",
+      "title": "New diary entry form — symptoms, effects, notes, and submit",
+      "description": "As a patient, I want to add symptoms (with severity), effects, and notes to my diary entry and save it.",
+      "acceptanceCriteria": [
+        "Add 'Como estou antes' section: grid of SymptomChip components for predefined symptoms, each with SeveritySelector. Button '+ Adicionar sintoma' opens text input for custom symptom",
+        "Add 'Efeitos sentidos' section: grid of EffectChip components split into 'Positivos' and 'Negativos' groups, toggleable. Optional section with note that user can fill later. Button '+ Outro' for custom effects",
+        "Add 'Notas' section: textarea with placeholder 'Como foi a experiencia?'",
+        "Add 'Salvar como favorito' toggle checkbox at bottom",
+        "Submit button calls useCreateDiaryEntry, closes modal, shows success feedback, invalidates list",
+        "Validation: date + product (or custom name) + dose are required, show inline errors",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 19,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-020",
+      "title": "Diary timeline — entry cards grouped by day",
+      "description": "As a patient, I want to see my diary history as a timeline grouped by day.",
+      "acceptanceCriteria": [
+        "Create DiaryEntryCard component showing: time, method icon (SVG), product name, dose with unit, symptom badges with delta indicator (green arrow down = improvement, red arrow up = worsened, gray dash = no change), truncated notes preview",
+        "Main section of /diario page shows entries grouped by day with date headers (e.g., 'Hoje, 06 Abr', 'Ontem, 05 Abr', '04 Abr 2026')",
+        "Uses useDiaryEntries hook with pagination",
+        "Empty state: SVG illustration + 'Comece registrando seu primeiro uso' text + CTA button that opens new entry form",
+        "Load more button or infinite scroll at bottom",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 20,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-021",
+      "title": "Diary timeline — filters and entry detail/edit",
+      "description": "As a patient, I want to filter my timeline and view/edit entry details.",
+      "acceptanceCriteria": [
+        "Add filter bar above timeline: period chips (7d, 30d, 90d, custom date range), method dropdown, product dropdown, symptom dropdown",
+        "Filters update URL query params and refetch entries via useDiaryEntries",
+        "Click on entry card expands inline or opens detail view showing all fields",
+        "Detail view has 'Editar' button that makes fields editable, save calls useUpdateDiaryEntry",
+        "Detail view has 'Excluir' button with confirmation dialog, calls useDeleteDiaryEntry",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 21,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-022",
+      "title": "Symptom re-evaluation flow",
+      "description": "As a patient, I want to re-evaluate my symptoms after the product takes effect.",
+      "acceptanceCriteria": [
+        "Entries with symptoms missing severityAfter show amber badge 'Pendente re-avaliacao' on the DiaryEntryCard",
+        "Badge has button 'Como estou agora?' that opens mini-modal showing the same symptoms from the entry with SeveritySelector for severityAfter",
+        "Save calls useUpdateDiaryEntry with severityAfter values",
+        "After re-evaluation, DiaryEntryCard updates to show delta indicators (e.g., 'Dor: moderada → leve' with green arrow)",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 22,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-023",
+      "title": "Quick-log bar with favorites",
+      "description": "As a patient who uses the same product daily, I want to re-log with 1-2 taps using saved favorites.",
+      "acceptanceCriteria": [
+        "Add QuickLogBar component between header and timeline on /diario page",
+        "Horizontal scrollable row of favorite cards showing: method icon + product name + dose",
+        "Tap on favorite card opens the new entry form pre-filled with favorite data (product, method, dose, symptoms pre-selected), user just confirms time and symptom severity",
+        "Calls useLogFromFavorite on submit",
+        "If no favorites yet, show subtle hint 'Salve um registro como favorito para acesso rapido'",
+        "Manage favorites: small gear/edit icon that shows list with delete option",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 23,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-024",
+      "title": "Diary summary card on patient dashboard",
+      "description": "As a patient, I want to see a diary summary on my main dashboard.",
+      "acceptanceCriteria": [
+        "Add 'Diario de Tratamento' card to /painel (DashboardPage), matching the existing card style (Perfil Clinico, Documentos, Associacoes cards)",
+        "Card content: total entries this month, last entry (product name + time + relative time like 'ha 2h'), most tracked symptom, overall improvement indicator (average delta)",
+        "Uses useDiarySummary hook with current month date range",
+        "Empty state: 'Comece seu diario' text + CTA button linking to /diario",
+        "Link 'Ver diario completo' at bottom navigating to /diario",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 24,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-025",
+      "title": "Insights tab with charts (install recharts, symptom trends, method distribution)",
+      "description": "As a patient, I want to see charts and trends of my treatment in an Insights tab.",
+      "acceptanceCriteria": [
+        "Install recharts as dependency in apps/web",
+        "Add tab navigation on /diario: 'Timeline' (default) and 'Insights'",
+        "Insights tab shows: line chart of average severity before vs after for top 3 symptoms over time (uses useSymptomTrend), bar chart of administration method distribution, card 'Produto mais eficaz' showing product with best average improvement delta, card 'Consistencia' showing days with entries vs total days in period (e.g., '18 de 30 dias')",
+        "Period selector: 30d, 60d, 90d",
+        "Uses useDiarySummary and useSymptomTrend hooks",
+        "Charts use brand-green palette colors",
+        "Typecheck passes",
+        "Verify in browser using dev-browser skill"
+      ],
+      "priority": 25,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}

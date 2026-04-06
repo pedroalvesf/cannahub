@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+.pnpm-store/
 
 # Build
 dist/
@@ -14,8 +15,15 @@ build/
 # IDE
 .idea/
 .vscode/
+.claude/
 *.swp
 *.swo
+
+# npm lockfile (project uses pnpm)
+package-lock.json
+
+# Devcontainer
+.devcontainer/
 
 # OS
 .DS_Store
