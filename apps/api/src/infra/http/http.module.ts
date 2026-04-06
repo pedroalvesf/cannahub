@@ -66,6 +66,12 @@ import { ListDiaryEntriesController } from './controllers/diary/list-diary-entri
 import { GetDiaryEntryController } from './controllers/diary/get-diary-entry.controller';
 import { UpdateDiaryEntryController } from './controllers/diary/update-diary-entry.controller';
 import { DeleteDiaryEntryController } from './controllers/diary/delete-diary-entry.controller';
+import { CreateDiaryFavoriteController } from './controllers/diary/create-diary-favorite.controller';
+import { ListDiaryFavoritesController } from './controllers/diary/list-diary-favorites.controller';
+import { DeleteDiaryFavoriteController } from './controllers/diary/delete-diary-favorite.controller';
+import { LogFromFavoriteController } from './controllers/diary/log-from-favorite.controller';
+import { GetDiarySummaryController } from './controllers/diary/get-diary-summary.controller';
+import { GetSymptomTrendController } from './controllers/diary/get-symptom-trend.controller';
 
 // Controllers - Onboarding
 import { StartOnboardingController } from './controllers/onboarding/start-onboarding.controller';
@@ -81,6 +87,12 @@ import { ListDiaryEntriesUseCase } from '@/domain/diary/application/use-cases/li
 import { GetDiaryEntryUseCase } from '@/domain/diary/application/use-cases/get-diary-entry';
 import { UpdateDiaryEntryUseCase } from '@/domain/diary/application/use-cases/update-diary-entry';
 import { DeleteDiaryEntryUseCase } from '@/domain/diary/application/use-cases/delete-diary-entry';
+import { CreateDiaryFavoriteUseCase } from '@/domain/diary/application/use-cases/create-diary-favorite';
+import { ListDiaryFavoritesUseCase } from '@/domain/diary/application/use-cases/list-diary-favorites';
+import { DeleteDiaryFavoriteUseCase } from '@/domain/diary/application/use-cases/delete-diary-favorite';
+import { CreateEntryFromFavoriteUseCase } from '@/domain/diary/application/use-cases/create-entry-from-favorite';
+import { GetDiarySummaryUseCase } from '@/domain/diary/application/use-cases/get-diary-summary';
+import { GetSymptomTrendUseCase } from '@/domain/diary/application/use-cases/get-symptom-trend';
 
 // Use Cases - Auth
 import { CreateUserUseCase } from '@/domain/auth/application/use-cases/create-user';
@@ -209,6 +221,12 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     GetDiaryEntryController,
     UpdateDiaryEntryController,
     DeleteDiaryEntryController,
+    CreateDiaryFavoriteController,
+    ListDiaryFavoritesController,
+    DeleteDiaryFavoriteController,
+    LogFromFavoriteController,
+    GetDiarySummaryController,
+    GetSymptomTrendController,
 
     // Onboarding Controllers
     StartOnboardingController,
@@ -280,6 +298,12 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     GetDiaryEntryUseCase,
     UpdateDiaryEntryUseCase,
     DeleteDiaryEntryUseCase,
+    CreateDiaryFavoriteUseCase,
+    ListDiaryFavoritesUseCase,
+    DeleteDiaryFavoriteUseCase,
+    CreateEntryFromFavoriteUseCase,
+    GetDiarySummaryUseCase,
+    GetSymptomTrendUseCase,
 
     // Onboarding Use Cases
     StartOnboardingUseCase,
