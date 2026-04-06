@@ -39,6 +39,12 @@ import { PrismaProfessionalProfilesRepository } from './prisma/repositories/pris
 import { AddressesRepository } from '@/domain/auth/application/repositories/addresses-repository';
 import { PrismaAddressesRepository } from './prisma/repositories/prisma-addresses-repository';
 
+// Diary
+import { DiaryEntriesRepository } from '@/domain/diary/application/repositories/diary-entries-repository';
+import { PrismaDiaryEntriesRepository } from './prisma/repositories/prisma-diary-entries-repository';
+import { DiaryFavoritesRepository } from '@/domain/diary/application/repositories/diary-favorites-repository';
+import { PrismaDiaryFavoritesRepository } from './prisma/repositories/prisma-diary-favorites-repository';
+
 // Association
 import { AssociationsRepository } from '@/domain/association/application/repositories/associations-repository';
 import { PrismaAssociationsRepository } from './prisma/repositories/prisma-associations-repository';
@@ -138,6 +144,15 @@ import { PrismaProductVariantsRepository } from './prisma/repositories/prisma-pr
       provide: ProductVariantsRepository,
       useClass: PrismaProductVariantsRepository,
     },
+    // Diary
+    {
+      provide: DiaryEntriesRepository,
+      useClass: PrismaDiaryEntriesRepository,
+    },
+    {
+      provide: DiaryFavoritesRepository,
+      useClass: PrismaDiaryFavoritesRepository,
+    },
     // Address
     {
       provide: AddressesRepository,
@@ -169,6 +184,9 @@ import { PrismaProductVariantsRepository } from './prisma/repositories/prisma-pr
     PatientAssociationLinksRepository,
     ProductsRepository,
     ProductVariantsRepository,
+    // Diary
+    DiaryEntriesRepository,
+    DiaryFavoritesRepository,
     // Address
     AddressesRepository,
   ],
