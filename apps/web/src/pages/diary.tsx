@@ -5,6 +5,7 @@ import { DiaryEntryCard } from '@/components/diary/diary-entry-card'
 import { ReEvaluationModal } from '@/components/diary/re-evaluation-modal'
 import { QuickLogBar } from '@/components/diary/quick-log-bar'
 import { useDiaryEntries, useDeleteDiaryEntry } from '@/hooks/use-diary'
+import { DiaryInsights } from '@/components/diary/diary-insights'
 import { ADMINISTRATION_METHOD_LABELS, SYMPTOM_LABELS, SYMPTOM_SEVERITY_LABELS, DOSE_UNIT_LABELS, EFFECT_LABELS } from '@/constants/labels'
 
 const PERIOD_OPTIONS = [
@@ -40,6 +41,7 @@ export function DiaryPage() {
   const [period, setPeriod] = useState<number | null>(null)
   const [methodFilter, setMethodFilter] = useState('')
   const [symptomFilter, setSymptomFilter] = useState('')
+  const [tab, setTab] = useState<'timeline' | 'insights'>('timeline')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [reEvalEntry, setReEvalEntry] = useState<{ id: string; symptoms: any[] } | null>(null)
 
@@ -107,6 +109,34 @@ export function DiaryPage() {
             </button>
           </div>
 
+          {/* Tab navigation */}
+          <div className="flex gap-1 mb-6 bg-brand-cream/60 dark:bg-surface-dark-card/60 rounded-[10px] p-1 w-fit">
+            <button
+              onClick={() => setTab('timeline')}
+              className={`px-4 py-2 rounded-[8px] text-sm font-medium transition-colors ${
+                tab === 'timeline'
+                  ? 'bg-brand-white dark:bg-surface-dark text-brand-green-deep dark:text-white shadow-sm'
+                  : 'text-brand-muted dark:text-gray-400'
+              }`}
+            >
+              Timeline
+            </button>
+            <button
+              onClick={() => setTab('insights')}
+              className={`px-4 py-2 rounded-[8px] text-sm font-medium transition-colors ${
+                tab === 'insights'
+                  ? 'bg-brand-white dark:bg-surface-dark text-brand-green-deep dark:text-white shadow-sm'
+                  : 'text-brand-muted dark:text-gray-400'
+              }`}
+            >
+              Insights
+            </button>
+          </div>
+
+          {tab === 'insights' ? (
+            <DiaryInsights />
+          ) : (
+          <>
           {/* Quick-log bar */}
           <QuickLogBar onLogFromFavorite={handleLogFromFavorite} />
 
@@ -296,6 +326,8 @@ export function DiaryPage() {
                 </div>
               )}
             </div>
+          )}
+          </>
           )}
         </div>
       </main>
