@@ -98,6 +98,71 @@ export function formatMultiSelect(value: string | undefined, labels: Record<stri
   return value.split(',').map((v) => labels[v.trim()] ?? v.trim()).join(', ')
 }
 
+// --- Diary labels ---
+
+export const ADMINISTRATION_METHOD_LABELS: Record<string, string> = {
+  oil: 'Oleo',
+  flower: 'Flor',
+  vape: 'Vaporizacao',
+  edible: 'Comestivel',
+  topical: 'Topico',
+  capsule: 'Capsula',
+  other: 'Outro',
+}
+
+export const DOSE_UNIT_LABELS: Record<string, string> = {
+  drops: 'gotas',
+  ml: 'ml',
+  mg: 'mg',
+  g: 'g',
+  puffs: 'tragadas',
+  units: 'unidades',
+}
+
+export const SYMPTOM_SEVERITY_LABELS: Record<string, string> = {
+  none: 'Nenhum',
+  mild: 'Leve',
+  moderate: 'Moderado',
+  severe: 'Severo',
+}
+
+export const SYMPTOM_LABELS: Record<string, string> = {
+  pain: 'Dor',
+  anxiety: 'Ansiedade',
+  insomnia: 'Insonia',
+  nausea: 'Nausea',
+  inflammation: 'Inflamacao',
+  fatigue: 'Fadiga',
+  depression: 'Depressao',
+  appetite_loss: 'Perda de apetite',
+  headache: 'Dor de cabeca',
+  muscle_spasm: 'Espasmo muscular',
+  stress: 'Estresse',
+  ptsd: 'TEPT',
+}
+
+export const EFFECT_LABELS: Record<string, string> = {
+  // Positivos
+  relaxed: 'Relaxado',
+  pain_relief: 'Alivio da dor',
+  sleepy: 'Sonolento',
+  calm: 'Calmo',
+  focused: 'Focado',
+  euphoric: 'Euforico',
+  hungry: 'Com fome',
+  creative: 'Criativo',
+  energized: 'Energizado',
+  // Negativos
+  dry_mouth: 'Boca seca',
+  dizzy: 'Tontura',
+  paranoia: 'Paranoia',
+  anxious: 'Ansioso',
+  headache: 'Dor de cabeca',
+  nausea: 'Nausea',
+  drowsy: 'Sonolencia',
+  red_eyes: 'Olhos vermelhos',
+}
+
 /**
  * Classes CSS para badges de status.
  */
