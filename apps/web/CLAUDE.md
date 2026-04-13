@@ -52,7 +52,10 @@ src/
 | `/login` | LoginPage | Não | Email + senha |
 | `/acolhimento` | OnboardingPage | Sim | 5-6 steps clínicos (multi-select condições/formas, step condicional: acesso atual) |
 | `/documentos` | DocumentsPage | Sim | Upload 4 documentos |
-| `/painel` | DashboardPage | Sim | Dashboard do paciente (edição inline, perfil clínico, docs, associações) |
+| `/painel` | DashboardPage | Sim | Dashboard do paciente (edição inline, perfil clínico, docs, associações, card do diário) |
+| `/diario` | JournalPage | Sim | Diário de tratamento (CRUD: humor 1-5, sintomas multi-select, dosagem, notas, visibility) |
+| `/medicos` | DoctorsPage | Não | Diretório público de médicos (filtros: estado, especialidade, modalidade) |
+| `/medicos/:slug` | DoctorDetailPage | Não | Perfil do médico (bio, especialidades, contato WhatsApp/email/site) |
 | `/tratamentos` | TreatmentsPage | Não | Hub de tratamentos v2 (hero 2 cols, filter chips, grid assimétrico, proof cards) |
 | `/tratamentos/categoria/:slug` | TreatmentCategoryPage | Não | Categoria (neurológicas, saúde mental, dor, oncologia) com tint, endocannabinoid context |
 | `/tratamentos/:slug` | TreatmentDetailPage | Não | Detalhe por condição (barra nav, hero com stat, sidebar TOC, conteúdo editorial) |
@@ -100,6 +103,22 @@ src/
 - `useCompleteOnboarding()` — `POST /onboarding/complete`
 - `useExtractFromText()` — `POST /onboarding/extract`
 - `useEscalate()` — `POST /onboarding/escalate`
+
+### use-association-link.ts
+- `useMyLinks()` — `GET /my-links`
+- `useAssociationProductTypes(id)` — `GET /associations/:id/product-types`
+- `usePublicAssociationProducts(id)` — `GET /associations/:id/products` (público, com variantes)
+- `useRequestAssociationLink()` — `POST /associations/:id/link`
+
+### use-doctors.ts
+- `useDoctors(filters)` — `GET /doctors?state&specialty&modality`
+- `useDoctor(slug)` — `GET /doctors/:slug`
+
+### use-journal.ts
+- `useJournalEntries()` — `GET /journal`
+- `useCreateJournalEntry()` — `POST /journal`
+- `useUpdateJournalEntry()` — `PATCH /journal/:id`
+- `useDeleteJournalEntry()` — `DELETE /journal/:id`
 
 ## Design System — v2 (redesign março 2026)
 
