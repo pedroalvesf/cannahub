@@ -83,7 +83,7 @@ export function HomePage() {
         <div className="relative max-w-[1100px] mx-auto rounded-[20px] overflow-hidden bg-brand-green-mid border border-white/[0.06] h-[280px] md:h-[480px]">
           {/* Hero image */}
           <img
-            src="/treatments/hero-geral.png"
+            src="/treatments/hero-geral.webp"
             alt="Cannabis medicinal — ciência e acolhimento"
             className="absolute inset-0 w-full h-full object-cover"
             loading="eager"
