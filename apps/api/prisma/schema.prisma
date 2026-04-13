@@ -46,6 +46,7 @@ model User {
   // Patient domain relations
   Patient              Patient?
   Dependents           Dependent[]
+  JournalEntries       TreatmentJournalEntry[]
   Documents            Document[]          @relation("UserDocuments")
   ReviewedDocuments    Document[]          @relation("DocumentReviewer")
   ProfessionalProfile  ProfessionalProfile?
@@ -289,20 +290,28 @@ model SupportMessage {
 
 model Doctor {
   id              String   @id @default(uuid())
+  slug            String   @unique
   name            String
   crm             String   @unique
   state           String
+  city            String?
   specialties     String[]
   telemedicine    Boolean  @default(false)
+  inPerson        Boolean  @default(false)
+  bio             String?
+  photoUrl        String?
   consultationFee String?
   contactInfo     Json
   active          Boolean  @default(true)
+  directoryListed Boolean  @default(false)
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@index([state])
   @@index([crm])
+  @@index([slug])
+  @@index([directoryListed])
 }
 
 // --- Patient Domain ---
@@ -378,6 +387,27 @@ model ProfessionalProfile {
 
   @@unique([registrationNumber, registrationState])
   @@index([userId])
+}
+
+model TreatmentJournalEntry {
+  id                String   @id @default(uuid())
+  userId            String
+  entryDate         DateTime @db.Date
+  mood              Int?
+  symptoms          String[]
+  symptomIntensity  Int?
+  medicationTaken   Boolean  @default(false)
+  dosage            String?
+  sideEffects       String[]
+  notes             String?
+  visibility        String   @default("private") // 'private' | 'shareable'
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  User              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, entryDate])
+  @@index([userId, createdAt])
 }
 
 // --- Association Domain ---

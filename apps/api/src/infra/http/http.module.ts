@@ -34,6 +34,7 @@ import { GetAssociationController } from './controllers/association/get-associat
 import { RequestAssociationLinkController } from './controllers/association/request-link.controller';
 import { ListMyLinksController } from './controllers/association/list-my-links.controller';
 import { GetAssociationProductTypesController } from './controllers/association/get-association-product-types.controller';
+import { GetAssociationProductsPublicController } from './controllers/association/get-association-products-public.controller';
 
 // Controllers - Association Panel
 import { AssociationDashboardController } from './controllers/association/association-dashboard.controller';
@@ -50,6 +51,7 @@ import { AssociationUpdateProfileController } from './controllers/association/up
 
 // Controllers - Documents
 import { ListDocumentsController } from './controllers/patient/list-documents.controller';
+import { JournalController } from './controllers/patient/journal.controller';
 
 // Controllers - Admin
 import { AdminListUsersController } from './controllers/admin/list-users.controller';
@@ -58,6 +60,10 @@ import { AdminApproveDocumentController } from './controllers/admin/approve-docu
 import { AdminRejectDocumentController } from './controllers/admin/reject-document.controller';
 import { AdminUpdateUserStatusController } from './controllers/admin/update-user-status.controller';
 import { AdminDeleteUsersController } from './controllers/admin/delete-users.controller';
+
+// Controllers - Directory (public)
+import { ListDoctorsController } from './controllers/directory/list-doctors.controller';
+import { GetDoctorController } from './controllers/directory/get-doctor.controller';
 
 // Controllers - Onboarding
 import { StartOnboardingController } from './controllers/onboarding/start-onboarding.controller';
@@ -114,6 +120,12 @@ import { ListMyLinksUseCase } from '@/domain/association/application/use-cases/l
 import { ListUserDocumentsUseCase } from '@/domain/patient/application/use-cases/list-user-documents';
 import { GetDocumentByIdUseCase } from '@/domain/patient/application/use-cases/get-document-by-id';
 
+// Use Cases - Journal
+import { CreateJournalEntryUseCase } from '@/domain/patient/application/use-cases/create-journal-entry';
+import { ListJournalEntriesUseCase } from '@/domain/patient/application/use-cases/list-journal-entries';
+import { UpdateJournalEntryUseCase } from '@/domain/patient/application/use-cases/update-journal-entry';
+import { DeleteJournalEntryUseCase } from '@/domain/patient/application/use-cases/delete-journal-entry';
+
 // Use Cases - Admin
 import { ListUsersUseCase } from '@/domain/admin/application/use-cases/list-users';
 import { GetUserDetailUseCase } from '@/domain/admin/application/use-cases/get-user-detail';
@@ -121,6 +133,10 @@ import { ApproveDocumentUseCase } from '@/domain/admin/application/use-cases/app
 import { RejectDocumentUseCase } from '@/domain/admin/application/use-cases/reject-document';
 import { UpdateUserStatusUseCase } from '@/domain/admin/application/use-cases/update-user-status';
 import { DeleteUsersUseCase } from '@/domain/admin/application/use-cases/delete-users';
+
+// Use Cases - Directory
+import { ListDirectoryDoctorsUseCase } from '@/domain/onboarding/application/use-cases/list-directory-doctors';
+import { GetDoctorBySlugUseCase } from '@/domain/onboarding/application/use-cases/get-doctor-by-slug';
 
 // Use Cases - Onboarding
 import { StartOnboardingUseCase } from '@/domain/onboarding/application/use-cases/start-onboarding';
@@ -162,6 +178,7 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     RequestAssociationLinkController,
     ListMyLinksController,
     GetAssociationProductTypesController,
+    GetAssociationProductsPublicController,
 
     // Association Panel Controllers
     AssociationDashboardController,
@@ -186,6 +203,11 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
 
     // Document Controllers
     ListDocumentsController,
+    JournalController,
+
+    // Directory Controllers (public)
+    ListDoctorsController,
+    GetDoctorController,
 
     // Onboarding Controllers
     StartOnboardingController,
@@ -250,6 +272,16 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     // Document Use Cases
     ListUserDocumentsUseCase,
     GetDocumentByIdUseCase,
+
+    // Journal Use Cases
+    CreateJournalEntryUseCase,
+    ListJournalEntriesUseCase,
+    UpdateJournalEntryUseCase,
+    DeleteJournalEntryUseCase,
+
+    // Directory Use Cases
+    ListDirectoryDoctorsUseCase,
+    GetDoctorBySlugUseCase,
 
     // Onboarding Use Cases
     StartOnboardingUseCase,

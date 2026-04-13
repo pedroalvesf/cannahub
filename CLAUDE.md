@@ -88,7 +88,7 @@ docker compose up -d              # Sobe Postgres + Redis
 # API (cd apps/api)
 pnpm dev                          # Dev server (port 3000)
 pnpm build                        # Compile TypeScript
-pnpm test                         # 93 unit tests (Vitest)
+pnpm test                         # 140 unit tests (Vitest)
 pnpm test:e2e                     # 22 E2E tests (precisa docker-compose.test.yml rodando)
 pnpm prisma:generate              # Gera Prisma client
 npx prisma db push                # Sync schema com DB
@@ -120,7 +120,10 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 | `/login` | Login | Não | — |
 | `/acolhimento` | Onboarding (5-6 steps, multi-select, condicional) | Sim | ProtectedRoute |
 | `/documentos` | Upload de documentos | Sim | ProtectedRoute |
-| `/painel` | Dashboard do paciente (associações vinculadas dinâmicas) | Sim | ProtectedRoute |
+| `/painel` | Dashboard do paciente (associações vinculadas dinâmicas + card do diário) | Sim | ProtectedRoute |
+| `/diario` | Diário de tratamento (CRUD de entradas privadas ou compartilháveis) | Sim | ProtectedRoute |
+| `/medicos` | Diretório de médicos (filtros estado/especialidade/modalidade) | Não | — |
+| `/medicos/:slug` | Perfil do médico (bio, especialidades, contato) | Não | — |
 | `/tratamentos` | Hub de tratamentos v2 (filter chips, grid assimétrico, proof cards) | Não | — |
 | `/tratamentos/categoria/:slug` | Categoria de tratamento (neurológicas, saúde mental, dor, oncologia) | Não | — |
 | `/tratamentos/:slug` | Detalhe por condição (barra nav, hero com stat, sidebar TOC) | Não | — |
@@ -173,9 +176,20 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 - `GET /associations` — listar associações (@Public, filtros: region, state, hasAssistedAccess)
 - `GET /associations/:id` — detalhe associação (@Public)
 - `GET /associations/:id/product-types` — tipos de produto da associação (@Public)
+- `GET /associations/:id/products` — produtos completos com variantes (@Public)
 - `POST /associations/:id/link` — paciente solicita vínculo (JWT, cria Patient se não existir)
 - `GET /my-links` — vínculos do paciente logado com nome da associação (JWT)
 - `GET /documents` — listar documentos do user (JWT)
+
+### Directory (público)
+- `GET /doctors` — listar médicos do diretório (@Public, filtros: `state`, `specialty`, `modality=telemedicine|in_person`)
+- `GET /doctors/:slug` — detalhe do médico por slug (@Public)
+
+### Treatment Journal (JWT, só dono)
+- `GET /journal` — lista entradas do usuário logado (ordem: entryDate desc, depois createdAt desc)
+- `POST /journal` — cria entrada (body validado com Zod)
+- `PATCH /journal/:id` — atualiza parcialmente (404 se não for dono)
+- `DELETE /journal/:id` — remove (404 se não for dono)
 
 ### Painel da Associação (requer role association + permissões)
 - `GET /association/dashboard` — métricas (membros, pendentes, produtos) — `association_profile:read`
@@ -230,6 +244,7 @@ npx tsx prisma/seed-admin.ts email@ex.com            # Promove user existente pa
 npx tsx prisma/seed-association-user.ts               # Cria associacaoalianca@teste.com + Aliança Medicinal + role
 npx tsx prisma/seed-association-user.ts email assocId  # Promove user existente para association
 npx tsx prisma/seed-products.ts                       # Cria 12 produtos da Aliança Medicinal
+npx tsx prisma/seed-doctors.ts                        # Cria 6 médicos no diretório público
 ```
 
 ### Tipos de usuário
@@ -256,6 +271,8 @@ AssociationMember → associationId + userId, role (staff/manager/director), sta
 PatientAssociationLink → associationId + patientId, requestedBy/approvedBy, startDate/endDate, status, feeStatus, feeExpiresAt, feePaidAt
 Product → associationId, name, description, type, category, concentration, cbd, thc, dosagePerDrop, inStock, imageUrl
 ProductVariant → productId, volume, price (Decimal 10,2)
+Doctor → slug, name, crm, state, city, specialties[], telemedicine, inPerson, bio, photoUrl, contactInfo(Json), directoryListed
+TreatmentJournalEntry → userId, entryDate, mood(1-5?), symptoms[], symptomIntensity(0-10?), medicationTaken, dosage?, sideEffects[], notes?, visibility('private'|'shareable')
 Patient, Dependent, ProfessionalProfile → domínio de pacientes
 Role → name, slug, level, assignableRoles
 Permission → name, slug, resource, action
@@ -334,7 +351,7 @@ Dor: #F5EDEA             Oncologia: #EEE9F5
 
 ## Testes
 
-### Unit tests (123 — Vitest)
+### Unit tests (140 — Vitest)
 ```bash
 cd apps/api && pnpm test
 ```
@@ -366,6 +383,12 @@ Blog, diretório médicos/advogados, eventos, SEO, auto-cadastro associações
 
 ### Fase 3 — Transação
 Pagamento com split (iugu), pedidos, inteligência de mercado
+
+### Frente atual (abril 2026) — ordem de execução
+1. ✅ **Catálogo público via API real** — endpoint `GET /associations/:id/products` (`@Public`) no backend; frontend consome via `usePublicAssociationProducts(associationId)` com fallback para `sample-products.ts` quando a associação não tem produtos cadastrados.
+2. ✅ **Diretório de médicos** — entidade `Doctor` estendida com `slug`, `city`, `bio`, `photoUrl`, `inPerson`, `directoryListed`. Endpoints públicos `GET /doctors` (filtros `?state&specialty&modality`) e `GET /doctors/:slug`. Rotas frontend `/medicos` e `/medicos/:slug` (lazy loaded). Seed: `prisma/seed-doctors.ts` com 6 médicos cobrindo SP/RJ/MG/RS/PR/PE.
+3. ✅ **Diário de tratamento** — rota protegida `/diario`. Entidade `TreatmentJournalEntry` (data, mood 1-5, symptoms[], symptomIntensity 0-10, medicationTaken, dosage, sideEffects[], notes, visibility `private`\|`shareable`). 4 endpoints JWT em `/journal` (GET/POST/PATCH/DELETE). Card no `/painel` linkando para o diário.
+4. ⏳ **Upload real S3** — substituir mock em `/documentos` por URL assinada + PUT direto ao bucket. Variáveis `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_S3_BUCKET`.
 
 ## Próximos passos
 
@@ -407,8 +430,9 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] SVGs ilustrativos por condição (public/treatments/) + imagens WebP nos cards
 - [x] Ícones SVG no catálogo e quiz (substituiu emojis)
 - [ ] Upload real de documentos (S3)
-- [ ] Integrar catálogo com API real (substituir sample-products.ts)
-- [ ] Diretório de médicos (/medicos) + perfil (/medicos/:slug)
+- [x] Integrar catálogo com API real (endpoint público + fallback sample-products)
+- [x] Diretório de médicos (/medicos) + perfil (/medicos/:slug)
+- [x] Diário de tratamento do paciente (/diario, entradas private|shareable)
 - [ ] Páginas de detalhe para novas condições (artrite, endometriose, náuseas quimio, dor oncológica)
 
 ### Segurança (próximos passos)
@@ -432,7 +456,9 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] 13 use cases + 30 testes unitários novos (total: 123)
 - [x] Seed: Aliança Medicinal (12 produtos) + user associacaoalianca@teste.com
 - [x] Mensagens de erro em PT-BR
-- [ ] Seed de AMME Medicinal (19 produtos)
-- [ ] Endpoints de médicos (GET /doctors, GET /doctors/:id)
+- [x] Seed de AMME Medicinal (19 produtos)
+- [x] Endpoints de médicos públicos (GET /doctors, GET /doctors/:slug) + 6 seeds
+- [x] Endpoint público `GET /associations/:id/products` com variantes
+- [x] Diário de tratamento — entidade `TreatmentJournalEntry`, 4 use cases + 11 testes, controller JWT `/journal`
 - [ ] Notificações por e-mail (Resend)
 - [ ] Upload S3 com URLs assinadas

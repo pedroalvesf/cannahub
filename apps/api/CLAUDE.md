@@ -5,7 +5,7 @@
 ```bash
 pnpm dev                # Dev server (port 3000)
 pnpm build              # Compile TypeScript (nest build --tsc)
-pnpm test               # Unit tests — 93 passando (vitest run --project unit)
+pnpm test               # Unit tests — 140 passando (vitest run --project unit)
 pnpm test:watch         # Watch mode
 pnpm test:e2e           # E2E (precisa Postgres na porta 8239)
 pnpm lint               # ESLint fix
@@ -111,11 +111,27 @@ Rastreia mutações em coleções (ex: RoleList do User). Persiste apenas diffs.
 |--------|------|------|-----------|
 | GET | `/associations` | @Public | Listar (filtros: region, state, hasAssistedAccess) |
 | GET | `/associations/:id` | @Public | Detalhe |
+| GET | `/associations/:id/product-types` | @Public | Tipos e categorias (sem preços) |
+| GET | `/associations/:id/products` | @Public | Produtos com variantes (preços visíveis; frontend filtra por `accountStatus`) |
+
+### Directory
+| Método | Rota | Auth | Descrição |
+|--------|------|------|-----------|
+| GET | `/doctors` | @Public | Listar médicos (filtros: `?state&specialty&modality=telemedicine\|in_person`) |
+| GET | `/doctors/:slug` | @Public | Perfil do médico por slug |
 
 ### Documents
 | Método | Rota | Auth | Descrição |
 |--------|------|------|-----------|
 | GET | `/documents` | JWT | Listar documentos do user |
+
+### Treatment Journal
+| Método | Rota | Auth | Descrição |
+|--------|------|------|-----------|
+| GET | `/journal` | JWT | Lista entradas do usuário logado (ordem: entryDate desc) |
+| POST | `/journal` | JWT | Cria entrada (body Zod: entryDate, mood?, symptoms?, medicationTaken?, …) |
+| PATCH | `/journal/:id` | JWT | Atualiza parcial (404 se não for dono) |
+| DELETE | `/journal/:id` | JWT | Remove (204; 404 se não for dono) |
 
 ### RBAC
 | Método | Rota | Auth | Descrição |
@@ -144,7 +160,11 @@ Rastreia mutações em coleções (ex: RoleList do User). Persiste apenas diffs.
 User              → accountType (patient/guardian/prescriber/veterinarian/caregiver)
 OnboardingSession → condition, experience, currentAccessMethod, preferredForm, hasPrescription, assistedAccess, summary
 SupportTicket     → escalação de onboarding para humano
+Doctor            → slug, name, crm, state, city, specialties[], telemedicine, inPerson, bio, photoUrl, contactInfo(Json), directoryListed
+                    (compartilhada entre escalação de onboarding e diretório público — só `directoryListed=true` aparece em /doctors)
 Document          → tipo, URL S3, status (pending/approved/rejected), motivo rejeição
+TreatmentJournalEntry → userId, entryDate, mood(1-5?), symptoms[], symptomIntensity(0-10?), medicationTaken,
+                        dosage?, sideEffects[], notes?, visibility('private'|'shareable')
 Association       → perfil, região, produtos
 Patient/Dependent → domínio de pacientes
 PatientAssociationLink → vínculo paciente-associação

@@ -5,6 +5,30 @@ import { useAuthStore } from '@/stores/auth-store'
 import { sampleAssociations } from '@/data/sample-associations'
 import { sampleProducts } from '@/data/sample-products'
 import type { AssociationProduct } from '@/data/sample-products'
+import { usePublicAssociationProducts, type PublicAssociationProduct } from '@/hooks/use-association-link'
+
+type CatalogProduct = Pick<
+  AssociationProduct,
+  'id' | 'name' | 'description' | 'type' | 'category' | 'concentration' | 'dosagePerDrop' | 'cbd' | 'thc' | 'inStock'
+> & {
+  variants: { volume: string; price: number }[]
+}
+
+function apiProductToCatalog(p: PublicAssociationProduct): CatalogProduct {
+  return {
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    type: p.type as CatalogProduct['type'],
+    category: p.category as CatalogProduct['category'],
+    concentration: p.concentration,
+    dosagePerDrop: p.dosagePerDrop ?? undefined,
+    cbd: p.cbd,
+    thc: p.thc,
+    inStock: p.inStock,
+    variants: p.variants.map((v) => ({ volume: v.volume, price: v.price })),
+  }
+}
 
 const CATEGORY_ORDER = ['Óleo CBD', 'Óleo THC', 'Óleo Misto', 'Óleo Especial', 'Pomada', 'Creme', 'Cápsula', 'Gummy', 'Flor'] as const
 
@@ -42,7 +66,12 @@ export function AssociationCatalogPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
 
   const association = sampleAssociations.find((a) => a.slug === slug)
-  const products = sampleProducts.filter((p) => p.associationSlug === slug)
+
+  const { data: apiData } = usePublicAssociationProducts(association?.id)
+
+  const products: CatalogProduct[] = apiData && apiData.products.length > 0
+    ? apiData.products.map(apiProductToCatalog)
+    : sampleProducts.filter((p) => p.associationSlug === slug)
 
   if (!association) {
     return (
@@ -278,7 +307,7 @@ export function AssociationCatalogPage() {
 
 /* ─── Subcomponents ──────────────────────────────────────── */
 
-function ProductCard({ product, canSeePrices }: { product: AssociationProduct; canSeePrices: boolean }) {
+function ProductCard({ product, canSeePrices }: { product: CatalogProduct; canSeePrices: boolean }) {
   const [selectedVariant, setSelectedVariant] = useState(0)
   const colors = TYPE_COLORS[product.category] ?? TYPE_COLORS['Óleo CBD']!
   const variant = product.variants[selectedVariant]

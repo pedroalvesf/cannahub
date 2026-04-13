@@ -23,6 +23,9 @@ const TreatmentsPage = lazy(() => import('@/pages/treatments').then(m => ({ defa
 const TreatmentDetailPage = lazy(() => import('@/pages/treatment-detail').then(m => ({ default: m.TreatmentDetailPage })))
 const TreatmentCategoryPage = lazy(() => import('@/pages/treatment-category').then(m => ({ default: m.TreatmentCategoryPage })))
 const LegislationPage = lazy(() => import('@/pages/legislation').then(m => ({ default: m.LegislationPage })))
+const DoctorsPage = lazy(() => import('@/pages/doctors').then(m => ({ default: m.DoctorsPage })))
+const DoctorDetailPage = lazy(() => import('@/pages/doctor-detail').then(m => ({ default: m.DoctorDetailPage })))
+const JournalPage = lazy(() => import('@/pages/journal').then(m => ({ default: m.JournalPage })))
 const AdminUsersPage = lazy(() => import('@/pages/admin/users').then(m => ({ default: m.AdminUsersPage })))
 const AdminUserDetailPage = lazy(() => import('@/pages/admin/user-detail').then(m => ({ default: m.AdminUserDetailPage })))
 const AssociationDashboardPage = lazy(() => import('@/pages/association-panel/dashboard').then(m => ({ default: m.AssociationDashboardPage })))
@@ -123,12 +126,15 @@ function AppContent() {
       <Route path="/tratamentos/categoria/:slug" element={<TreatmentCategoryPage />} />
       <Route path="/tratamentos/:slug" element={<TreatmentDetailPage />} />
       <Route path="/legislacao" element={<LegislationPage />} />
+      <Route path="/medicos" element={<DoctorsPage />} />
+      <Route path="/medicos/:slug" element={<DoctorDetailPage />} />
       <Route path="/associacoes" element={<AssociationsPage />} />
       <Route path="/associacoes/:slug" element={<AssociationDetailPage />} />
       <Route path="/associacoes/:slug/catalogo" element={<AssociationCatalogPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<RegisterPage />} />
       <Route path="/painel" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+      <Route path="/diario" element={<ProtectedRoute><JournalPage /></ProtectedRoute>} />
       <Route path="/associacao/painel" element={<AssociationRoute><AssociationDashboardPage /></AssociationRoute>} />
       <Route path="/associacao/produtos" element={<AssociationRoute><AssociationProductsPage /></AssociationRoute>} />
       <Route path="/associacao/associados" element={<AssociationRoute><AssociationMembersPage /></AssociationRoute>} />

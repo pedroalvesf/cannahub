@@ -34,6 +34,8 @@ import { DocumentsRepository } from '@/domain/patient/application/repositories/d
 import { PrismaDocumentsRepository } from './prisma/repositories/prisma-documents-repository';
 import { ProfessionalProfilesRepository } from '@/domain/patient/application/repositories/professional-profiles-repository';
 import { PrismaProfessionalProfilesRepository } from './prisma/repositories/prisma-professional-profiles-repository';
+import { TreatmentJournalEntriesRepository } from '@/domain/patient/application/repositories/treatment-journal-entries-repository';
+import { PrismaTreatmentJournalEntriesRepository } from './prisma/repositories/prisma-treatment-journal-entries-repository';
 
 // Address
 import { AddressesRepository } from '@/domain/auth/application/repositories/addresses-repository';
@@ -117,6 +119,10 @@ import { PrismaProductVariantsRepository } from './prisma/repositories/prisma-pr
       provide: ProfessionalProfilesRepository,
       useClass: PrismaProfessionalProfilesRepository,
     },
+    {
+      provide: TreatmentJournalEntriesRepository,
+      useClass: PrismaTreatmentJournalEntriesRepository,
+    },
     // Association
     {
       provide: AssociationsRepository,
@@ -163,6 +169,7 @@ import { PrismaProductVariantsRepository } from './prisma/repositories/prisma-pr
     PatientsRepository,
     DocumentsRepository,
     ProfessionalProfilesRepository,
+    TreatmentJournalEntriesRepository,
     // Association
     AssociationsRepository,
     AssociationMembersRepository,

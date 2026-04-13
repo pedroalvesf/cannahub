@@ -33,6 +33,39 @@ export function useAssociationProductTypes(associationId?: string) {
   })
 }
 
+export interface PublicProductVariant {
+  id: string
+  volume: string
+  price: number
+}
+
+export interface PublicAssociationProduct {
+  id: string
+  name: string
+  description: string
+  type: string
+  category: string
+  concentration: string
+  cbd: number
+  thc: number
+  dosagePerDrop?: string | null
+  inStock: boolean
+  imageUrl?: string | null
+  createdAt: string
+  variants: PublicProductVariant[]
+}
+
+export function usePublicAssociationProducts(associationId?: string) {
+  return useQuery<{ products: PublicAssociationProduct[] }>({
+    queryKey: ['association-products-public', associationId],
+    queryFn: async () => {
+      const { data } = await api.get(`/associations/${associationId}/products`)
+      return data
+    },
+    enabled: !!associationId,
+  })
+}
+
 export function useRequestAssociationLink() {
   const queryClient = useQueryClient()
   return useMutation({

@@ -620,6 +620,25 @@ export function DashboardPage() {
             )}
           </SectionCard>
 
+          {/* Treatment journal */}
+          <SectionCard
+            title="Diário de tratamento"
+            action={
+              <Link
+                to="/diario"
+                className="text-[12px] font-semibold text-brand-green-mid dark:text-brand-green-light hover:underline no-underline"
+              >
+                Abrir diário →
+              </Link>
+            }
+          >
+            <p className="text-[13.5px] text-brand-text-md dark:text-gray-300 leading-relaxed py-2">
+              Registre humor, sintomas, dosagem e observações ao longo do
+              tratamento. Entradas são privadas por padrão — marque como
+              compartilháveis quando quiser que seu médico possa acompanhar.
+            </p>
+          </SectionCard>
+
           {/* Documents */}
           <SectionCard
             title="Documentos"
