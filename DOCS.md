@@ -35,6 +35,9 @@ src/
 │   ├── association/            # Associações, produtos, vínculos
 │   │   ├── enterprise/entities/    # Association, Product, PatientAssociationLink
 │   │   └── application/use-cases/  # CRUD produtos, membros, links, perfil
+│   ├── patient/                # Pacientes, documentos, diário
+│   │   ├── enterprise/entities/    # Patient, Dependent, Document, ProfessionalProfile, TreatmentJournalEntry
+│   │   └── application/use-cases/  # list-docs, create/list/update/delete journal entry
 │   └── admin/                  # Aprovação de usuários e documentos
 │       └── application/use-cases/  # list-users, approve/reject docs, etc.
 ├── infra/
@@ -157,7 +160,17 @@ Endpoints públicos usam o decorator `@Public()` (importado de `@/infra/auth/pub
 |--------|------|-----------|
 | GET | `/associations` | Lista com filtros: region, state, hasAssistedAccess |
 | GET | `/associations/:id` | Detalhe da associação |
-| GET | `/associations/:id/product-types` | Tipos de produto disponíveis |
+| GET | `/associations/:id/product-types` | Tipos e categorias de produto (sem preços) |
+| GET | `/associations/:id/products` | Produtos completos com variantes (frontend filtra preços por `accountStatus`) |
+
+### Diretório de médicos (públicos)
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/doctors` | Lista pública (filtros: `state`, `specialty`, `modality=telemedicine\|in_person`) |
+| GET | `/doctors/:slug` | Perfil do médico por slug |
+
+Só retorna registros com `active=true AND directoryListed=true`.
 
 ### Vínculos (autenticados)
 
@@ -171,6 +184,32 @@ Endpoints públicos usam o decorator `@Public()` (importado de `@/infra/auth/pub
 | Método | Rota | Descrição |
 |--------|------|-----------|
 | GET | `/documents` | Lista documentos do user logado |
+
+### Diário de tratamento (autenticados, só dono)
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/journal` | Lista entradas do usuário logado (ordem: entryDate desc) |
+| POST | `/journal` | Cria entrada (body Zod) |
+| PATCH | `/journal/:id` | Atualiza parcialmente |
+| DELETE | `/journal/:id` | Remove (204) |
+
+**Body schema (POST/PATCH)**:
+```typescript
+{
+  entryDate: string          // 'YYYY-MM-DD' ou ISO
+  mood?: number              // 1..5
+  symptoms?: string[]
+  symptomIntensity?: number  // 0..10
+  medicationTaken?: boolean
+  dosage?: string
+  sideEffects?: string[]
+  notes?: string
+  visibility?: 'private' | 'shareable'
+}
+```
+
+**Ownership**: se o usuário não for o dono, o controller retorna 404 (não 403), para não revelar a existência da entrada.
 
 ### Painel da Associação (role: association)
 
@@ -314,7 +353,7 @@ Arquivo `src/constants/labels.ts` contém todos os mapas de exibição:
 
 ## Testes
 
-### Unit tests (123 — Vitest)
+### Unit tests (140 — Vitest)
 
 Usam implementações in-memory dos repositories, fake crypto e fake AI. Sem banco de dados.
 
@@ -326,6 +365,7 @@ Cada use case tem seu arquivo de teste em `use-cases/tests/*.spec.ts`. Factories
 - `makeUser()`, `makeRole()`, `makePermission()`
 - `makeDevice()`, `makeOnboardingSession()`
 - `makeDocument()`, `makeAssociation()`, `makeProduct()`
+- `makeDoctor()`, `makeJournalEntry()`
 
 ### E2E tests (22 — Vitest + Supertest)
 
@@ -382,6 +422,14 @@ npx tsx prisma/seed-products.ts
 ```
 
 Cria 12 produtos da Aliança Medicinal com variantes (óleos, tópicos, cápsulas, gummies, flores).
+
+### Diretório de médicos
+
+```bash
+npx tsx prisma/seed-doctors.ts
+```
+
+Cria 6 médicos cobrindo SP, RJ, MG, RS, PR, PE com especialidades variadas (neurologia, dor crônica, psiquiatria, reumatologia, oncologia, parkinson). Todos com `directoryListed=true` — aparecem em `GET /doctors`.
 
 ### Promover user existente
 

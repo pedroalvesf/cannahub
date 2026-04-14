@@ -59,6 +59,7 @@ npx prisma db push
 npx tsx prisma/seed-admin-user.ts           # Admin: adm@teste.com / 123456
 npx tsx prisma/seed-association-user.ts      # Associação: associacaoalianca@teste.com / 123456
 npx tsx prisma/seed-products.ts              # 12 produtos da Aliança Medicinal
+npx tsx prisma/seed-doctors.ts               # 6 médicos no diretório público (/medicos)
 ```
 
 ## Variáveis de ambiente
@@ -86,7 +87,7 @@ Acesse http://localhost:5173
 ## Testes
 
 ```bash
-# Unit tests (123 testes)
+# Unit tests (140 testes)
 cd apps/api && pnpm test
 
 # E2E tests (22 testes — precisa do Postgres de teste rodando)
@@ -113,6 +114,10 @@ Pacientes são criados pelo fluxo de cadastro em /cadastro.
 Cadastro → Acolhimento (perfil clínico) → Documentos (upload) → Painel
                                                                    ↓
                                               Associações → Catálogo (preços após aprovação)
+                                                                   ↓
+                                              Diário de tratamento (humor, sintomas, medicação)
+                                                                   ↓
+                                              Diretório de médicos (encontrar prescritor)
 ```
 
 ## Tipos de usuário
@@ -131,7 +136,12 @@ Cadastro → Acolhimento (perfil clínico) → Documentos (upload) → Painel
 
 - **Fase 1 — MVP**: Concluída (auth, cadastro, onboarding, documentos, catálogo, tratamentos, legislação, admin)
 - **Fase 1.5 — Painel da Associação**: Concluída (CRUD produtos, gestão de vínculos, anuidade, perfil)
-- **Fase 2 — Conteúdo**: Blog, diretório de médicos/advogados, eventos, SEO
+- **Fase 2 — Conteúdo**: em andamento
+  - ✅ Catálogo público via API real (`GET /associations/:id/products`)
+  - ✅ Diretório de médicos (`/medicos`, `/medicos/:slug`)
+  - ✅ Diário de tratamento do paciente (`/diario`)
+  - ⏳ Upload real via S3
+  - ⏳ Blog, diretório de advogados, eventos, SEO
 - **Fase 3 — Transação**: Pagamento com split, pedidos, inteligência de mercado
 
 ## Documentação

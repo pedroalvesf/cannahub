@@ -32,7 +32,7 @@ domain/
 │                                                                      │
 │  User ── OnboardingSession ── SupportTicket ── SupportMessage       │
 │                                                                      │
-│  Doctor (diretório, futuro)                                          │
+│  Doctor  (compartilhada com o diretório público via directoryListed) │
 └──────────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -40,7 +40,8 @@ domain/
 │                                                                      │
 │  User ─┬─ Patient ── PatientAssociationLink                         │
 │        ├─ Dependent ── Patient                                       │
-│        └─ Document                                                   │
+│        ├─ Document                                                   │
+│        └─ TreatmentJournalEntry (diário privado do paciente)         │
 └──────────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -101,6 +102,47 @@ Sessão 1:1 com User. Armazena respostas do acolhimento em 5-6 steps.
 | reviewedBy | String? | FK → User (admin que revisou) |
 
 **Cascade**: quando todos os docs de um user são aprovados → `user.documentsStatus = 'approved'`. Se qualquer um é rejeitado → `'rejected'`.
+
+### TreatmentJournalEntry (diário de tratamento)
+
+Entrada cronológica escrita pelo próprio paciente. Privada por padrão.
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| userId | String | FK → User (dono, único que pode ler/editar) |
+| entryDate | Date | Dia sobre o qual a entrada fala (pode ser retroativa) |
+| mood | Int? | Humor geral, 1 (muito ruim) a 5 (muito bem) |
+| symptoms | String[] | Multi-select de sintomas (ansiedade, insônia, dor crônica…) |
+| symptomIntensity | Int? | Intensidade média 0-10 |
+| medicationTaken | Boolean | Tomou cannabis medicinal no dia? |
+| dosage | String? | Texto livre (ex: "3 gotas CBD 30mg/ml, 2x ao dia") |
+| sideEffects | String[] | Multi-select de efeitos adversos |
+| notes | String? | Texto livre — observações, contexto |
+| visibility | String | `private` (só o dono) \| `shareable` (médico vinculado verá no futuro) |
+
+**Regras**:
+- **Ownership**: só o dono lê, edita ou remove. Controllers retornam 404 para não-donos (nunca 403, para não revelar existência).
+- **Visibility `shareable`** é uma flag de intenção; o médico ainda não tem endpoint de leitura. Campo criado agora para não exigir migration depois.
+- **Ordenação padrão**: `entryDate DESC`, depois `createdAt DESC`.
+
+### Doctor
+
+Entidade compartilhada entre **escalação de onboarding** (histórico) e **diretório público** (novo). A flag `directoryListed` separa os dois usos.
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| slug | String | Único, usado na URL `/medicos/:slug` |
+| name | String | Nome completo (ex: "Dra. Camila Alencar") |
+| crm | String | CRM com UF (único) |
+| state, city | String / String? | Localização |
+| specialties | String[] | Ex: `["Neurologia", "Epilepsia"]` |
+| telemedicine, inPerson | Boolean | Modalidades de atendimento |
+| bio | String? | Texto livre para a página de perfil |
+| photoUrl | String? | Futuro (placeholder por enquanto) |
+| consultationFee | String? | Texto livre (ex: "R$ 450") |
+| contactInfo | Json | `{ email?, whatsapp?, website? }` |
+| active | Boolean | Soft-delete genérico |
+| directoryListed | Boolean | Se `true`, aparece em `GET /doctors` e `GET /doctors/:slug` |
 
 ### Association
 
@@ -225,3 +267,5 @@ Pacientes não têm role — o acesso é controlado por `accountType` e `account
 6. **Cascade de documentos** — aprovação/rejeição de um doc pode alterar `documentsStatus` do User
 7. **Use cases retornam Either** — nunca lançam exceções, o controller mapeia Left → HTTP error
 8. **JwtAuthGuard não é global** — cada controller declara seus guards explicitamente
+9. **Journal ownership** — `TreatmentJournalEntry` só é legível/editável pelo seu `userId`. Não-dono recebe 404 (não 403).
+10. **Doctor.directoryListed** — `GET /doctors` e `GET /doctors/:slug` filtram por `active=true AND directoryListed=true`. Doctors legados do escalonamento permanecem invisíveis ao público.
