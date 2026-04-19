@@ -291,20 +291,28 @@ model SupportMessage {
 
 model Doctor {
   id              String   @id @default(uuid())
+  slug            String   @unique
   name            String
   crm             String   @unique
   state           String
+  city            String?
   specialties     String[]
   telemedicine    Boolean  @default(false)
+  inPerson        Boolean  @default(false)
+  bio             String?
+  photoUrl        String?
   consultationFee String?
   contactInfo     Json
   active          Boolean  @default(true)
+  directoryListed Boolean  @default(false)
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@index([state])
   @@index([crm])
+  @@index([slug])
+  @@index([directoryListed])
 }
 
 // --- Patient Domain ---

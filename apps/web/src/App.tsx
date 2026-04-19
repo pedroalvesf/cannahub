@@ -23,6 +23,8 @@ const TreatmentsPage = lazy(() => import('@/pages/treatments').then(m => ({ defa
 const TreatmentDetailPage = lazy(() => import('@/pages/treatment-detail').then(m => ({ default: m.TreatmentDetailPage })))
 const TreatmentCategoryPage = lazy(() => import('@/pages/treatment-category').then(m => ({ default: m.TreatmentCategoryPage })))
 const LegislationPage = lazy(() => import('@/pages/legislation').then(m => ({ default: m.LegislationPage })))
+const DoctorsPage = lazy(() => import('@/pages/doctors').then(m => ({ default: m.DoctorsPage })))
+const DoctorDetailPage = lazy(() => import('@/pages/doctor-detail').then(m => ({ default: m.DoctorDetailPage })))
 const AdminUsersPage = lazy(() => import('@/pages/admin/users').then(m => ({ default: m.AdminUsersPage })))
 const AdminUserDetailPage = lazy(() => import('@/pages/admin/user-detail').then(m => ({ default: m.AdminUserDetailPage })))
 const DiaryPage = lazy(() => import('@/pages/diary').then(m => ({ default: m.DiaryPage })))
@@ -124,6 +126,8 @@ function AppContent() {
       <Route path="/tratamentos/categoria/:slug" element={<TreatmentCategoryPage />} />
       <Route path="/tratamentos/:slug" element={<TreatmentDetailPage />} />
       <Route path="/legislacao" element={<LegislationPage />} />
+      <Route path="/medicos" element={<DoctorsPage />} />
+      <Route path="/medicos/:slug" element={<DoctorDetailPage />} />
       <Route path="/associacoes" element={<AssociationsPage />} />
       <Route path="/associacoes/:slug" element={<AssociationDetailPage />} />
       <Route path="/associacoes/:slug/catalogo" element={<AssociationCatalogPage />} />

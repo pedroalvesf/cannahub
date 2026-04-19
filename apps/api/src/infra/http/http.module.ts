@@ -73,6 +73,10 @@ import { LogFromFavoriteController } from './controllers/diary/log-from-favorite
 import { GetDiarySummaryController } from './controllers/diary/get-diary-summary.controller';
 import { GetSymptomTrendController } from './controllers/diary/get-symptom-trend.controller';
 
+// Controllers - Directory (public)
+import { ListDoctorsController } from './controllers/directory/list-doctors.controller';
+import { GetDoctorController } from './controllers/directory/get-doctor.controller';
+
 // Controllers - Onboarding
 import { StartOnboardingController } from './controllers/onboarding/start-onboarding.controller';
 import { SubmitStepController } from './controllers/onboarding/submit-step.controller';
@@ -148,6 +152,10 @@ import { ApproveDocumentUseCase } from '@/domain/admin/application/use-cases/app
 import { RejectDocumentUseCase } from '@/domain/admin/application/use-cases/reject-document';
 import { UpdateUserStatusUseCase } from '@/domain/admin/application/use-cases/update-user-status';
 import { DeleteUsersUseCase } from '@/domain/admin/application/use-cases/delete-users';
+
+// Use Cases - Directory
+import { ListDirectoryDoctorsUseCase } from '@/domain/onboarding/application/use-cases/list-directory-doctors';
+import { GetDoctorBySlugUseCase } from '@/domain/onboarding/application/use-cases/get-doctor-by-slug';
 
 // Use Cases - Onboarding
 import { StartOnboardingUseCase } from '@/domain/onboarding/application/use-cases/start-onboarding';
@@ -228,6 +236,10 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     GetDiarySummaryController,
     GetSymptomTrendController,
 
+    // Directory Controllers (public)
+    ListDoctorsController,
+    GetDoctorController,
+
     // Onboarding Controllers
     StartOnboardingController,
     SubmitStepController,
@@ -304,6 +316,10 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     CreateEntryFromFavoriteUseCase,
     GetDiarySummaryUseCase,
     GetSymptomTrendUseCase,
+
+    // Directory Use Cases
+    ListDirectoryDoctorsUseCase,
+    GetDoctorBySlugUseCase,
 
     // Onboarding Use Cases
     StartOnboardingUseCase,
