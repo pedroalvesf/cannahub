@@ -43,6 +43,11 @@ export class InMemoryDiaryEntriesRepository implements DiaryEntriesRepository {
         item.symptoms.some((s) => s.symptomKey === params.symptomKey),
       )
     }
+    if (params.targetCondition) {
+      result = result.filter(
+        (item) => item.targetCondition === params.targetCondition,
+      )
+    }
 
     result.sort((a, b) => {
       const dateDiff = b.date.getTime() - a.date.getTime()

@@ -1,4 +1,4 @@
-import { ADMINISTRATION_METHOD_LABELS, DOSE_UNIT_LABELS, SYMPTOM_LABELS, SYMPTOM_SEVERITY_LABELS } from '@/constants/labels'
+import { ADMINISTRATION_METHOD_LABELS, DOSE_UNIT_LABELS, SYMPTOM_LABELS, SYMPTOM_SEVERITY_LABELS, CONDITION_LABELS } from '@/constants/labels'
 
 interface Symptom {
   id: string
@@ -16,6 +16,7 @@ interface DiaryEntryCardProps {
   doseAmount: number
   doseUnit: string
   notes: string | null
+  targetCondition: string | null
   symptoms: Symptom[]
   onClick?: () => void
 }
@@ -56,6 +57,7 @@ export function DiaryEntryCard({
   doseAmount,
   doseUnit,
   notes,
+  targetCondition,
   symptoms,
   onClick,
 }: DiaryEntryCardProps) {
@@ -75,13 +77,18 @@ export function DiaryEntryCard({
           <div className="text-[10px] text-brand-muted dark:text-gray-500 mt-0.5">{methodLabel}</div>
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-baseline gap-2 mb-1.5">
+          <div className="flex items-baseline gap-2 mb-1.5 flex-wrap">
             <span className="text-sm font-medium text-brand-green-deep dark:text-gray-200 truncate">
               {productName}
             </span>
             <span className="text-xs text-brand-muted dark:text-gray-500 flex-shrink-0">
               {doseAmount} {unitLabel}
             </span>
+            {targetCondition && (
+              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-brand-green-pale dark:bg-brand-green-deep/40 text-brand-green-deep dark:text-brand-green-pale uppercase tracking-wide">
+                {CONDITION_LABELS[targetCondition] ?? targetCondition}
+              </span>
+            )}
           </div>
 
           {symptoms.length > 0 && (

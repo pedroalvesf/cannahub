@@ -14,6 +14,7 @@ export interface DiaryEntryProps {
   doseAmount: number
   doseUnit: string
   notes?: string
+  targetCondition?: string
   isFavorite: boolean
   symptoms: DiarySymptomLog[]
   effects: DiaryEffectLog[]
@@ -56,6 +57,10 @@ export class DiaryEntry extends Entity<DiaryEntryProps> {
 
   get notes() {
     return this.props.notes
+  }
+
+  get targetCondition() {
+    return this.props.targetCondition
   }
 
   get isFavorite() {
@@ -115,6 +120,11 @@ export class DiaryEntry extends Entity<DiaryEntryProps> {
 
   set notes(value: string | undefined) {
     this.props.notes = value
+    this.touch()
+  }
+
+  set targetCondition(value: string | undefined) {
+    this.props.targetCondition = value
     this.touch()
   }
 

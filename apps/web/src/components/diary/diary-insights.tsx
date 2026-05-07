@@ -9,12 +9,16 @@ const PERIOD_OPTIONS = [
   { label: '90d', days: 90 },
 ] as const
 
-export function DiaryInsights() {
+interface DiaryInsightsProps {
+  targetCondition?: string
+}
+
+export function DiaryInsights({ targetCondition }: DiaryInsightsProps = {}) {
   const [days, setDays] = useState(30)
 
   const dateFrom = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
   const dateTo = new Date().toISOString()
-  const { data: summary, isLoading } = useDiarySummary(dateFrom, dateTo)
+  const { data: summary, isLoading } = useDiarySummary(dateFrom, dateTo, targetCondition || undefined)
 
   const topSymptoms = (summary?.mostFrequentSymptoms ?? []).slice(0, 3)
 

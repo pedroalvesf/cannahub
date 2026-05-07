@@ -37,6 +37,7 @@ export class UpdateDiaryEntryController {
       doseAmount: body.doseAmount,
       doseUnit: body.doseUnit,
       notes: body.notes,
+      targetCondition: body.targetCondition,
       isFavorite: body.isFavorite,
       severityAfterUpdates: body.severityAfterUpdates,
     })

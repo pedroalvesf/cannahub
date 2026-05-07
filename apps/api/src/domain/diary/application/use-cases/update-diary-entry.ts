@@ -22,6 +22,7 @@ interface UpdateDiaryEntryRequest {
   doseAmount?: number
   doseUnit?: string
   notes?: string | null
+  targetCondition?: string | null
   isFavorite?: boolean
   severityAfterUpdates?: SeverityAfterUpdate[]
 }
@@ -56,6 +57,8 @@ export class UpdateDiaryEntryUseCase {
     if (request.doseUnit !== undefined) entry.doseUnit = request.doseUnit
     if (request.notes !== undefined)
       entry.notes = request.notes ?? undefined
+    if (request.targetCondition !== undefined)
+      entry.targetCondition = request.targetCondition ?? undefined
     if (request.isFavorite !== undefined) entry.isFavorite = request.isFavorite
     if (request.productId !== undefined)
       entry.productId = request.productId

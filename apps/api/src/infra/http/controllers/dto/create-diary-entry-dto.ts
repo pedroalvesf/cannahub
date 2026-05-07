@@ -55,6 +55,10 @@ export class CreateDiaryEntryDto {
   notes?: string
 
   @IsOptional()
+  @IsString()
+  targetCondition?: string
+
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => SymptomInputDto)

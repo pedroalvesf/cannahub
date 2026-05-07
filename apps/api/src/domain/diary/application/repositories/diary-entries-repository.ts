@@ -9,6 +9,7 @@ export interface FindManyDiaryEntriesParams {
   productId?: string
   administrationMethod?: string
   symptomKey?: string
+  targetCondition?: string
 }
 
 export abstract class DiaryEntriesRepository {

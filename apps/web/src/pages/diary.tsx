@@ -5,8 +5,9 @@ import { DiaryEntryCard } from '@/components/diary/diary-entry-card'
 import { ReEvaluationModal } from '@/components/diary/re-evaluation-modal'
 import { QuickLogBar } from '@/components/diary/quick-log-bar'
 import { useDiaryEntries, useDeleteDiaryEntry } from '@/hooks/use-diary'
+import { useOnboardingSummary } from '@/hooks/use-onboarding'
 import { DiaryInsights } from '@/components/diary/diary-insights'
-import { ADMINISTRATION_METHOD_LABELS, SYMPTOM_LABELS, SYMPTOM_SEVERITY_LABELS, DOSE_UNIT_LABELS, EFFECT_LABELS } from '@/constants/labels'
+import { ADMINISTRATION_METHOD_LABELS, SYMPTOM_LABELS, SYMPTOM_SEVERITY_LABELS, DOSE_UNIT_LABELS, EFFECT_LABELS, CONDITION_LABELS } from '@/constants/labels'
 
 const PERIOD_OPTIONS = [
   { label: '7d', days: 7 },
@@ -41,11 +42,19 @@ export function DiaryPage() {
   const [period, setPeriod] = useState<number | null>(null)
   const [methodFilter, setMethodFilter] = useState('')
   const [symptomFilter, setSymptomFilter] = useState('')
+  const [conditionFilter, setConditionFilter] = useState('')
   const [tab, setTab] = useState<'timeline' | 'insights'>('timeline')
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [reEvalEntry, setReEvalEntry] = useState<{ id: string; symptoms: any[] } | null>(null)
 
   const deleteEntry = useDeleteDiaryEntry()
+  const { data: onboarding } = useOnboardingSummary()
+  const trackedConditions = onboarding?.condition
+    ? onboarding.condition
+        .split(',')
+        .map((c) => CONDITION_LABELS[c.trim()] ?? c.trim())
+        .filter(Boolean)
+    : []
 
   const dateFrom = period
     ? new Date(Date.now() - period * 24 * 60 * 60 * 1000).toISOString()
@@ -57,6 +66,7 @@ export function DiaryPage() {
     dateFrom,
     administrationMethod: methodFilter || undefined,
     symptomKey: symptomFilter || undefined,
+    targetCondition: conditionFilter || undefined,
   })
 
   const groupedEntries = useMemo(() => {
@@ -91,11 +101,20 @@ export function DiaryPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="font-serif text-3xl text-brand-green-deep dark:text-white mb-1">
-                Diario de Tratamento
+                Diário de Tratamento
               </h1>
-              <p className="text-brand-muted dark:text-gray-400 text-sm">
-                Registre seu uso e acompanhe a evolucao dos sintomas.
-              </p>
+              {trackedConditions.length > 0 ? (
+                <p className="text-brand-muted dark:text-gray-400 text-sm">
+                  Acompanhando{' '}
+                  <span className="font-medium text-brand-green-deep dark:text-gray-200">
+                    {trackedConditions.join(' · ')}
+                  </span>
+                </p>
+              ) : (
+                <p className="text-brand-muted dark:text-gray-400 text-sm">
+                  Registre seu uso e acompanhe a evolução dos sintomas.
+                </p>
+              )}
             </div>
             <button
               onClick={() => setShowNewEntry(true)}
@@ -134,7 +153,7 @@ export function DiaryPage() {
           </div>
 
           {tab === 'insights' ? (
-            <DiaryInsights />
+            <DiaryInsights targetCondition={conditionFilter || undefined} />
           ) : (
           <>
           {/* Quick-log bar */}
@@ -175,6 +194,18 @@ export function DiaryPage() {
                 <option key={k} value={k}>{v}</option>
               ))}
             </select>
+            {trackedConditions.length > 0 && (
+              <select
+                value={conditionFilter}
+                onChange={(e) => { setConditionFilter(e.target.value); setPage(1) }}
+                className="px-3 py-1.5 rounded-[8px] text-xs border border-brand-cream-dark/40 dark:border-gray-700/40 bg-brand-cream dark:bg-surface-dark-card text-brand-muted dark:text-gray-400"
+              >
+                <option value="">Condição</option>
+                {(onboarding?.condition?.split(',').map((c) => c.trim()).filter(Boolean) ?? []).map((key) => (
+                  <option key={key} value={key}>{CONDITION_LABELS[key] ?? key}</option>
+                ))}
+              </select>
+            )}
           </div>
 
           {/* Timeline */}
@@ -222,6 +253,7 @@ export function DiaryPage() {
                             doseAmount={entry.doseAmount}
                             doseUnit={entry.doseUnit}
                             notes={entry.notes}
+                            targetCondition={entry.targetCondition}
                             symptoms={entry.symptoms}
                             onClick={() => setExpandedId(isExpanded ? null : entry.id)}
                           />

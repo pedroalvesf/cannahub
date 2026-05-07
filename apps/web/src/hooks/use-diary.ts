@@ -28,6 +28,7 @@ interface DiaryEntry {
   doseAmount: number
   doseUnit: string
   notes: string | null
+  targetCondition: string | null
   isFavorite: boolean
   symptoms: DiarySymptom[]
   effects: DiaryEffect[]
@@ -89,6 +90,7 @@ interface DiaryEntriesFilters {
   productId?: string
   administrationMethod?: string
   symptomKey?: string
+  targetCondition?: string
 }
 
 // --- Entries ---
@@ -105,6 +107,7 @@ export function useDiaryEntries(filters: DiaryEntriesFilters = {}) {
       if (filters.productId) params.set('productId', filters.productId)
       if (filters.administrationMethod) params.set('administrationMethod', filters.administrationMethod)
       if (filters.symptomKey) params.set('symptomKey', filters.symptomKey)
+      if (filters.targetCondition) params.set('targetCondition', filters.targetCondition)
       const { data } = await api.get(`/diary?${params.toString()}`)
       return data
     },
@@ -134,6 +137,7 @@ export function useCreateDiaryEntry() {
       doseAmount: number
       doseUnit: string
       notes?: string
+      targetCondition?: string
       symptoms?: Array<{ symptomKey: string; customSymptomName?: string; severityBefore: string }>
       effects?: Array<{ effectKey: string; isPositive: boolean; customEffectName?: string }>
     }) => {
@@ -163,6 +167,7 @@ export function useUpdateDiaryEntry() {
       doseAmount?: number
       doseUnit?: string
       notes?: string | null
+      targetCondition?: string | null
       isFavorite?: boolean
       severityAfterUpdates?: Array<{ symptomLogId: string; severityAfter: string }>
     }) => {
@@ -264,13 +269,14 @@ export function useLogFromFavorite() {
 
 // --- Insights ---
 
-export function useDiarySummary(dateFrom?: string, dateTo?: string) {
+export function useDiarySummary(dateFrom?: string, dateTo?: string, targetCondition?: string) {
   return useQuery<DiarySummary>({
-    queryKey: ['diary-summary', dateFrom, dateTo],
+    queryKey: ['diary-summary', dateFrom, dateTo, targetCondition],
     queryFn: async () => {
       const params = new URLSearchParams()
       if (dateFrom) params.set('dateFrom', dateFrom)
       if (dateTo) params.set('dateTo', dateTo)
+      if (targetCondition) params.set('targetCondition', targetCondition)
       const { data } = await api.get(`/diary/summary?${params.toString()}`)
       return data
     },

@@ -29,6 +29,7 @@ interface CreateDiaryEntryRequest {
   doseAmount: number
   doseUnit: string
   notes?: string
+  targetCondition?: string
   symptoms?: SymptomInput[]
   effects?: EffectInput[]
 }
@@ -65,6 +66,7 @@ export class CreateDiaryEntryUseCase {
       doseAmount: request.doseAmount,
       doseUnit: request.doseUnit,
       notes: request.notes,
+      targetCondition: request.targetCondition,
     })
 
     const symptoms = (request.symptoms ?? []).map((s) =>

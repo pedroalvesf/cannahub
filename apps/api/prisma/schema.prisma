@@ -519,6 +519,7 @@ model DiaryEntry {
   doseAmount           Decimal  @db.Decimal(10, 2)
   doseUnit             String   // drops | ml | mg | g | puffs | units
   notes                String?
+  targetCondition      String?
   isFavorite           Boolean  @default(false)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt

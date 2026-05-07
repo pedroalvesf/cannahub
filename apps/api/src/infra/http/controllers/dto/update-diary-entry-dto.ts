@@ -44,6 +44,10 @@ export class UpdateDiaryEntryDto {
   notes?: string | null
 
   @IsOptional()
+  @IsString()
+  targetCondition?: string | null
+
+  @IsOptional()
   @IsBoolean()
   isFavorite?: boolean
 

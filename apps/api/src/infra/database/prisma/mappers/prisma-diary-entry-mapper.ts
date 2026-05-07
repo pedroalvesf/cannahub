@@ -56,6 +56,7 @@ export class PrismaDiaryEntryMapper {
         doseAmount: Number(raw.doseAmount),
         doseUnit: raw.doseUnit,
         notes: raw.notes ?? undefined,
+        targetCondition: raw.targetCondition ?? undefined,
         isFavorite: raw.isFavorite,
         symptoms,
         effects,
@@ -80,6 +81,7 @@ export class PrismaDiaryEntryMapper {
       doseAmount: entry.doseAmount,
       doseUnit: entry.doseUnit,
       notes: entry.notes ?? null,
+      targetCondition: entry.targetCondition ?? null,
       isFavorite: entry.isFavorite,
       createdAt: entry.createdAt,
       Symptoms: {

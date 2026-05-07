@@ -6,6 +6,7 @@ interface GetDiarySummaryRequest {
   userId: string
   dateFrom?: Date
   dateTo?: Date
+  targetCondition?: string
 }
 
 interface SymptomDelta {
@@ -49,6 +50,7 @@ export class GetDiarySummaryUseCase {
       perPage: 10000,
       dateFrom,
       dateTo,
+      targetCondition: request.targetCondition,
     })
 
     const totalEntries = entries.length

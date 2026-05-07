@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
+import { useAuthStore } from '@/stores/auth-store'
 
 export interface MyLink {
   id: string
@@ -13,12 +14,14 @@ export interface MyLink {
 }
 
 export function useMyLinks() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   return useQuery<{ links: MyLink[] }>({
     queryKey: ['my-links'],
     queryFn: async () => {
       const { data } = await api.get('/my-links')
       return data
     },
+    enabled: isAuthenticated,
   })
 }
 

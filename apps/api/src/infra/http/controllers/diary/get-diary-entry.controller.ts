@@ -49,6 +49,7 @@ export class GetDiaryEntryController {
       doseAmount: entry.doseAmount,
       doseUnit: entry.doseUnit,
       notes: entry.notes ?? null,
+      targetCondition: entry.targetCondition ?? null,
       isFavorite: entry.isFavorite,
       symptoms: entry.symptoms.map((s: any) => ({
         id: s.id.toString(),

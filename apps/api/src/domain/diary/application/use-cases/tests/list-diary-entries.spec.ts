@@ -76,6 +76,29 @@ describe('ListDiaryEntriesUseCase', () => {
     }
   })
 
+  it('should list entries filtered by targetCondition', async () => {
+    const userId = new UniqueEntityID('user-1')
+    diaryEntriesRepository.items.push(
+      makeDiaryEntry({ userId, targetCondition: 'anxiety' }),
+      makeDiaryEntry({ userId, targetCondition: 'insomnia' }),
+      makeDiaryEntry({ userId, targetCondition: 'anxiety' }),
+      makeDiaryEntry({ userId }),
+    )
+
+    const result = await sut.execute({
+      userId: 'user-1',
+      targetCondition: 'anxiety',
+    })
+
+    expect(result.isRight()).toBe(true)
+    if (result.isRight()) {
+      expect(result.value.entries).toHaveLength(2)
+      expect(
+        result.value.entries.every((e) => e.targetCondition === 'anxiety'),
+      ).toBe(true)
+    }
+  })
+
   it('should paginate results', async () => {
     const userId = new UniqueEntityID('user-1')
     for (let i = 0; i < 5; i++) {

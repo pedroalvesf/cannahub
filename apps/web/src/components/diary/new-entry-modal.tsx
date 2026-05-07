@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { PREDEFINED_SYMPTOMS, PREDEFINED_EFFECTS_POSITIVE, PREDEFINED_EFFECTS_NEGATIVE } from '@cannahub/shared'
-import { SYMPTOM_LABELS, DOSE_UNIT_LABELS } from '@/constants/labels'
+import { SYMPTOM_LABELS, DOSE_UNIT_LABELS, CONDITION_LABELS } from '@/constants/labels'
 import { MethodSelector } from './method-selector'
 import { SymptomChip } from './symptom-chip'
 import { EffectChip } from './effect-chip'
 import { useCreateDiaryEntry } from '@/hooks/use-diary'
+import { useOnboardingSummary } from '@/hooks/use-onboarding'
 
 interface SymptomState {
   symptomKey: string
@@ -35,6 +36,10 @@ const DOSE_UNITS = ['drops', 'ml', 'mg', 'g', 'puffs', 'units'] as const
 
 export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
   const createEntry = useCreateDiaryEntry()
+  const { data: onboarding } = useOnboardingSummary()
+  const conditionOptions = onboarding?.condition
+    ? onboarding.condition.split(',').map((c) => c.trim()).filter(Boolean)
+    : []
 
   const now = new Date()
   const [date, setDate] = useState(now.toISOString().split('T')[0] ?? '')
@@ -47,6 +52,7 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
   const [doseAmount, setDoseAmount] = useState(prefill?.doseAmount ?? 0)
   const [doseUnit, setDoseUnit] = useState(prefill?.doseUnit ?? 'drops')
   const [notes, setNotes] = useState('')
+  const [targetCondition, setTargetCondition] = useState('')
   const [symptoms, setSymptoms] = useState<SymptomState[]>(
     prefill?.symptomKeys?.map((k) => ({ symptomKey: k, severityBefore: 'none' })) ?? [],
   )
@@ -108,6 +114,7 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
       doseAmount,
       doseUnit,
       notes: notes || undefined,
+      targetCondition: targetCondition || undefined,
       symptoms: symptoms.map((s) => ({
         symptomKey: s.symptomKey,
         customSymptomName: s.customSymptomName,
@@ -170,6 +177,25 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
           />
           {errors['product'] && <p className="text-xs text-red-500 mt-1">{errors['product']}</p>}
         </section>
+
+        {/* Para qual condição (opcional) */}
+        {conditionOptions.length > 0 && (
+          <section className="mb-5">
+            <h3 className="text-sm font-semibold text-brand-green-deep dark:text-gray-200 mb-2">
+              Para qual condição? <span className="text-xs font-normal text-brand-muted">(opcional)</span>
+            </h3>
+            <select
+              value={targetCondition}
+              onChange={(e) => setTargetCondition(e.target.value)}
+              className="w-full px-3 py-2 rounded-[8px] border border-brand-cream-dark/60 dark:border-gray-700 bg-brand-cream dark:bg-surface-dark-card text-sm text-brand-green-deep dark:text-gray-200"
+            >
+              <option value="">Sem condição específica</option>
+              {conditionOptions.map((c) => (
+                <option key={c} value={c}>{CONDITION_LABELS[c] ?? c}</option>
+              ))}
+            </select>
+          </section>
+        )}
 
         {/* Metodo */}
         <section className="mb-5">

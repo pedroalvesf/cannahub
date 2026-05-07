@@ -19,11 +19,13 @@ export class GetDiarySummaryController {
     @CurrentUser() user: UserPayload,
     @Query('dateFrom') dateFrom?: string,
     @Query('dateTo') dateTo?: string,
+    @Query('targetCondition') targetCondition?: string,
   ) {
     const result = await this.getDiarySummary.execute({
       userId: user.sub,
       dateFrom: dateFrom ? new Date(dateFrom) : undefined,
       dateTo: dateTo ? new Date(dateTo) : undefined,
+      targetCondition,
     })
 
     return result.value

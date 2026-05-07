@@ -31,6 +31,7 @@ export class CreateDiaryEntryController {
       doseAmount: body.doseAmount,
       doseUnit: body.doseUnit,
       notes: body.notes,
+      targetCondition: body.targetCondition,
       symptoms: body.symptoms,
       effects: body.effects,
     })

@@ -52,6 +52,9 @@ export class PrismaDiaryEntriesRepository implements DiaryEntriesRepository {
     if (params.symptomKey) {
       where.Symptoms = { some: { symptomKey: params.symptomKey } }
     }
+    if (params.targetCondition) {
+      where.targetCondition = params.targetCondition
+    }
 
     const [entries, total] = await Promise.all([
       this.prisma.diaryEntry.findMany({
@@ -83,6 +86,7 @@ export class PrismaDiaryEntriesRepository implements DiaryEntriesRepository {
           doseAmount: entry.doseAmount,
           doseUnit: entry.doseUnit,
           notes: entry.notes ?? null,
+          targetCondition: entry.targetCondition ?? null,
           isFavorite: entry.isFavorite,
           updatedAt: entry.updatedAt,
         },

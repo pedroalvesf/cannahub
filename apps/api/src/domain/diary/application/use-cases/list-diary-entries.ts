@@ -12,6 +12,7 @@ interface ListDiaryEntriesRequest {
   productId?: string
   administrationMethod?: string
   symptomKey?: string
+  targetCondition?: string
 }
 
 type ListDiaryEntriesResponse = Either<
@@ -36,6 +37,7 @@ export class ListDiaryEntriesUseCase {
         productId: request.productId,
         administrationMethod: request.administrationMethod,
         symptomKey: request.symptomKey,
+        targetCondition: request.targetCondition,
       })
 
     return right({ entries, total })

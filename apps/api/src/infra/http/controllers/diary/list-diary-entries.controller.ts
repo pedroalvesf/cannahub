@@ -24,6 +24,7 @@ export class ListDiaryEntriesController {
     @Query('productId') productId?: string,
     @Query('administrationMethod') administrationMethod?: string,
     @Query('symptomKey') symptomKey?: string,
+    @Query('targetCondition') targetCondition?: string,
   ) {
     const result = await this.listDiaryEntries.execute({
       userId: user.sub,
@@ -34,6 +35,7 @@ export class ListDiaryEntriesController {
       productId,
       administrationMethod,
       symptomKey,
+      targetCondition,
     })
 
     const { entries, total } = result.value as { entries: any[]; total: number }
@@ -48,6 +50,7 @@ export class ListDiaryEntriesController {
         doseAmount: e.doseAmount,
         doseUnit: e.doseUnit,
         notes: e.notes ?? null,
+        targetCondition: e.targetCondition ?? null,
         isFavorite: e.isFavorite,
         symptoms: e.symptoms.map((s: any) => ({
           id: s.id.toString(),
