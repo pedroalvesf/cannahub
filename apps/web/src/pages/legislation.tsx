@@ -239,7 +239,11 @@ export function LegislationPage() {
                 {timelineData.map((item, i) => (
                   <div
                     key={i}
-                    className="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-0 pb-10 last:pb-0 relative"
+                    className={`grid grid-cols-1 md:grid-cols-[140px_1fr] gap-0 pb-10 last:pb-0 relative max-md:pl-4 max-md:border-l-2 ${
+                      item.highlight
+                        ? 'max-md:border-brand-green-deep dark:max-md:border-brand-green-light'
+                        : 'max-md:border-brand-cream-dark dark:max-md:border-gray-700'
+                    }`}
                   >
                     {/* Year */}
                     <div className="flex md:justify-end md:pr-7 relative mb-2 md:mb-0">

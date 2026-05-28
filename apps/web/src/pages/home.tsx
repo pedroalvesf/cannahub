@@ -23,10 +23,10 @@ export function HomePage() {
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
-          style={{ backgroundImage: 'radial-gradient(circle at 60% 40%, rgba(255,255,255,.03) 0%, transparent 55%)' }}
+          style={{ backgroundImage: 'radial-gradient(circle at 60% 40%, rgba(255,255,255,.06) 0%, transparent 55%)' }}
         />
 
-        <div className="relative z-10 max-w-[1100px] mx-auto px-6 md:px-20 pt-[100px] pb-24">
+        <div className="relative z-10 max-w-[1100px] mx-auto px-6 md:px-20 pt-[88px] md:pt-[100px] pb-14 md:pb-24">
           {/* Eyebrow */}
           <div className="inline-flex items-center gap-2 text-[11.5px] text-white/[0.45] uppercase tracking-[0.1em] font-medium mb-9">
             <span className="w-[5px] h-[5px] rounded-full bg-brand-green-light" />
@@ -220,8 +220,8 @@ export function HomePage() {
             </p>
           </div>
 
-          {/* 4 step cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+          {/* 5 step cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 md:gap-6">
             {[
               {
                 step: '01',

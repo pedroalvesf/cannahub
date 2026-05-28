@@ -57,8 +57,8 @@ function EditButton({ onClick }: { onClick: () => void }) {
 
 function SectionCard({ title, children, action, id }: { title: string; children: React.ReactNode; action?: React.ReactNode; id?: string }) {
   return (
-    <div id={id} className="bg-brand-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-card overflow-hidden">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-brand-cream-dark/50 dark:border-gray-700/30">
+    <div id={id} className="bg-brand-white dark:bg-surface-dark-card card-border rounded-card overflow-hidden">
+      <div className="flex items-center justify-between px-6 py-4 border-b-[1.5px] border-brand-cream-dark dark:border-gray-700/50">
         <h2 className="text-[14px] font-bold text-brand-green-deep dark:text-white uppercase tracking-[0.04em]">
           {title}
         </h2>

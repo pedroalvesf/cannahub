@@ -323,7 +323,7 @@ function FeaturedCard({ card, illusBg, illusBgDark }: { card: ConditionCard; ill
       to={slugToPath(card.slug)}
       className="group col-span-2 max-md:col-span-1 bg-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-[20px] overflow-hidden cursor-pointer transition-all duration-200 hover:border-brand-green-light hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(20,31,20,0.07)] no-underline text-inherit grid grid-cols-2 max-md:grid-cols-1"
     >
-      <div className={`flex items-center justify-center min-h-[220px] max-md:min-h-[160px] overflow-hidden ${card.heroImage ? '' : `p-10 max-md:p-7 ${illusBg} ${illusBgDark}`}`}>
+      <div className={`flex items-center justify-center md:min-h-[220px] aspect-video md:aspect-auto overflow-hidden ${card.heroImage ? '' : `p-10 max-md:p-7 ${illusBg} ${illusBgDark}`}`}>
         {card.heroImage ? (
           <img src={card.heroImage} alt={card.name} className="w-full h-full object-cover" loading="lazy" width={480} height={320} />
         ) : (
