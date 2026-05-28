@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class ProductVariantDto {
@@ -6,7 +6,8 @@ class ProductVariantDto {
   @IsNotEmpty()
   volume!: string;
 
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 }, { message: 'Preço deve ter no máximo 2 casas decimais' })
+  @Min(0, { message: 'Preço não pode ser negativo' })
   price!: number;
 }
 
