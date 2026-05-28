@@ -2,7 +2,11 @@ import {
   PatientAssociationLink as PrismaPatientAssociationLink,
   Prisma,
 } from '@/generated/prisma/client';
-import { PatientAssociationLink } from '@/domain/association/enterprise/entities/patient-association-link';
+import {
+  PatientAssociationLink,
+  PatientAssociationStatusValue,
+  FeeStatus,
+} from '@/domain/association/enterprise/entities/patient-association-link';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 
 export class PrismaPatientAssociationLinkMapper {
@@ -12,13 +16,13 @@ export class PrismaPatientAssociationLinkMapper {
         associationId: new UniqueEntityID(raw.associationId),
         patientId: new UniqueEntityID(raw.patientId),
         requestedByUserId: new UniqueEntityID(raw.requestedByUserId),
-        status: raw.status,
+        status: raw.status as PatientAssociationStatusValue,
         approvedByUserId: raw.approvedByUserId
           ? new UniqueEntityID(raw.approvedByUserId)
           : undefined,
         startDate: raw.startDate ?? undefined,
         endDate: raw.endDate ?? undefined,
-        feeStatus: raw.feeStatus ?? undefined,
+        feeStatus: (raw.feeStatus ?? undefined) as FeeStatus | undefined,
         feeExpiresAt: raw.feeExpiresAt ?? undefined,
         feePaidAt: raw.feePaidAt ?? undefined,
         createdAt: raw.createdAt,

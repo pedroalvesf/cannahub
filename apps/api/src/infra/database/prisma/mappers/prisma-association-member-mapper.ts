@@ -2,7 +2,11 @@ import {
   AssociationMember as PrismaAssociationMember,
   Prisma,
 } from '@/generated/prisma/client';
-import { AssociationMember } from '@/domain/association/enterprise/entities/association-member';
+import {
+  AssociationMember,
+  AssociationMemberRoleValue,
+  AssociationMemberStatusValue,
+} from '@/domain/association/enterprise/entities/association-member';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 
 export class PrismaAssociationMemberMapper {
@@ -11,8 +15,8 @@ export class PrismaAssociationMemberMapper {
       {
         associationId: new UniqueEntityID(raw.associationId),
         userId: new UniqueEntityID(raw.userId),
-        role: raw.role,
-        status: raw.status,
+        role: raw.role as AssociationMemberRoleValue,
+        status: raw.status as AssociationMemberStatusValue,
         assignedAt: raw.assignedAt,
       },
       new UniqueEntityID(raw.id),

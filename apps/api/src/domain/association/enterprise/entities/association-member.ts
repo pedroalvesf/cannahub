@@ -1,12 +1,16 @@
+import { AssociationMemberRole, AssociationMemberStatus } from '@cannahub/shared';
 import { Entity } from '@/core/entities/entity';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
 
+export type AssociationMemberRoleValue = `${AssociationMemberRole}`;
+export type AssociationMemberStatusValue = `${AssociationMemberStatus}`;
+
 export interface AssociationMemberProps {
   associationId: UniqueEntityID;
   userId: UniqueEntityID;
-  role: string; // AssociationMemberRole enum
-  status: string; // AssociationMemberStatus enum
+  role: AssociationMemberRoleValue;
+  status: AssociationMemberStatusValue;
   assignedAt: Date;
 }
 
@@ -32,10 +36,10 @@ export class AssociationMember extends Entity<AssociationMemberProps> {
   }
 
   deactivate() {
-    this.props.status = 'inactive';
+    this.props.status = AssociationMemberStatus.INACTIVE;
   }
 
-  changeRole(role: string) {
+  changeRole(role: AssociationMemberRoleValue) {
     this.props.role = role;
   }
 
@@ -46,8 +50,8 @@ export class AssociationMember extends Entity<AssociationMemberProps> {
     return new AssociationMember(
       {
         ...props,
-        role: props.role ?? 'staff',
-        status: props.status ?? 'active',
+        role: props.role ?? AssociationMemberRole.STAFF,
+        status: props.status ?? AssociationMemberStatus.ACTIVE,
         assignedAt: props.assignedAt ?? new Date(),
       },
       id,
