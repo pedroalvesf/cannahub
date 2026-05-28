@@ -17,3 +17,29 @@
     @apply bg-surface-dark text-gray-200;
   }
 }
+
+@layer components {
+  /* Padding vertical padrão para seções de conteúdo */
+  .section-y {
+    @apply py-16 md:py-24 lg:py-[96px];
+  }
+  .section-y-sm {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+
+  /* Border de card padronizada */
+  .card-border {
+    @apply border border-brand-cream-dark dark:border-gray-700/40;
+  }
+  .card-border-strong {
+    @apply border-[1.5px] border-brand-green-light dark:border-brand-green-light/50;
+  }
+
+  /* Eyebrow / kicker labels — usa green-light em fundo claro, green-xs em escuro */
+  .eyebrow {
+    @apply text-[11.5px] uppercase tracking-[0.1em] font-medium text-brand-green-light dark:text-brand-green-xs;
+  }
+  .eyebrow-on-dark {
+    @apply text-[11.5px] uppercase tracking-[0.1em] font-medium text-brand-green-xs;
+  }
+}
