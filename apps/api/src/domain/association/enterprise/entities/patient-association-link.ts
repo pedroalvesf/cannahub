@@ -1,9 +1,14 @@
-import { PatientAssociationStatus } from '@cannahub/shared';
 import { Entity } from '@/core/entities/entity';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
 
-export type PatientAssociationStatusValue = `${PatientAssociationStatus}`;
+// Mirrors @cannahub/shared PatientAssociationStatus. Inlined as literals
+// to avoid runtime import of the shared package's TS enum.
+export type PatientAssociationStatusValue =
+  | 'requested'
+  | 'active'
+  | 'rejected'
+  | 'cancelled';
 export type FeeStatus = 'pending' | 'paid' | 'overdue' | 'exempt';
 
 export interface PatientAssociationLinkProps {
@@ -71,19 +76,19 @@ export class PatientAssociationLink extends Entity<PatientAssociationLinkProps> 
   }
 
   approve(approvedBy: UniqueEntityID) {
-    this.props.status = PatientAssociationStatus.ACTIVE;
+    this.props.status = 'active';
     this.props.approvedByUserId = approvedBy;
     this.props.startDate = new Date();
     this.touch();
   }
 
   reject() {
-    this.props.status = PatientAssociationStatus.REJECTED;
+    this.props.status = 'rejected';
     this.touch();
   }
 
   cancel() {
-    this.props.status = PatientAssociationStatus.CANCELLED;
+    this.props.status = 'cancelled';
     this.props.endDate = new Date();
     this.touch();
   }
@@ -102,7 +107,7 @@ export class PatientAssociationLink extends Entity<PatientAssociationLinkProps> 
     return new PatientAssociationLink(
       {
         ...props,
-        status: props.status ?? PatientAssociationStatus.REQUESTED,
+        status: props.status ?? 'requested',
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },
