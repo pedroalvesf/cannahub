@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PREDEFINED_SYMPTOMS, PREDEFINED_EFFECTS_POSITIVE, PREDEFINED_EFFECTS_NEGATIVE } from '@cannahub/shared'
 import { SYMPTOM_LABELS, DOSE_UNIT_LABELS, CONDITION_LABELS } from '@/constants/labels'
 import { MethodSelector } from './method-selector'
@@ -60,6 +60,20 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
   const [customSymptomInput, setCustomSymptomInput] = useState('')
   const [showCustomSymptom, setShowCustomSymptom] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    if (!open) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [open, onClose])
 
   if (!open) return null
 
@@ -131,13 +145,18 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
 
   return (
     <div className="fixed inset-0 z-[200] flex items-end md:items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full md:max-w-[560px] max-h-[90vh] overflow-y-auto bg-brand-white dark:bg-surface-dark rounded-t-[20px] md:rounded-[16px] p-6 shadow-xl">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="new-entry-title"
+        className="relative w-full md:max-w-[560px] max-h-[90vh] overflow-y-auto bg-brand-white dark:bg-surface-dark rounded-t-[20px] md:rounded-[16px] p-6 shadow-xl"
+      >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="font-serif text-xl text-brand-green-deep dark:text-white">
+          <h2 id="new-entry-title" className="font-serif text-xl text-brand-green-deep dark:text-white">
             Novo registro
           </h2>
-          <button onClick={onClose} className="text-brand-muted hover:text-brand-green-deep dark:text-gray-400 dark:hover:text-white transition-colors">
+          <button onClick={onClose} aria-label="Fechar" className="text-brand-muted hover:text-brand-green-deep dark:text-gray-400 dark:hover:text-white transition-colors">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />

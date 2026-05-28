@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SYMPTOM_LABELS } from '@/constants/labels'
 import { SeveritySelector } from './severity-selector'
 import { useUpdateDiaryEntry } from '@/hooks/use-diary'
@@ -24,6 +24,15 @@ export function ReEvaluationModal({ open, onClose, entryId, symptoms }: ReEvalua
     Object.fromEntries(symptoms.map((s) => [s.id, s.severityAfter ?? 'none'])),
   )
 
+  useEffect(() => {
+    if (!open) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, onClose])
+
   if (!open) return null
 
   async function handleSave() {
@@ -37,9 +46,14 @@ export function ReEvaluationModal({ open, onClose, entryId, symptoms }: ReEvalua
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative w-full max-w-[400px] bg-brand-white dark:bg-surface-dark rounded-[16px] p-6 shadow-xl">
-        <h2 className="font-serif text-lg text-brand-green-deep dark:text-white mb-4">
+      <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reeval-title"
+        className="relative w-full max-w-[400px] bg-brand-white dark:bg-surface-dark rounded-[16px] p-6 shadow-xl"
+      >
+        <h2 id="reeval-title" className="font-serif text-lg text-brand-green-deep dark:text-white mb-4">
           Como estou agora?
         </h2>
         <div className="space-y-4 mb-6">

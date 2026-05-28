@@ -1,8 +1,13 @@
-import { useState, useMemo } from 'react'
+import { lazy, Suspense, useState, useMemo } from 'react'
 import { Header } from '@/components/layout/header'
-import { NewEntryModal } from '@/components/diary/new-entry-modal'
 import { DiaryEntryCard } from '@/components/diary/diary-entry-card'
-import { ReEvaluationModal } from '@/components/diary/re-evaluation-modal'
+
+const NewEntryModal = lazy(() =>
+  import('@/components/diary/new-entry-modal').then((m) => ({ default: m.NewEntryModal })),
+)
+const ReEvaluationModal = lazy(() =>
+  import('@/components/diary/re-evaluation-modal').then((m) => ({ default: m.ReEvaluationModal })),
+)
 import { QuickLogBar } from '@/components/diary/quick-log-bar'
 import { useDiaryEntries, useDeleteDiaryEntry } from '@/hooks/use-diary'
 import { useOnboardingSummary } from '@/hooks/use-onboarding'
@@ -364,14 +369,20 @@ export function DiaryPage() {
         </div>
       </main>
 
-      <NewEntryModal open={showNewEntry} onClose={handleCloseModal} prefill={prefill} />
+      {showNewEntry && (
+        <Suspense fallback={null}>
+          <NewEntryModal open={showNewEntry} onClose={handleCloseModal} prefill={prefill} />
+        </Suspense>
+      )}
       {reEvalEntry && (
-        <ReEvaluationModal
-          open={true}
-          onClose={() => setReEvalEntry(null)}
-          entryId={reEvalEntry.id}
-          symptoms={reEvalEntry.symptoms}
-        />
+        <Suspense fallback={null}>
+          <ReEvaluationModal
+            open={true}
+            onClose={() => setReEvalEntry(null)}
+            entryId={reEvalEntry.id}
+            symptoms={reEvalEntry.symptoms}
+          />
+        </Suspense>
       )}
     </>
   )
