@@ -537,8 +537,8 @@ model DiarySymptomLog {
   diaryEntryId    String
   symptomKey      String
   customSymptomName String?
-  severityBefore  String  // none | mild | moderate | severe
-  severityAfter   String? // none | mild | moderate | severe
+  severityBefore  Int     // 0..10 (0 = nenhuma, 10 = pior possível)
+  severityAfter   Int?    // 0..10 (após uso); null = ainda não avaliado
 
   DiaryEntry DiaryEntry @relation(fields: [diaryEntryId], references: [id], onDelete: Cascade)
 

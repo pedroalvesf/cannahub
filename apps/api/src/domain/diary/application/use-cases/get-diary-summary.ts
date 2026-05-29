@@ -25,12 +25,7 @@ interface GetDiarySummaryResult {
 
 type GetDiarySummaryResponse = Either<never, GetDiarySummaryResult>
 
-const SEVERITY_MAP: Record<string, number> = {
-  none: 0,
-  mild: 1,
-  moderate: 2,
-  severe: 3,
-}
+// Severidade é numérica (0..10) — sem necessidade de mapeamento.
 
 @Injectable()
 export class GetDiarySummaryUseCase {
@@ -107,12 +102,10 @@ export class GetDiarySummaryUseCase {
           afterSum: 0,
           afterCount: 0,
         }
-        const beforeVal = SEVERITY_MAP[symptom.severityBefore] ?? 0
-        data.beforeSum += beforeVal
+        data.beforeSum += symptom.severityBefore
         data.beforeCount += 1
-        if (symptom.severityAfter) {
-          const afterVal = SEVERITY_MAP[symptom.severityAfter] ?? 0
-          data.afterSum += afterVal
+        if (symptom.severityAfter !== undefined) {
+          data.afterSum += symptom.severityAfter
           data.afterCount += 1
         }
         symptomData.set(symptom.symptomKey, data)

@@ -135,7 +135,7 @@ export function HomePage() {
       {/* ================================================================
           4. RECOGNITION — "Você se reconhece aqui?"
           ================================================================ */}
-      <section className="max-w-[1260px] mx-auto px-6 md:px-20 py-24">
+      <section className="max-w-[1100px] mx-auto px-6 md:px-20 py-20 md:py-24">
         <div className="text-[11.5px] text-brand-green-light dark:text-brand-green-xs uppercase tracking-[0.1em] font-medium mb-3.5">
           Você se reconhece aqui?
         </div>
@@ -220,8 +220,8 @@ export function HomePage() {
             </p>
           </div>
 
-          {/* 5 step cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 md:gap-6">
+          {/* 5 step cards — empilhar até lg para evitar quebra desbalanceada (3+2) em tablet */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 lg:gap-5">
             {[
               {
                 step: '01',
@@ -307,17 +307,17 @@ export function HomePage() {
       {/* ================================================================
           6. FOR WHO — editorial layout
           ================================================================ */}
-      <section id="para-quem" className="max-w-[1260px] mx-auto px-6 md:px-20 py-24">
-        <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-16 items-start">
-          {/* Left — sticky header */}
-          <div className="md:sticky md:top-20">
+      <section id="para-quem" className="max-w-[1100px] mx-auto px-6 md:px-20 py-20 md:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10 lg:gap-16 items-start">
+          {/* Left — header (sticky só em desktop) */}
+          <div className="lg:sticky lg:top-24">
             <div className="text-[11.5px] text-brand-green-light dark:text-brand-green-xs uppercase tracking-[0.1em] font-medium mb-3.5">
               Perfis
             </div>
             <h2 className="font-serif text-[clamp(26px,3vw,36px)] text-brand-text dark:text-white leading-[1.1] tracking-[-0.02em] mb-3">
               Para quem é o CannHub?
             </h2>
-            <p className="text-sm text-brand-muted dark:text-gray-400 leading-[1.7] font-light mt-3">
+            <p className="text-sm text-brand-muted dark:text-gray-400 leading-[1.7] font-light mt-3 max-w-[480px]">
               Não importa se você já usa, se está começando agora ou se está buscando para um familiar. Existe um caminho para cada situação.
             </p>
           </div>
@@ -456,7 +456,7 @@ export function HomePage() {
       {/* ================================================================
           8. TESTIMONIAL
           ================================================================ */}
-      <section className="max-w-[1260px] mx-auto px-6 md:px-20 py-24">
+      <section className="max-w-[1100px] mx-auto px-6 md:px-20 py-20 md:py-24">
         <div className="grid grid-cols-1 md:grid-cols-[380px_1fr] gap-16 items-center">
           {/* Photo placeholder */}
           <div className="relative bg-brand-cream dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700 rounded-[20px] overflow-hidden aspect-[3/4] flex flex-col items-center justify-center gap-3">

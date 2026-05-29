@@ -19,12 +19,12 @@ export enum DoseUnit {
   UNITS = 'units',
 }
 
-export enum SymptomSeverity {
-  NONE = 'none',
-  MILD = 'mild',
-  MODERATE = 'moderate',
-  SEVERE = 'severe',
-}
+// Severidade agora segue escala numérica clínica 0..10 (NRS).
+// 0 = nenhuma, 5 = moderada, 10 = pior possível.
+export type SymptomSeverityScore = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+
+export const SEVERITY_MIN = 0
+export const SEVERITY_MAX = 10
 
 // --- Predefined Lists ---
 

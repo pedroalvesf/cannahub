@@ -134,7 +134,7 @@ describe('Diary Favorites Use Cases', () => {
         expect(result.value.entry.administrationMethod).toBe('oil')
         expect(result.value.entry.doseAmount).toBe(5)
         expect(result.value.entry.symptoms).toHaveLength(2)
-        expect(result.value.entry.symptoms[0]?.severityBefore).toBe('none')
+        expect(result.value.entry.symptoms[0]?.severityBefore).toBe(0)
       }
       expect(entriesRepository.items).toHaveLength(1)
     })

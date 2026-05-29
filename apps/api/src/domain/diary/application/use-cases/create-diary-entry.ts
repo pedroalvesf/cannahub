@@ -10,7 +10,7 @@ import { InvalidDiaryEntryError } from './errors/invalid-diary-entry-error'
 interface SymptomInput {
   symptomKey: string
   customSymptomName?: string
-  severityBefore: string
+  severityBefore: number
 }
 
 interface EffectInput {

@@ -21,7 +21,7 @@ describe('GetDiaryEntryUseCase', () => {
     const symptom = DiarySymptomLog.create({
       diaryEntryId: entry.id,
       symptomKey: 'pain',
-      severityBefore: 'moderate',
+      severityBefore: 5,
     })
     const effect = DiaryEffectLog.create({
       diaryEntryId: entry.id,

@@ -40,7 +40,7 @@ describe('UpdateDiaryEntryUseCase', () => {
     const symptom = DiarySymptomLog.create({
       diaryEntryId: entry.id,
       symptomKey: 'pain',
-      severityBefore: 'severe',
+      severityBefore: 9,
     })
     entry.symptoms = [symptom]
     diaryEntriesRepository.items.push(entry)
@@ -49,13 +49,13 @@ describe('UpdateDiaryEntryUseCase', () => {
       entryId: entry.id.toString(),
       userId: 'user-1',
       severityAfterUpdates: [
-        { symptomLogId: symptom.id.toString(), severityAfter: 'mild' },
+        { symptomLogId: symptom.id.toString(), severityAfter: 3 },
       ],
     })
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(result.value.entry.symptoms[0]?.severityAfter).toBe('mild')
+      expect(result.value.entry.symptoms[0]?.severityAfter).toBe(3)
     }
   })
 

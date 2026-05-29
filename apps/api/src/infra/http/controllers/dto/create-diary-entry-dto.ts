@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber, IsBoolean, IsArray, IsDateString, ValidateNested, Min } from 'class-validator'
+import { IsString, IsOptional, IsNumber, IsBoolean, IsArray, IsDateString, IsInt, Max, ValidateNested, Min } from 'class-validator'
 import { Type } from 'class-transformer'
 
 class SymptomInputDto {
@@ -9,8 +9,10 @@ class SymptomInputDto {
   @IsString()
   customSymptomName?: string
 
-  @IsString()
-  severityBefore!: string
+  @IsInt()
+  @Min(0)
+  @Max(10)
+  severityBefore!: number
 }
 
 class EffectInputDto {

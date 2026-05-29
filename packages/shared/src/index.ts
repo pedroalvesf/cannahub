@@ -3,12 +3,14 @@
 export {
   AdministrationMethod,
   DoseUnit,
-  SymptomSeverity,
+  SEVERITY_MIN,
+  SEVERITY_MAX,
   PREDEFINED_SYMPTOMS,
   PREDEFINED_EFFECTS_POSITIVE,
   PREDEFINED_EFFECTS_NEGATIVE,
 } from './diary'
 export type {
+  SymptomSeverityScore,
   PredefinedSymptom,
   PredefinedEffectPositive,
   PredefinedEffectNegative,

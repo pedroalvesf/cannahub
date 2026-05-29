@@ -57,7 +57,7 @@ export class CreateEntryFromFavoriteUseCase {
       DiarySymptomLog.create({
         diaryEntryId: entry.id,
         symptomKey: key,
-        severityBefore: 'none',
+        severityBefore: 0,
       }),
     )
 

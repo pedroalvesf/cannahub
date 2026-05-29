@@ -8,7 +8,7 @@ import { NotAllowedError } from './errors/not-allowed-error'
 
 interface SeverityAfterUpdate {
   symptomLogId: string
-  severityAfter: string
+  severityAfter: number
 }
 
 interface UpdateDiaryEntryRequest {

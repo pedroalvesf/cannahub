@@ -24,8 +24,8 @@ describe('GetDiarySummaryUseCase', () => {
     const symptom1 = DiarySymptomLog.create({
       diaryEntryId: entry1.id,
       symptomKey: 'pain',
-      severityBefore: 'severe',
-      severityAfter: 'mild',
+      severityBefore: 9,
+      severityAfter: 3,
     })
     entry1.symptoms = [symptom1]
 
@@ -38,8 +38,8 @@ describe('GetDiarySummaryUseCase', () => {
     const symptom2 = DiarySymptomLog.create({
       diaryEntryId: entry2.id,
       symptomKey: 'pain',
-      severityBefore: 'moderate',
-      severityAfter: 'none',
+      severityBefore: 5,
+      severityAfter: 0,
     })
     entry2.symptoms = [symptom2]
 
@@ -56,12 +56,12 @@ describe('GetDiarySummaryUseCase', () => {
       expect(result.value.mostUsedProduct?.name).toBe('Oleo CBD')
       expect(result.value.mostUsedProduct?.count).toBe(2)
       expect(result.value.methodDistribution['oil']).toBe(2)
-      // pain: avg before = (3+2)/2 = 2.5, avg after = (1+0)/2 = 0.5
+      // pain: avg before = (9+5)/2 = 7, avg after = (3+0)/2 = 1.5
       const painDelta = result.value.symptomDeltas.find(
         (d) => d.symptomKey === 'pain',
       )
-      expect(painDelta?.avgSeverityBefore).toBe(2.5)
-      expect(painDelta?.avgSeverityAfter).toBe(0.5)
+      expect(painDelta?.avgSeverityBefore).toBe(7)
+      expect(painDelta?.avgSeverityAfter).toBe(1.5)
     }
   })
 
