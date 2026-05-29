@@ -12,7 +12,7 @@ import { QuickLogBar } from '@/components/diary/quick-log-bar'
 import { useDiaryEntries, useDeleteDiaryEntry } from '@/hooks/use-diary'
 import { useOnboardingSummary } from '@/hooks/use-onboarding'
 import { DiaryInsights } from '@/components/diary/diary-insights'
-import { ADMINISTRATION_METHOD_LABELS, SYMPTOM_LABELS, SYMPTOM_SEVERITY_LABELS, DOSE_UNIT_LABELS, EFFECT_LABELS, CONDITION_LABELS } from '@/constants/labels'
+import { ADMINISTRATION_METHOD_LABELS, SYMPTOM_LABELS, DOSE_UNIT_LABELS, EFFECT_LABELS, CONDITION_LABELS } from '@/constants/labels'
 
 const PERIOD_OPTIONS = [
   { label: '7d', days: 7 },
@@ -297,8 +297,9 @@ export function DiaryPage() {
                                   <div className="mt-1 space-y-1">
                                     {entry.symptoms.map((s) => (
                                       <div key={s.id} className="text-sm text-brand-green-deep dark:text-gray-200">
-                                        {s.customSymptomName ?? SYMPTOM_LABELS[s.symptomKey] ?? s.symptomKey}: {SYMPTOM_SEVERITY_LABELS[s.severityBefore] ?? s.severityBefore}
-                                        {s.severityAfter && ` → ${SYMPTOM_SEVERITY_LABELS[s.severityAfter] ?? s.severityAfter}`}
+                                        {s.customSymptomName ?? SYMPTOM_LABELS[s.symptomKey] ?? s.symptomKey}: <span className="font-semibold">{s.severityBefore}</span>
+                                        {s.severityAfter !== null && <> → <span className="font-semibold">{s.severityAfter}</span></>}
+                                        <span className="text-xs text-brand-muted ml-1">/10</span>
                                       </div>
                                     ))}
                                   </div>

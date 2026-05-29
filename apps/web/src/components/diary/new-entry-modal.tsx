@@ -4,13 +4,14 @@ import { SYMPTOM_LABELS, DOSE_UNIT_LABELS, CONDITION_LABELS } from '@/constants/
 import { MethodSelector } from './method-selector'
 import { SymptomChip } from './symptom-chip'
 import { EffectChip } from './effect-chip'
+import { ProductSourcePicker, type ProductSourceState } from './product-source-picker'
 import { useCreateDiaryEntry } from '@/hooks/use-diary'
 import { useOnboardingSummary } from '@/hooks/use-onboarding'
 
 interface SymptomState {
   symptomKey: string
   customSymptomName?: string
-  severityBefore: string
+  severityBefore: number
 }
 
 interface EffectState {
@@ -46,15 +47,20 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
   const [time, setTime] = useState(
     `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
   )
-  const [productId] = useState(prefill?.productId ?? '')
-  const [customProductName, setCustomProductName] = useState(prefill?.customProductName ?? '')
+  const [productSource, setProductSource] = useState<ProductSourceState>({
+    associationId: undefined,
+    associationName: undefined,
+    productId: prefill?.productId,
+    productName: prefill?.customProductName ?? '',
+    concentration: undefined,
+  })
   const [administrationMethod, setAdministrationMethod] = useState(prefill?.administrationMethod ?? 'oil')
   const [doseAmount, setDoseAmount] = useState(prefill?.doseAmount ?? 0)
   const [doseUnit, setDoseUnit] = useState(prefill?.doseUnit ?? 'drops')
   const [notes, setNotes] = useState('')
   const [targetCondition, setTargetCondition] = useState('')
   const [symptoms, setSymptoms] = useState<SymptomState[]>(
-    prefill?.symptomKeys?.map((k) => ({ symptomKey: k, severityBefore: 'none' })) ?? [],
+    prefill?.symptomKeys?.map((k) => ({ symptomKey: k, severityBefore: 0 })) ?? [],
   )
   const [effects, setEffects] = useState<EffectState[]>([])
   const [customSymptomInput, setCustomSymptomInput] = useState('')
@@ -81,11 +87,11 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
     setSymptoms((prev) => {
       const exists = prev.find((s) => s.symptomKey === key)
       if (exists) return prev.filter((s) => s.symptomKey !== key)
-      return [...prev, { symptomKey: key, severityBefore: 'none' }]
+      return [...prev, { symptomKey: key, severityBefore: 0 }]
     })
   }
 
-  function updateSymptomSeverity(key: string, value: string) {
+  function updateSymptomSeverity(key: string, value: number) {
     setSymptoms((prev) =>
       prev.map((s) => (s.symptomKey === key ? { ...s, severityBefore: value } : s)),
     )
@@ -95,7 +101,7 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
     if (!customSymptomInput.trim()) return
     setSymptoms((prev) => [
       ...prev,
-      { symptomKey: `custom_${Date.now()}`, customSymptomName: customSymptomInput.trim(), severityBefore: 'none' },
+      { symptomKey: `custom_${Date.now()}`, customSymptomName: customSymptomInput.trim(), severityBefore: 0 },
     ])
     setCustomSymptomInput('')
     setShowCustomSymptom(false)
@@ -112,18 +118,31 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
   async function handleSubmit() {
     const newErrors: Record<string, string> = {}
     if (!date) newErrors['date'] = 'Data obrigatoria'
-    if (!productId && !customProductName) newErrors['product'] = 'Informe um produto'
+    if (!productSource.productId && !productSource.productName.trim()) {
+      newErrors['product'] = 'Informe um produto'
+    }
     if (!doseAmount || doseAmount <= 0) newErrors['dose'] = 'Informe a dose'
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
     }
 
+    // Compõe o nome final exibido — inclui associação e concentração quando livres
+    const composedName = [
+      productSource.productName.trim(),
+      productSource.concentration?.trim(),
+      productSource.associationName?.trim() && !productSource.associationId
+        ? `(${productSource.associationName.trim()})`
+        : null,
+    ]
+      .filter(Boolean)
+      .join(' · ')
+
     await createEntry.mutateAsync({
       date: new Date(date).toISOString(),
       time,
-      productId: productId || undefined,
-      customProductName: customProductName || undefined,
+      productId: productSource.productId || undefined,
+      customProductName: productSource.productId ? undefined : (composedName || undefined),
       administrationMethod,
       doseAmount,
       doseUnit,
@@ -184,18 +203,11 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
           {errors['date'] && <p className="text-xs text-red-500 mt-1">{errors['date']}</p>}
         </section>
 
-        {/* O que */}
-        <section className="mb-5">
-          <h3 className="text-sm font-semibold text-brand-green-deep dark:text-gray-200 mb-2">O que</h3>
-          <input
-            type="text"
-            value={customProductName}
-            onChange={(e) => setCustomProductName(e.target.value)}
-            placeholder="Nome do produto (ex: Oleo CBD 15mg/ml)"
-            className="w-full px-3 py-2 rounded-[8px] border border-brand-cream-dark/60 dark:border-gray-700 bg-brand-cream dark:bg-surface-dark-card text-sm text-brand-green-deep dark:text-gray-200 placeholder:text-brand-muted/50"
-          />
-          {errors['product'] && <p className="text-xs text-red-500 mt-1">{errors['product']}</p>}
-        </section>
+        <ProductSourcePicker
+          value={productSource}
+          onChange={setProductSource}
+          error={errors['product']}
+        />
 
         {/* Para qual condição (opcional) */}
         {conditionOptions.length > 0 && (

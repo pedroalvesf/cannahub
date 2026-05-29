@@ -7,8 +7,8 @@ interface Symptom {
   id: string
   symptomKey: string
   customSymptomName: string | null
-  severityBefore: string
-  severityAfter: string | null
+  severityBefore: number
+  severityAfter: number | null
 }
 
 interface ReEvaluationModalProps {
@@ -20,8 +20,8 @@ interface ReEvaluationModalProps {
 
 export function ReEvaluationModal({ open, onClose, entryId, symptoms }: ReEvaluationModalProps) {
   const updateEntry = useUpdateDiaryEntry()
-  const [values, setValues] = useState<Record<string, string>>(
-    Object.fromEntries(symptoms.map((s) => [s.id, s.severityAfter ?? 'none'])),
+  const [values, setValues] = useState<Record<string, number>>(
+    Object.fromEntries(symptoms.map((s) => [s.id, s.severityAfter ?? 0])),
   )
 
   useEffect(() => {
@@ -60,10 +60,10 @@ export function ReEvaluationModal({ open, onClose, entryId, symptoms }: ReEvalua
           {symptoms.map((s) => {
             const label = s.customSymptomName ?? SYMPTOM_LABELS[s.symptomKey] ?? s.symptomKey
             return (
-              <div key={s.id} className="flex items-center justify-between">
-                <span className="text-sm font-medium text-brand-green-deep dark:text-gray-200">{label}</span>
+              <div key={s.id}>
+                <span className="text-sm font-medium text-brand-green-deep dark:text-gray-200 block mb-2">{label}</span>
                 <SeveritySelector
-                  value={values[s.id] ?? 'none'}
+                  value={values[s.id] ?? 0}
                   onChange={(v) => setValues((prev) => ({ ...prev, [s.id]: v }))}
                   size="sm"
                 />

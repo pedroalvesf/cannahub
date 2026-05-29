@@ -1,11 +1,11 @@
-import { ADMINISTRATION_METHOD_LABELS, DOSE_UNIT_LABELS, SYMPTOM_LABELS, SYMPTOM_SEVERITY_LABELS, CONDITION_LABELS } from '@/constants/labels'
+import { ADMINISTRATION_METHOD_LABELS, DOSE_UNIT_LABELS, SYMPTOM_LABELS, CONDITION_LABELS } from '@/constants/labels'
 
 interface Symptom {
   id: string
   symptomKey: string
   customSymptomName: string | null
-  severityBefore: string
-  severityAfter: string | null
+  severityBefore: number
+  severityAfter: number | null
 }
 
 interface DiaryEntryCardProps {
@@ -21,13 +21,10 @@ interface DiaryEntryCardProps {
   onClick?: () => void
 }
 
-function SeverityDelta({ before, after }: { before: string; after: string | null }) {
-  if (!after) return null
+function SeverityDelta({ before, after }: { before: number; after: number | null }) {
+  if (after === null) return null
 
-  const levels: Record<string, number> = { none: 0, mild: 1, moderate: 2, severe: 3 }
-  const bVal = levels[before] ?? 0
-  const aVal = levels[after] ?? 0
-  const diff = bVal - aVal
+  const diff = before - after
 
   if (diff > 0) {
     return (
@@ -95,18 +92,16 @@ export function DiaryEntryCard({
             <div className="flex flex-wrap gap-1.5 mb-1.5">
               {symptoms.map((s) => {
                 const label = s.customSymptomName ?? SYMPTOM_LABELS[s.symptomKey] ?? s.symptomKey
-                const beforeLabel = SYMPTOM_SEVERITY_LABELS[s.severityBefore] ?? s.severityBefore
-                const afterLabel = s.severityAfter ? (SYMPTOM_SEVERITY_LABELS[s.severityAfter] ?? s.severityAfter) : null
                 return (
                   <span
                     key={s.id}
                     className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-brand-green-pale/60 dark:bg-gray-700/40 text-brand-text-md dark:text-gray-300"
                   >
-                    {label}: {beforeLabel}
-                    {afterLabel && (
+                    {label}: <span className="font-semibold">{s.severityBefore}</span>
+                    {s.severityAfter !== null && (
                       <>
                         <span className="text-brand-muted">→</span>
-                        {afterLabel}
+                        <span className="font-semibold">{s.severityAfter}</span>
                         <SeverityDelta before={s.severityBefore} after={s.severityAfter} />
                       </>
                     )}

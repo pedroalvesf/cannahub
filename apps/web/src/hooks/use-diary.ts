@@ -7,8 +7,8 @@ interface DiarySymptom {
   id: string
   symptomKey: string
   customSymptomName: string | null
-  severityBefore: string
-  severityAfter: string | null
+  severityBefore: number
+  severityAfter: number | null
 }
 
 interface DiaryEffect {
@@ -138,7 +138,7 @@ export function useCreateDiaryEntry() {
       doseUnit: string
       notes?: string
       targetCondition?: string
-      symptoms?: Array<{ symptomKey: string; customSymptomName?: string; severityBefore: string }>
+      symptoms?: Array<{ symptomKey: string; customSymptomName?: string; severityBefore: number }>
       effects?: Array<{ effectKey: string; isPositive: boolean; customEffectName?: string }>
     }) => {
       const { data } = await api.post('/diary', body)
@@ -169,7 +169,7 @@ export function useUpdateDiaryEntry() {
       notes?: string | null
       targetCondition?: string | null
       isFavorite?: boolean
-      severityAfterUpdates?: Array<{ symptomLogId: string; severityAfter: string }>
+      severityAfterUpdates?: Array<{ symptomLogId: string; severityAfter: number }>
     }) => {
       const { data } = await api.patch(`/diary/${id}`, body)
       return data

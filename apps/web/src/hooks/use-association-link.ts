@@ -25,6 +25,26 @@ export function useMyLinks() {
   })
 }
 
+export interface AssociationListItem {
+  id: string
+  name: string
+  status: string
+  city?: string
+  state?: string
+  slug?: string
+}
+
+export function useAssociationsList() {
+  return useQuery<{ associations: AssociationListItem[] }>({
+    queryKey: ['associations-list'],
+    queryFn: async () => {
+      const { data } = await api.get('/associations')
+      return data
+    },
+    staleTime: 5 * 60_000,
+  })
+}
+
 export interface AssociationProductAPI {
   id: string
   name: string
