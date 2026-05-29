@@ -6,11 +6,6 @@ import { DiaryEntry } from '../../enterprise/entities/diary-entry'
 import { DiaryEntryNotFoundError } from './errors/diary-entry-not-found-error'
 import { NotAllowedError } from './errors/not-allowed-error'
 
-interface SeverityAfterUpdate {
-  symptomLogId: string
-  severityAfter: number
-}
-
 interface UpdateDiaryEntryRequest {
   entryId: string
   userId: string
@@ -24,7 +19,6 @@ interface UpdateDiaryEntryRequest {
   notes?: string | null
   targetCondition?: string | null
   isFavorite?: boolean
-  severityAfterUpdates?: SeverityAfterUpdate[]
 }
 
 type UpdateDiaryEntryResponse = Either<
@@ -66,17 +60,6 @@ export class UpdateDiaryEntryUseCase {
         : undefined
     if (request.customProductName !== undefined)
       entry.customProductName = request.customProductName ?? undefined
-
-    if (request.severityAfterUpdates) {
-      for (const update of request.severityAfterUpdates) {
-        const symptom = entry.symptoms.find(
-          (s) => s.id.toString() === update.symptomLogId,
-        )
-        if (symptom) {
-          symptom.severityAfter = update.severityAfter
-        }
-      }
-    }
 
     await this.diaryEntriesRepository.update(entry)
 

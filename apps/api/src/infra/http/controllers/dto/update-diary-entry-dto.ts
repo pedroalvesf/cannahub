@@ -1,15 +1,4 @@
-import { IsString, IsOptional, IsNumber, IsBoolean, IsArray, IsDateString, IsInt, Max, ValidateNested, Min } from 'class-validator'
-import { Type } from 'class-transformer'
-
-class SeverityAfterUpdateDto {
-  @IsString()
-  symptomLogId!: string
-
-  @IsInt()
-  @Min(0)
-  @Max(10)
-  severityAfter!: number
-}
+import { IsString, IsOptional, IsNumber, IsBoolean, IsDateString, Min } from 'class-validator'
 
 export class UpdateDiaryEntryDto {
   @IsOptional()
@@ -52,10 +41,4 @@ export class UpdateDiaryEntryDto {
   @IsOptional()
   @IsBoolean()
   isFavorite?: boolean
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => SeverityAfterUpdateDto)
-  severityAfterUpdates?: SeverityAfterUpdateDto[]
 }

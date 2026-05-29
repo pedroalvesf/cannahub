@@ -4,19 +4,12 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { DiaryEntriesRepository } from '../repositories/diary-entries-repository'
 import { DiaryEntry } from '../../enterprise/entities/diary-entry'
 import { DiarySymptomLog } from '../../enterprise/entities/diary-symptom-log'
-import { DiaryEffectLog } from '../../enterprise/entities/diary-effect-log'
 import { InvalidDiaryEntryError } from './errors/invalid-diary-entry-error'
 
 interface SymptomInput {
   symptomKey: string
   customSymptomName?: string
   severityBefore: number
-}
-
-interface EffectInput {
-  effectKey: string
-  isPositive: boolean
-  customEffectName?: string
 }
 
 interface CreateDiaryEntryRequest {
@@ -31,7 +24,6 @@ interface CreateDiaryEntryRequest {
   notes?: string
   targetCondition?: string
   symptoms?: SymptomInput[]
-  effects?: EffectInput[]
 }
 
 type CreateDiaryEntryResponse = Either<
@@ -78,17 +70,7 @@ export class CreateDiaryEntryUseCase {
       }),
     )
 
-    const effects = (request.effects ?? []).map((e) =>
-      DiaryEffectLog.create({
-        diaryEntryId: entry.id,
-        effectKey: e.effectKey,
-        isPositive: e.isPositive,
-        customEffectName: e.customEffectName,
-      }),
-    )
-
     entry.symptoms = symptoms
-    entry.effects = effects
 
     await this.diaryEntriesRepository.create(entry)
 

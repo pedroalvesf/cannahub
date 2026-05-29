@@ -10,7 +10,12 @@ import { PrismaDiaryEntryMapper } from '../mappers/prisma-diary-entry-mapper'
 
 const INCLUDE_RELATIONS = {
   Symptoms: true,
-  Effects: true,
+  FollowUps: {
+    include: {
+      SymptomAssessments: true,
+      Effects: true,
+    },
+  },
 } as const
 
 @Injectable()
@@ -74,33 +79,21 @@ export class PrismaDiaryEntriesRepository implements DiaryEntriesRepository {
   }
 
   async update(entry: DiaryEntry): Promise<void> {
-    await this.prisma.$transaction(async (tx) => {
-      await tx.diaryEntry.update({
-        where: { id: entry.id.toString() },
-        data: {
-          date: entry.date,
-          time: entry.time,
-          productId: entry.productId?.toString() ?? null,
-          customProductName: entry.customProductName ?? null,
-          administrationMethod: entry.administrationMethod,
-          doseAmount: entry.doseAmount,
-          doseUnit: entry.doseUnit,
-          notes: entry.notes ?? null,
-          targetCondition: entry.targetCondition ?? null,
-          isFavorite: entry.isFavorite,
-          updatedAt: entry.updatedAt,
-        },
-      })
-
-      // Update symptom severityAfter values
-      for (const symptom of entry.symptoms) {
-        if (symptom.severityAfter !== undefined) {
-          await tx.diarySymptomLog.update({
-            where: { id: symptom.id.toString() },
-            data: { severityAfter: symptom.severityAfter },
-          })
-        }
-      }
+    await this.prisma.diaryEntry.update({
+      where: { id: entry.id.toString() },
+      data: {
+        date: entry.date,
+        time: entry.time,
+        productId: entry.productId?.toString() ?? null,
+        customProductName: entry.customProductName ?? null,
+        administrationMethod: entry.administrationMethod,
+        doseAmount: entry.doseAmount,
+        doseUnit: entry.doseUnit,
+        notes: entry.notes ?? null,
+        targetCondition: entry.targetCondition ?? null,
+        isFavorite: entry.isFavorite,
+        updatedAt: entry.updatedAt,
+      },
     })
   }
 

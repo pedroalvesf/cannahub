@@ -6,7 +6,6 @@ export interface DiarySymptomLogProps {
   symptomKey: string
   customSymptomName?: string
   severityBefore: number
-  severityAfter?: number
 }
 
 export class DiarySymptomLog extends Entity<DiarySymptomLogProps> {
@@ -24,14 +23,6 @@ export class DiarySymptomLog extends Entity<DiarySymptomLogProps> {
 
   get severityBefore() {
     return this.props.severityBefore
-  }
-
-  get severityAfter() {
-    return this.props.severityAfter
-  }
-
-  set severityAfter(value: number | undefined) {
-    this.props.severityAfter = value
   }
 
   static create(props: DiarySymptomLogProps, id?: UniqueEntityID) {

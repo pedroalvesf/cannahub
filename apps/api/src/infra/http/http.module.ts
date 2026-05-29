@@ -72,6 +72,9 @@ import { DeleteDiaryFavoriteController } from './controllers/diary/delete-diary-
 import { LogFromFavoriteController } from './controllers/diary/log-from-favorite.controller';
 import { GetDiarySummaryController } from './controllers/diary/get-diary-summary.controller';
 import { GetSymptomTrendController } from './controllers/diary/get-symptom-trend.controller';
+import { CreateDiaryFollowUpController } from './controllers/diary/create-diary-follow-up.controller';
+import { UpdateDiaryFollowUpController } from './controllers/diary/update-diary-follow-up.controller';
+import { DeleteDiaryFollowUpController } from './controllers/diary/delete-diary-follow-up.controller';
 
 // Controllers - Directory (public)
 import { ListDoctorsController } from './controllers/directory/list-doctors.controller';
@@ -97,6 +100,9 @@ import { DeleteDiaryFavoriteUseCase } from '@/domain/diary/application/use-cases
 import { CreateEntryFromFavoriteUseCase } from '@/domain/diary/application/use-cases/create-entry-from-favorite';
 import { GetDiarySummaryUseCase } from '@/domain/diary/application/use-cases/get-diary-summary';
 import { GetSymptomTrendUseCase } from '@/domain/diary/application/use-cases/get-symptom-trend';
+import { CreateDiaryFollowUpUseCase } from '@/domain/diary/application/use-cases/create-diary-follow-up';
+import { UpdateDiaryFollowUpUseCase } from '@/domain/diary/application/use-cases/update-diary-follow-up';
+import { DeleteDiaryFollowUpUseCase } from '@/domain/diary/application/use-cases/delete-diary-follow-up';
 
 // Use Cases - Auth
 import { CreateUserUseCase } from '@/domain/auth/application/use-cases/create-user';
@@ -235,6 +241,9 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     LogFromFavoriteController,
     GetDiarySummaryController,
     GetSymptomTrendController,
+    CreateDiaryFollowUpController,
+    UpdateDiaryFollowUpController,
+    DeleteDiaryFollowUpController,
 
     // Directory Controllers (public)
     ListDoctorsController,
@@ -316,6 +325,9 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     CreateEntryFromFavoriteUseCase,
     GetDiarySummaryUseCase,
     GetSymptomTrendUseCase,
+    CreateDiaryFollowUpUseCase,
+    UpdateDiaryFollowUpUseCase,
+    DeleteDiaryFollowUpUseCase,
 
     // Directory Use Cases
     ListDirectoryDoctorsUseCase,

@@ -1,17 +1,26 @@
 import {
   DiaryEntry as PrismaDiaryEntry,
   DiarySymptomLog as PrismaDiarySymptomLog,
+  DiaryFollowUp as PrismaDiaryFollowUp,
+  DiaryFollowUpSymptom as PrismaDiaryFollowUpSymptom,
   DiaryEffectLog as PrismaDiaryEffectLog,
   Prisma,
 } from '@/generated/prisma/client'
 import { DiaryEntry } from '@/domain/diary/enterprise/entities/diary-entry'
 import { DiarySymptomLog } from '@/domain/diary/enterprise/entities/diary-symptom-log'
+import { DiaryFollowUp } from '@/domain/diary/enterprise/entities/diary-follow-up'
+import { DiaryFollowUpSymptom } from '@/domain/diary/enterprise/entities/diary-follow-up-symptom'
 import { DiaryEffectLog } from '@/domain/diary/enterprise/entities/diary-effect-log'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
+type PrismaFollowUpWithRelations = PrismaDiaryFollowUp & {
+  SymptomAssessments?: PrismaDiaryFollowUpSymptom[]
+  Effects?: PrismaDiaryEffectLog[]
+}
+
 export type PrismaDiaryEntryWithRelations = PrismaDiaryEntry & {
   Symptoms?: PrismaDiarySymptomLog[]
-  Effects?: PrismaDiaryEffectLog[]
+  FollowUps?: PrismaFollowUpWithRelations[]
 }
 
 export class PrismaDiaryEntryMapper {
@@ -25,23 +34,48 @@ export class PrismaDiaryEntryMapper {
           symptomKey: s.symptomKey,
           customSymptomName: s.customSymptomName ?? undefined,
           severityBefore: s.severityBefore,
-          severityAfter: s.severityAfter ?? undefined,
         },
         new UniqueEntityID(s.id),
       ),
     )
 
-    const effects = (raw.Effects ?? []).map((e) =>
-      DiaryEffectLog.create(
+    const followUps = (raw.FollowUps ?? []).map((f) => {
+      const followUpId = new UniqueEntityID(f.id)
+      const assessments = (f.SymptomAssessments ?? []).map((a) =>
+        DiaryFollowUpSymptom.create(
+          {
+            followUpId,
+            symptomLogId: new UniqueEntityID(a.symptomLogId),
+            severityAfter: a.severityAfter,
+          },
+          new UniqueEntityID(a.id),
+        ),
+      )
+      const effects = (f.Effects ?? []).map((e) =>
+        DiaryEffectLog.create(
+          {
+            followUpId,
+            effectKey: e.effectKey,
+            isPositive: e.isPositive,
+            customEffectName: e.customEffectName ?? undefined,
+          },
+          new UniqueEntityID(e.id),
+        ),
+      )
+      return DiaryFollowUp.create(
         {
           diaryEntryId: entryId,
-          effectKey: e.effectKey,
-          isPositive: e.isPositive,
-          customEffectName: e.customEffectName ?? undefined,
+          evaluatedAt: f.evaluatedAt,
+          notes: f.notes ?? undefined,
+          tags: f.tags,
+          symptomAssessments: assessments,
+          effects,
+          createdAt: f.createdAt,
+          updatedAt: f.updatedAt,
         },
-        new UniqueEntityID(e.id),
-      ),
-    )
+        followUpId,
+      )
+    })
 
     return DiaryEntry.create(
       {
@@ -59,7 +93,7 @@ export class PrismaDiaryEntryMapper {
         targetCondition: raw.targetCondition ?? undefined,
         isFavorite: raw.isFavorite,
         symptoms,
-        effects,
+        followUps,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -90,15 +124,6 @@ export class PrismaDiaryEntryMapper {
           symptomKey: s.symptomKey,
           customSymptomName: s.customSymptomName ?? null,
           severityBefore: s.severityBefore,
-          severityAfter: s.severityAfter ?? null,
-        })),
-      },
-      Effects: {
-        create: entry.effects.map((e) => ({
-          id: e.id.toString(),
-          effectKey: e.effectKey,
-          isPositive: e.isPositive,
-          customEffectName: e.customEffectName ?? null,
         })),
       },
     }

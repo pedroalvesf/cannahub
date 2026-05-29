@@ -10,35 +10,30 @@ import {
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
-import { UpdateDiaryEntryUseCase } from '@/domain/diary/application/use-cases/update-diary-entry'
-import { UpdateDiaryEntryDto } from '../dto/update-diary-entry-dto'
+import { UpdateDiaryFollowUpUseCase } from '@/domain/diary/application/use-cases/update-diary-follow-up'
+import { UpdateDiaryFollowUpDto } from '../dto/create-diary-follow-up-dto'
 import { DiaryEntryNotFoundError } from '@/domain/diary/application/use-cases/errors/diary-entry-not-found-error'
 import { NotAllowedError } from '@/domain/diary/application/use-cases/errors/not-allowed-error'
 
-@Controller('diary')
+@Controller('diary/follow-ups')
 @UseGuards(JwtAuthGuard)
-export class UpdateDiaryEntryController {
-  constructor(private updateDiaryEntry: UpdateDiaryEntryUseCase) {}
+export class UpdateDiaryFollowUpController {
+  constructor(private updateDiaryFollowUp: UpdateDiaryFollowUpUseCase) {}
 
   @Patch(':id')
   async handle(
     @CurrentUser() user: UserPayload,
     @Param('id') id: string,
-    @Body() body: UpdateDiaryEntryDto,
+    @Body() body: UpdateDiaryFollowUpDto,
   ) {
-    const result = await this.updateDiaryEntry.execute({
-      entryId: id,
+    const result = await this.updateDiaryFollowUp.execute({
+      followUpId: id,
       userId: user.sub,
-      date: body.date ? new Date(body.date) : undefined,
-      time: body.time,
-      productId: body.productId,
-      customProductName: body.customProductName,
-      administrationMethod: body.administrationMethod,
-      doseAmount: body.doseAmount,
-      doseUnit: body.doseUnit,
+      evaluatedAt: body.evaluatedAt ? new Date(body.evaluatedAt) : undefined,
       notes: body.notes,
-      targetCondition: body.targetCondition,
-      isFavorite: body.isFavorite,
+      tags: body.tags,
+      symptomAssessments: body.symptomAssessments,
+      effects: body.effects,
     })
 
     if (result.isLeft()) {

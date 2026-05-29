@@ -2,7 +2,7 @@ import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
 import { DiarySymptomLog } from './diary-symptom-log'
-import { DiaryEffectLog } from './diary-effect-log'
+import { DiaryFollowUp } from './diary-follow-up'
 
 export interface DiaryEntryProps {
   userId: UniqueEntityID
@@ -17,7 +17,7 @@ export interface DiaryEntryProps {
   targetCondition?: string
   isFavorite: boolean
   symptoms: DiarySymptomLog[]
-  effects: DiaryEffectLog[]
+  followUps: DiaryFollowUp[]
   createdAt: Date
   updatedAt?: Date
 }
@@ -71,8 +71,8 @@ export class DiaryEntry extends Entity<DiaryEntryProps> {
     return this.props.symptoms
   }
 
-  get effects() {
-    return this.props.effects
+  get followUps() {
+    return this.props.followUps
   }
 
   get createdAt() {
@@ -138,8 +138,8 @@ export class DiaryEntry extends Entity<DiaryEntryProps> {
     this.touch()
   }
 
-  set effects(value: DiaryEffectLog[]) {
-    this.props.effects = value
+  set followUps(value: DiaryFollowUp[]) {
+    this.props.followUps = value
     this.touch()
   }
 
@@ -148,7 +148,7 @@ export class DiaryEntry extends Entity<DiaryEntryProps> {
   }
 
   static create(
-    props: Optional<DiaryEntryProps, 'isFavorite' | 'symptoms' | 'effects' | 'createdAt' | 'updatedAt'>,
+    props: Optional<DiaryEntryProps, 'isFavorite' | 'symptoms' | 'followUps' | 'createdAt' | 'updatedAt'>,
     id?: UniqueEntityID,
   ) {
     return new DiaryEntry(
@@ -156,7 +156,7 @@ export class DiaryEntry extends Entity<DiaryEntryProps> {
         ...props,
         isFavorite: props.isFavorite ?? false,
         symptoms: props.symptoms ?? [],
-        effects: props.effects ?? [],
+        followUps: props.followUps ?? [],
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },

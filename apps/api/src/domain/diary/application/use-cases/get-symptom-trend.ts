@@ -18,13 +18,6 @@ interface TrendDataPoint {
 
 type GetSymptomTrendResponse = Either<never, { dataPoints: TrendDataPoint[] }>
 
-const SEVERITY_MAP: Record<string, number> = {
-  none: 0,
-  mild: 1,
-  moderate: 2,
-  severe: 3,
-}
-
 @Injectable()
 export class GetSymptomTrendUseCase {
   constructor(private diaryEntriesRepository: DiaryEntriesRepository) {}
@@ -56,19 +49,34 @@ export class GetSymptomTrendUseCase {
         entryCount: 0,
       }
 
-      for (const symptom of entry.symptoms) {
-        if (symptom.symptomKey !== request.symptomKey) continue
-        const beforeVal = SEVERITY_MAP[symptom.severityBefore] ?? 0
-        data.beforeSum += beforeVal
+      const matchingSymptoms = entry.symptoms.filter(
+        (s) => s.symptomKey === request.symptomKey,
+      )
+      for (const symptom of matchingSymptoms) {
+        data.beforeSum += symptom.severityBefore
         data.beforeCount += 1
-        if (symptom.severityAfter) {
-          const afterVal = SEVERITY_MAP[symptom.severityAfter] ?? 0
-          data.afterSum += afterVal
-          data.afterCount += 1
+
+        // Pega o último follow-up que avaliou este sintoma específico
+        const latestFollowUp = [...entry.followUps]
+          .sort((a, b) => b.evaluatedAt.getTime() - a.evaluatedAt.getTime())
+          .find((f) =>
+            f.symptomAssessments.some(
+              (a) => a.symptomLogId.toString() === symptom.id.toString(),
+            ),
+          )
+
+        if (latestFollowUp) {
+          const assessment = latestFollowUp.symptomAssessments.find(
+            (a) => a.symptomLogId.toString() === symptom.id.toString(),
+          )
+          if (assessment) {
+            data.afterSum += assessment.severityAfter
+            data.afterCount += 1
+          }
         }
       }
 
-      data.entryCount += 1
+      if (matchingSymptoms.length > 0) data.entryCount += 1
       dayMap.set(dateKey, data)
     }
 

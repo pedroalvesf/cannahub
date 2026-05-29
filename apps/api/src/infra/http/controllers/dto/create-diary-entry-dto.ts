@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNumber, IsBoolean, IsArray, IsDateString, IsInt, Max, ValidateNested, Min } from 'class-validator'
+import { IsString, IsOptional, IsNumber, IsArray, IsDateString, IsInt, Max, ValidateNested, Min } from 'class-validator'
 import { Type } from 'class-transformer'
 
 class SymptomInputDto {
@@ -13,18 +13,6 @@ class SymptomInputDto {
   @Min(0)
   @Max(10)
   severityBefore!: number
-}
-
-class EffectInputDto {
-  @IsString()
-  effectKey!: string
-
-  @IsBoolean()
-  isPositive!: boolean
-
-  @IsOptional()
-  @IsString()
-  customEffectName?: string
 }
 
 export class CreateDiaryEntryDto {
@@ -65,10 +53,4 @@ export class CreateDiaryEntryDto {
   @ValidateNested({ each: true })
   @Type(() => SymptomInputDto)
   symptoms?: SymptomInputDto[]
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => EffectInputDto)
-  effects?: EffectInputDto[]
 }

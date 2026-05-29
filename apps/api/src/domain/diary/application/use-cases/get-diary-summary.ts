@@ -89,12 +89,26 @@ export class GetDiarySummaryUseCase {
       }
     }
 
-    // Symptom deltas (avg before vs after)
+    // Symptom deltas (avg severity before vs latest follow-up after)
     const symptomData = new Map<
       string,
       { beforeSum: number; beforeCount: number; afterSum: number; afterCount: number }
     >()
     for (const entry of entries) {
+      // Pré-computa o último follow-up por symptomLogId desta entry
+      const lastAfterBySymptomLog = new Map<string, number>()
+      const sortedFollowUps = [...entry.followUps].sort(
+        (a, b) => b.evaluatedAt.getTime() - a.evaluatedAt.getTime(),
+      )
+      for (const followUp of sortedFollowUps) {
+        for (const assessment of followUp.symptomAssessments) {
+          const key = assessment.symptomLogId.toString()
+          if (!lastAfterBySymptomLog.has(key)) {
+            lastAfterBySymptomLog.set(key, assessment.severityAfter)
+          }
+        }
+      }
+
       for (const symptom of entry.symptoms) {
         const data = symptomData.get(symptom.symptomKey) ?? {
           beforeSum: 0,
@@ -104,8 +118,9 @@ export class GetDiarySummaryUseCase {
         }
         data.beforeSum += symptom.severityBefore
         data.beforeCount += 1
-        if (symptom.severityAfter !== undefined) {
-          data.afterSum += symptom.severityAfter
+        const after = lastAfterBySymptomLog.get(symptom.id.toString())
+        if (after !== undefined) {
+          data.afterSum += after
           data.afterCount += 1
         }
         symptomData.set(symptom.symptomKey, data)

@@ -44,6 +44,8 @@ import { DiaryEntriesRepository } from '@/domain/diary/application/repositories/
 import { PrismaDiaryEntriesRepository } from './prisma/repositories/prisma-diary-entries-repository';
 import { DiaryFavoritesRepository } from '@/domain/diary/application/repositories/diary-favorites-repository';
 import { PrismaDiaryFavoritesRepository } from './prisma/repositories/prisma-diary-favorites-repository';
+import { DiaryFollowUpsRepository } from '@/domain/diary/application/repositories/diary-follow-ups-repository';
+import { PrismaDiaryFollowUpsRepository } from './prisma/repositories/prisma-diary-follow-ups-repository';
 
 // Association
 import { AssociationsRepository } from '@/domain/association/application/repositories/associations-repository';
@@ -153,6 +155,10 @@ import { PrismaProductVariantsRepository } from './prisma/repositories/prisma-pr
       provide: DiaryFavoritesRepository,
       useClass: PrismaDiaryFavoritesRepository,
     },
+    {
+      provide: DiaryFollowUpsRepository,
+      useClass: PrismaDiaryFollowUpsRepository,
+    },
     // Address
     {
       provide: AddressesRepository,
@@ -187,6 +193,7 @@ import { PrismaProductVariantsRepository } from './prisma/repositories/prisma-pr
     // Diary
     DiaryEntriesRepository,
     DiaryFavoritesRepository,
+    DiaryFollowUpsRepository,
     // Address
     AddressesRepository,
   ],

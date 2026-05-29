@@ -4,7 +4,6 @@ import { makeDiaryEntry } from '@/test/factories/make-diary-entry'
 import { DiaryEntryNotFoundError } from '../errors/diary-entry-not-found-error'
 import { NotAllowedError } from '../errors/not-allowed-error'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { DiarySymptomLog } from '@/domain/diary/enterprise/entities/diary-symptom-log'
 
 let diaryEntriesRepository: InMemoryDiaryEntriesRepository
 let sut: UpdateDiaryEntryUseCase
@@ -34,28 +33,20 @@ describe('UpdateDiaryEntryUseCase', () => {
     }
   })
 
-  it('should update severityAfter on symptoms', async () => {
+  it('should toggle favorite flag', async () => {
     const userId = new UniqueEntityID('user-1')
     const entry = makeDiaryEntry({ userId })
-    const symptom = DiarySymptomLog.create({
-      diaryEntryId: entry.id,
-      symptomKey: 'pain',
-      severityBefore: 9,
-    })
-    entry.symptoms = [symptom]
     diaryEntriesRepository.items.push(entry)
 
     const result = await sut.execute({
       entryId: entry.id.toString(),
       userId: 'user-1',
-      severityAfterUpdates: [
-        { symptomLogId: symptom.id.toString(), severityAfter: 3 },
-      ],
+      isFavorite: true,
     })
 
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
-      expect(result.value.entry.symptoms[0]?.severityAfter).toBe(3)
+      expect(result.value.entry.isFavorite).toBe(true)
     }
   })
 

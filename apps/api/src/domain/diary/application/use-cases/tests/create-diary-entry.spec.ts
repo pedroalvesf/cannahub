@@ -11,7 +11,7 @@ describe('CreateDiaryEntryUseCase', () => {
     sut = new CreateDiaryEntryUseCase(diaryEntriesRepository)
   })
 
-  it('should create a diary entry with symptoms and effects', async () => {
+  it('should create a diary entry with symptoms', async () => {
     const result = await sut.execute({
       userId: 'user-1',
       date: new Date('2026-04-06'),
@@ -22,12 +22,8 @@ describe('CreateDiaryEntryUseCase', () => {
       doseUnit: 'drops',
       notes: 'Tomei pela manha',
       symptoms: [
-        { symptomKey: 'pain', severityBefore: 'moderate' },
-        { symptomKey: 'anxiety', severityBefore: 'mild' },
-      ],
-      effects: [
-        { effectKey: 'relaxed', isPositive: true },
-        { effectKey: 'dry_mouth', isPositive: false },
+        { symptomKey: 'pain', severityBefore: 5 },
+        { symptomKey: 'anxiety', severityBefore: 3 },
       ],
     })
 
@@ -35,7 +31,7 @@ describe('CreateDiaryEntryUseCase', () => {
     if (result.isRight()) {
       expect(result.value.entry.customProductName).toBe('Oleo CBD 15mg/ml')
       expect(result.value.entry.symptoms).toHaveLength(2)
-      expect(result.value.entry.effects).toHaveLength(2)
+      expect(result.value.entry.followUps).toHaveLength(0)
     }
     expect(diaryEntriesRepository.items).toHaveLength(1)
   })
@@ -71,7 +67,7 @@ describe('CreateDiaryEntryUseCase', () => {
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
       expect(result.value.entry.symptoms).toHaveLength(0)
-      expect(result.value.entry.effects).toHaveLength(0)
+      expect(result.value.entry.followUps).toHaveLength(0)
     }
   })
 

@@ -2,15 +2,15 @@ import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 export interface DiaryEffectLogProps {
-  diaryEntryId: UniqueEntityID
+  followUpId: UniqueEntityID
   effectKey: string
   isPositive: boolean
   customEffectName?: string
 }
 
 export class DiaryEffectLog extends Entity<DiaryEffectLogProps> {
-  get diaryEntryId() {
-    return this.props.diaryEntryId
+  get followUpId() {
+    return this.props.followUpId
   }
 
   get effectKey() {

@@ -527,7 +527,7 @@ model DiaryEntry {
   User       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   Product    Product?          @relation(fields: [productId], references: [id])
   Symptoms   DiarySymptomLog[]
-  Effects    DiaryEffectLog[]
+  FollowUps  DiaryFollowUp[]
 
   @@index([userId, date])
 }
@@ -538,23 +538,56 @@ model DiarySymptomLog {
   symptomKey      String
   customSymptomName String?
   severityBefore  Int     // 0..10 (0 = nenhuma, 10 = pior possível)
-  severityAfter   Int?    // 0..10 (após uso); null = ainda não avaliado
 
-  DiaryEntry DiaryEntry @relation(fields: [diaryEntryId], references: [id], onDelete: Cascade)
+  DiaryEntry      DiaryEntry @relation(fields: [diaryEntryId], references: [id], onDelete: Cascade)
+  Reassessments   DiaryFollowUpSymptom[]
 
   @@index([diaryEntryId])
 }
 
+// Avaliação posterior ao consumo. Uma DiaryEntry pode ter N follow-ups
+// (ex: ao acordar, almoço, fim do dia).
+model DiaryFollowUp {
+  id           String   @id @default(uuid())
+  diaryEntryId String
+  evaluatedAt  DateTime // timestamp de quando o paciente fez essa avaliação
+  notes        String?
+  tags         String[] // marcadores rápidos selecionados (ex: dormi_bem, acordei_varias_vezes)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  DiaryEntry           DiaryEntry              @relation(fields: [diaryEntryId], references: [id], onDelete: Cascade)
+  SymptomAssessments   DiaryFollowUpSymptom[]
+  Effects              DiaryEffectLog[]
+
+  @@index([diaryEntryId, evaluatedAt])
+}
+
+// Severidade pós-uso de um sintoma específico em um follow-up específico.
+model DiaryFollowUpSymptom {
+  id              String @id @default(uuid())
+  followUpId      String
+  symptomLogId    String
+  severityAfter   Int    // 0..10
+
+  FollowUp     DiaryFollowUp    @relation(fields: [followUpId], references: [id], onDelete: Cascade)
+  SymptomLog   DiarySymptomLog  @relation(fields: [symptomLogId], references: [id], onDelete: Cascade)
+
+  @@unique([followUpId, symptomLogId])
+  @@index([followUpId])
+}
+
+// Efeitos passam a ser registrados em um follow-up (faz sentido só após uso).
 model DiaryEffectLog {
   id               String  @id @default(uuid())
-  diaryEntryId     String
+  followUpId       String
   effectKey        String
   isPositive       Boolean
   customEffectName String?
 
-  DiaryEntry DiaryEntry @relation(fields: [diaryEntryId], references: [id], onDelete: Cascade)
+  FollowUp DiaryFollowUp @relation(fields: [followUpId], references: [id], onDelete: Cascade)
 
-  @@index([diaryEntryId])
+  @@index([followUpId])
 }
 
 model DiaryFavorite {

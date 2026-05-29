@@ -3,6 +3,8 @@ import { InMemoryDiaryEntriesRepository } from '@/test/repositories/in-memory-di
 import { makeDiaryEntry } from '@/test/factories/make-diary-entry'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { DiarySymptomLog } from '@/domain/diary/enterprise/entities/diary-symptom-log'
+import { DiaryFollowUp } from '@/domain/diary/enterprise/entities/diary-follow-up'
+import { DiaryFollowUpSymptom } from '@/domain/diary/enterprise/entities/diary-follow-up-symptom'
 
 let diaryEntriesRepository: InMemoryDiaryEntriesRepository
 let sut: GetDiarySummaryUseCase
@@ -25,9 +27,20 @@ describe('GetDiarySummaryUseCase', () => {
       diaryEntryId: entry1.id,
       symptomKey: 'pain',
       severityBefore: 9,
-      severityAfter: 3,
     })
     entry1.symptoms = [symptom1]
+    const followUp1 = DiaryFollowUp.create({
+      diaryEntryId: entry1.id,
+      evaluatedAt: new Date(),
+    })
+    followUp1.symptomAssessments = [
+      DiaryFollowUpSymptom.create({
+        followUpId: followUp1.id,
+        symptomLogId: symptom1.id,
+        severityAfter: 3,
+      }),
+    ]
+    entry1.followUps = [followUp1]
 
     const entry2 = makeDiaryEntry({
       userId,
@@ -39,9 +52,20 @@ describe('GetDiarySummaryUseCase', () => {
       diaryEntryId: entry2.id,
       symptomKey: 'pain',
       severityBefore: 5,
-      severityAfter: 0,
     })
     entry2.symptoms = [symptom2]
+    const followUp2 = DiaryFollowUp.create({
+      diaryEntryId: entry2.id,
+      evaluatedAt: new Date(),
+    })
+    followUp2.symptomAssessments = [
+      DiaryFollowUpSymptom.create({
+        followUpId: followUp2.id,
+        symptomLogId: symptom2.id,
+        severityAfter: 0,
+      }),
+    ]
+    entry2.followUps = [followUp2]
 
     diaryEntriesRepository.items.push(entry1, entry2)
 

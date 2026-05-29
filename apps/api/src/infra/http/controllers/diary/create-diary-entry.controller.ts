@@ -33,7 +33,6 @@ export class CreateDiaryEntryController {
       notes: body.notes,
       targetCondition: body.targetCondition,
       symptoms: body.symptoms,
-      effects: body.effects,
     })
 
     if (result.isLeft()) {
