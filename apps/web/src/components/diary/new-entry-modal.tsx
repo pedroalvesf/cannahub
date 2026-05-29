@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
-import { PREDEFINED_SYMPTOMS, PREDEFINED_EFFECTS_POSITIVE, PREDEFINED_EFFECTS_NEGATIVE } from '@cannahub/shared'
+import { PREDEFINED_SYMPTOMS } from '@cannahub/shared'
 import { SYMPTOM_LABELS, DOSE_UNIT_LABELS, CONDITION_LABELS } from '@/constants/labels'
 import { MethodSelector } from './method-selector'
 import { SymptomChip } from './symptom-chip'
-import { EffectChip } from './effect-chip'
 import { ProductSourcePicker, type ProductSourceState } from './product-source-picker'
 import { useCreateDiaryEntry } from '@/hooks/use-diary'
 import { useOnboardingSummary } from '@/hooks/use-onboarding'
@@ -12,12 +11,6 @@ interface SymptomState {
   symptomKey: string
   customSymptomName?: string
   severityBefore: number
-}
-
-interface EffectState {
-  effectKey: string
-  isPositive: boolean
-  customEffectName?: string
 }
 
 interface NewEntryModalProps {
@@ -62,7 +55,6 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
   const [symptoms, setSymptoms] = useState<SymptomState[]>(
     prefill?.symptomKeys?.map((k) => ({ symptomKey: k, severityBefore: 0 })) ?? [],
   )
-  const [effects, setEffects] = useState<EffectState[]>([])
   const [customSymptomInput, setCustomSymptomInput] = useState('')
   const [showCustomSymptom, setShowCustomSymptom] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -107,14 +99,6 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
     setShowCustomSymptom(false)
   }
 
-  function toggleEffect(key: string, isPositive: boolean) {
-    setEffects((prev) => {
-      const exists = prev.find((e) => e.effectKey === key)
-      if (exists) return prev.filter((e) => e.effectKey !== key)
-      return [...prev, { effectKey: key, isPositive }]
-    })
-  }
-
   async function handleSubmit() {
     const newErrors: Record<string, string> = {}
     if (!date) newErrors['date'] = 'Data obrigatoria'
@@ -152,10 +136,6 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
         symptomKey: s.symptomKey,
         customSymptomName: s.customSymptomName,
         severityBefore: s.severityBefore,
-      })),
-      effects: effects.map((e) => ({
-        effectKey: e.effectKey,
-        isPositive: e.isPositive,
       })),
     })
 
@@ -323,45 +303,19 @@ export function NewEntryModal({ open, onClose, prefill }: NewEntryModalProps) {
           )}
         </section>
 
-        {/* Efeitos sentidos */}
-        <section className="mb-5">
-          <h3 className="text-sm font-semibold text-brand-green-deep dark:text-gray-200 mb-2">Efeitos sentidos</h3>
-          <p className="text-xs text-brand-muted dark:text-gray-500 mb-2">Positivos</p>
-          <div className="flex flex-wrap gap-2 mb-3">
-            {PREDEFINED_EFFECTS_POSITIVE.map((key) => (
-              <EffectChip
-                key={key}
-                effectKey={key}
-                isPositive={true}
-                selected={effects.some((e) => e.effectKey === key)}
-                onToggle={() => toggleEffect(key, true)}
-              />
-            ))}
-          </div>
-          <p className="text-xs text-brand-muted dark:text-gray-500 mb-2">Negativos</p>
-          <div className="flex flex-wrap gap-2">
-            {PREDEFINED_EFFECTS_NEGATIVE.map((key) => (
-              <EffectChip
-                key={key}
-                effectKey={key}
-                isPositive={false}
-                selected={effects.some((e) => e.effectKey === key)}
-                onToggle={() => toggleEffect(key, false)}
-              />
-            ))}
-          </div>
-        </section>
-
         {/* Notas */}
         <section className="mb-6">
           <h3 className="text-sm font-semibold text-brand-green-deep dark:text-gray-200 mb-2">Notas</h3>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Como foi a experiencia?"
+            placeholder="Contexto, motivação, observações sobre o uso"
             rows={3}
             className="w-full px-3 py-2 rounded-[8px] border border-brand-cream-dark/60 dark:border-gray-700 bg-brand-cream dark:bg-surface-dark-card text-sm text-brand-green-deep dark:text-gray-200 placeholder:text-brand-muted/50 resize-none"
           />
+          <p className="text-[11px] text-brand-muted dark:text-gray-500 mt-1.5">
+            Os efeitos e como você se sente depois ficam para a avaliação pós-uso.
+          </p>
         </section>
 
         {/* Submit */}

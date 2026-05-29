@@ -3,22 +3,36 @@ import { api } from '@/lib/api'
 
 // --- Types ---
 
-interface DiarySymptom {
+export interface DiarySymptom {
   id: string
   symptomKey: string
   customSymptomName: string | null
   severityBefore: number
-  severityAfter: number | null
 }
 
-interface DiaryEffect {
+export interface DiaryEffect {
   id: string
   effectKey: string
   isPositive: boolean
   customEffectName: string | null
 }
 
-interface DiaryEntry {
+export interface DiaryFollowUpSymptomAssessment {
+  id: string
+  symptomLogId: string
+  severityAfter: number
+}
+
+export interface DiaryFollowUp {
+  id: string
+  evaluatedAt: string
+  notes: string | null
+  tags: string[]
+  symptomAssessments: DiaryFollowUpSymptomAssessment[]
+  effects: DiaryEffect[]
+}
+
+export interface DiaryEntry {
   id: string
   date: string
   time: string
@@ -31,7 +45,7 @@ interface DiaryEntry {
   targetCondition: string | null
   isFavorite: boolean
   symptoms: DiarySymptom[]
-  effects: DiaryEffect[]
+  followUps: DiaryFollowUp[]
   createdAt: string
   updatedAt?: string
 }
@@ -139,7 +153,6 @@ export function useCreateDiaryEntry() {
       notes?: string
       targetCondition?: string
       symptoms?: Array<{ symptomKey: string; customSymptomName?: string; severityBefore: number }>
-      effects?: Array<{ effectKey: string; isPositive: boolean; customEffectName?: string }>
     }) => {
       const { data } = await api.post('/diary', body)
       return data
@@ -169,7 +182,6 @@ export function useUpdateDiaryEntry() {
       notes?: string | null
       targetCondition?: string | null
       isFavorite?: boolean
-      severityAfterUpdates?: Array<{ symptomLogId: string; severityAfter: number }>
     }) => {
       const { data } = await api.patch(`/diary/${id}`, body)
       return data
@@ -279,6 +291,74 @@ export function useDiarySummary(dateFrom?: string, dateTo?: string, targetCondit
       if (targetCondition) params.set('targetCondition', targetCondition)
       const { data } = await api.get(`/diary/summary?${params.toString()}`)
       return data
+    },
+  })
+}
+
+// --- Follow-ups ---
+
+export interface CreateFollowUpInput {
+  entryId: string
+  evaluatedAt: string  // ISO datetime
+  notes?: string
+  tags?: string[]
+  symptomAssessments?: Array<{ symptomLogId: string; severityAfter: number }>
+  effects?: Array<{ effectKey: string; isPositive: boolean; customEffectName?: string }>
+}
+
+export function useCreateDiaryFollowUp() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ entryId, ...body }: CreateFollowUpInput) => {
+      const { data } = await api.post(`/diary/entries/${entryId}/follow-ups`, body)
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['diary-entries'] })
+      queryClient.invalidateQueries({ queryKey: ['diary-entry'] })
+      queryClient.invalidateQueries({ queryKey: ['diary-summary'] })
+      queryClient.invalidateQueries({ queryKey: ['symptom-trend'] })
+    },
+  })
+}
+
+export function useUpdateDiaryFollowUp() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      id,
+      ...body
+    }: {
+      id: string
+      evaluatedAt?: string
+      notes?: string | null
+      tags?: string[]
+      symptomAssessments?: Array<{ symptomLogId: string; severityAfter: number }>
+      effects?: Array<{ effectKey: string; isPositive: boolean; customEffectName?: string }>
+    }) => {
+      const { data } = await api.patch(`/diary/follow-ups/${id}`, body)
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['diary-entries'] })
+      queryClient.invalidateQueries({ queryKey: ['diary-entry'] })
+      queryClient.invalidateQueries({ queryKey: ['diary-summary'] })
+      queryClient.invalidateQueries({ queryKey: ['symptom-trend'] })
+    },
+  })
+}
+
+export function useDeleteDiaryFollowUp() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { data } = await api.delete(`/diary/follow-ups/${id}`)
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['diary-entries'] })
+      queryClient.invalidateQueries({ queryKey: ['diary-entry'] })
+      queryClient.invalidateQueries({ queryKey: ['diary-summary'] })
     },
   })
 }

@@ -5,7 +5,6 @@ interface Symptom {
   symptomKey: string
   customSymptomName: string | null
   severityBefore: number
-  severityAfter: number | null
 }
 
 interface DiaryEntryCardProps {
@@ -19,32 +18,6 @@ interface DiaryEntryCardProps {
   targetCondition: string | null
   symptoms: Symptom[]
   onClick?: () => void
-}
-
-function SeverityDelta({ before, after }: { before: number; after: number | null }) {
-  if (after === null) return null
-
-  const diff = before - after
-
-  if (diff > 0) {
-    return (
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-green-600">
-        <polyline points="18 15 12 9 6 15" />
-      </svg>
-    )
-  }
-  if (diff < 0) {
-    return (
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-red-500">
-        <polyline points="6 9 12 15 18 9" />
-      </svg>
-    )
-  }
-  return (
-    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
-      <line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  )
 }
 
 export function DiaryEntryCard({
@@ -98,13 +71,7 @@ export function DiaryEntryCard({
                     className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-brand-green-pale/60 dark:bg-gray-700/40 text-brand-text-md dark:text-gray-300"
                   >
                     {label}: <span className="font-semibold">{s.severityBefore}</span>
-                    {s.severityAfter !== null && (
-                      <>
-                        <span className="text-brand-muted">→</span>
-                        <span className="font-semibold">{s.severityAfter}</span>
-                        <SeverityDelta before={s.severityBefore} after={s.severityAfter} />
-                      </>
-                    )}
+                    <span className="text-brand-muted">/10</span>
                   </span>
                 )
               })}

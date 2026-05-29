@@ -1,18 +1,19 @@
 import { lazy, Suspense, useState, useMemo } from 'react'
 import { Header } from '@/components/layout/header'
 import { DiaryEntryCard } from '@/components/diary/diary-entry-card'
+import { FollowUpTimeline } from '@/components/diary/follow-up-timeline'
 
 const NewEntryModal = lazy(() =>
   import('@/components/diary/new-entry-modal').then((m) => ({ default: m.NewEntryModal })),
 )
-const ReEvaluationModal = lazy(() =>
-  import('@/components/diary/re-evaluation-modal').then((m) => ({ default: m.ReEvaluationModal })),
+const FollowUpModal = lazy(() =>
+  import('@/components/diary/follow-up-modal').then((m) => ({ default: m.FollowUpModal })),
 )
 import { QuickLogBar } from '@/components/diary/quick-log-bar'
-import { useDiaryEntries, useDeleteDiaryEntry } from '@/hooks/use-diary'
+import { useDiaryEntries, useDeleteDiaryEntry, type DiaryEntry, type DiaryFollowUp } from '@/hooks/use-diary'
 import { useOnboardingSummary } from '@/hooks/use-onboarding'
 import { DiaryInsights } from '@/components/diary/diary-insights'
-import { ADMINISTRATION_METHOD_LABELS, SYMPTOM_LABELS, DOSE_UNIT_LABELS, EFFECT_LABELS, CONDITION_LABELS } from '@/constants/labels'
+import { ADMINISTRATION_METHOD_LABELS, SYMPTOM_LABELS, DOSE_UNIT_LABELS, CONDITION_LABELS } from '@/constants/labels'
 
 const PERIOD_OPTIONS = [
   { label: '7d', days: 7 },
@@ -50,7 +51,8 @@ export function DiaryPage() {
   const [conditionFilter, setConditionFilter] = useState('')
   const [tab, setTab] = useState<'timeline' | 'insights'>('timeline')
   const [expandedId, setExpandedId] = useState<string | null>(null)
-  const [reEvalEntry, setReEvalEntry] = useState<{ id: string; symptoms: any[] } | null>(null)
+  const [followUpEntry, setFollowUpEntry] = useState<DiaryEntry | null>(null)
+  const [editingFollowUp, setEditingFollowUp] = useState<DiaryFollowUp | null>(null)
 
   const deleteEntry = useDeleteDiaryEntry()
   const { data: onboarding } = useOnboardingSummary()
@@ -247,7 +249,12 @@ export function DiaryPage() {
                   <div className="space-y-3">
                     {group.entries.map((entry) => {
                       const isExpanded = expandedId === entry.id
-                      const hasPendingReEval = entry.symptoms.some((s) => !s.severityAfter)
+                      const followUpCount = entry.followUps.length
+                      const entryDateMs = new Date(entry.date).getTime()
+                      const hoursSince = (Date.now() - entryDateMs) / (1000 * 60 * 60)
+                      // Sugere follow-up depois de 2h sem avaliação E até 72h após o consumo
+                      const shouldSuggestFollowUp =
+                        followUpCount === 0 && hoursSince >= 2 && hoursSince <= 72
                       return (
                         <div key={entry.id}>
                           <DiaryEntryCard
@@ -262,19 +269,31 @@ export function DiaryPage() {
                             symptoms={entry.symptoms}
                             onClick={() => setExpandedId(isExpanded ? null : entry.id)}
                           />
-                          {/* Pending re-evaluation badge */}
-                          {hasPendingReEval && !isExpanded && (
+                          {/* Sinalização: nenhum follow-up registrado ainda */}
+                          {shouldSuggestFollowUp && !isExpanded && (
                             <div className="mt-1 ml-[64px]">
                               <button
-                                onClick={() => setReEvalEntry({ id: entry.id, symptoms: entry.symptoms })}
-                                className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors"
+                                onClick={() => { setFollowUpEntry(entry); setEditingFollowUp(null) }}
+                                className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-brand-green-pale dark:bg-brand-green-deep/30 text-brand-green-deep dark:text-brand-green-xs hover:bg-brand-green-xs/30 dark:hover:bg-brand-green-deep/50 transition-colors"
                               >
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                  <circle cx="12" cy="12" r="10" />
-                                  <line x1="12" y1="8" x2="12" y2="12" />
-                                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
                                 </svg>
-                                Como estou agora?
+                                Registrar como você está
+                              </button>
+                            </div>
+                          )}
+                          {/* Já existe follow-up: mostra contador */}
+                          {followUpCount > 0 && !isExpanded && (
+                            <div className="mt-1 ml-[64px]">
+                              <button
+                                onClick={() => setExpandedId(entry.id)}
+                                className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-brand-cream-dark/40 dark:bg-gray-700/40 text-brand-text-md dark:text-gray-300 hover:bg-brand-cream-dark/70 dark:hover:bg-gray-700/70 transition-colors"
+                              >
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                                </svg>
+                                {followUpCount} avalia{followUpCount === 1 ? 'ção' : 'ções'}
                               </button>
                             </div>
                           )}
@@ -293,26 +312,13 @@ export function DiaryPage() {
                               </div>
                               {entry.symptoms.length > 0 && (
                                 <div>
-                                  <span className="text-xs text-brand-muted dark:text-gray-500">Sintomas</span>
+                                  <span className="text-xs text-brand-muted dark:text-gray-500">Sintomas no momento do uso</span>
                                   <div className="mt-1 space-y-1">
                                     {entry.symptoms.map((s) => (
                                       <div key={s.id} className="text-sm text-brand-green-deep dark:text-gray-200">
                                         {s.customSymptomName ?? SYMPTOM_LABELS[s.symptomKey] ?? s.symptomKey}: <span className="font-semibold">{s.severityBefore}</span>
-                                        {s.severityAfter !== null && <> → <span className="font-semibold">{s.severityAfter}</span></>}
                                         <span className="text-xs text-brand-muted ml-1">/10</span>
                                       </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-                              {entry.effects.length > 0 && (
-                                <div>
-                                  <span className="text-xs text-brand-muted dark:text-gray-500">Efeitos</span>
-                                  <div className="flex flex-wrap gap-1 mt-1">
-                                    {entry.effects.map((ef) => (
-                                      <span key={ef.id} className={`text-xs px-2 py-0.5 rounded-full ${ef.isPositive ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'}`}>
-                                        {ef.customEffectName ?? EFFECT_LABELS[ef.effectKey] ?? ef.effectKey}
-                                      </span>
                                     ))}
                                   </div>
                                 </div>
@@ -323,15 +329,21 @@ export function DiaryPage() {
                                   <p className="text-sm text-brand-green-deep dark:text-gray-200 mt-1">{entry.notes}</p>
                                 </div>
                               )}
+
+                              {/* Timeline de follow-ups */}
+                              <FollowUpTimeline
+                                entry={entry}
+                                onAddFollowUp={() => {
+                                  setFollowUpEntry(entry)
+                                  setEditingFollowUp(null)
+                                }}
+                                onEditFollowUp={(f) => {
+                                  setFollowUpEntry(entry)
+                                  setEditingFollowUp(f)
+                                }}
+                              />
+
                               <div className="flex gap-3 pt-2 border-t border-brand-cream-dark/20 dark:border-gray-700/20">
-                                {hasPendingReEval && (
-                                  <button
-                                    onClick={() => setReEvalEntry({ id: entry.id, symptoms: entry.symptoms })}
-                                    className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline"
-                                  >
-                                    Re-avaliar sintomas
-                                  </button>
-                                )}
                                 <button
                                   onClick={() => {
                                     if (confirm('Excluir este registro?')) {
@@ -375,13 +387,13 @@ export function DiaryPage() {
           <NewEntryModal open={showNewEntry} onClose={handleCloseModal} prefill={prefill} />
         </Suspense>
       )}
-      {reEvalEntry && (
+      {followUpEntry && (
         <Suspense fallback={null}>
-          <ReEvaluationModal
+          <FollowUpModal
             open={true}
-            onClose={() => setReEvalEntry(null)}
-            entryId={reEvalEntry.id}
-            symptoms={reEvalEntry.symptoms}
+            onClose={() => { setFollowUpEntry(null); setEditingFollowUp(null) }}
+            entry={followUpEntry}
+            existingFollowUp={editingFollowUp ?? undefined}
           />
         </Suspense>
       )}
