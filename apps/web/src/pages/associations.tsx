@@ -454,14 +454,14 @@ function AssociationCard({ association, featured }: { association: Association; 
               {isApproved && (
                 <Link
                   to={`/associacoes/${association.slug}/catalogo`}
-                  className="text-[13px] font-medium text-brand-green-deep dark:text-brand-green-light no-underline px-3.5 py-[7px] border border-brand-green-pale dark:border-brand-green-mid rounded-[8px] bg-brand-green-pale dark:bg-brand-green-deep/50 hover:bg-brand-green-deep hover:text-white hover:border-brand-green-deep dark:hover:bg-brand-green-light dark:hover:text-white dark:hover:border-brand-green-light transition-all"
+                  className="text-[13px] font-medium text-brand-green-deep dark:text-brand-green-light no-underline px-3.5 py-[7px] border border-brand-cream-dark dark:border-gray-600 rounded-[8px] bg-transparent hover:bg-brand-green-pale dark:hover:bg-brand-green-deep/30 transition-all"
                 >
                   Ver catálogo
                 </Link>
               )}
               <Link
                 to={`/associacoes/${association.slug}`}
-                className="text-[13px] font-medium text-brand-green-deep dark:text-brand-green-light no-underline px-3.5 py-[7px] border border-brand-green-pale dark:border-brand-green-mid rounded-[8px] bg-brand-green-pale dark:bg-brand-green-deep/50 hover:bg-brand-green-deep hover:text-white hover:border-brand-green-deep dark:hover:bg-brand-green-light dark:hover:text-white dark:hover:border-brand-green-light transition-all"
+                className="text-[13px] font-medium text-white dark:text-brand-text no-underline px-3.5 py-[7px] border border-brand-green-deep dark:border-brand-green-light rounded-[8px] bg-brand-green-deep dark:bg-brand-green-light hover:bg-brand-green-mid hover:border-brand-green-mid dark:hover:bg-brand-green-xs dark:hover:border-brand-green-xs transition-all"
               >
                 Ver associação &rarr;
               </Link>

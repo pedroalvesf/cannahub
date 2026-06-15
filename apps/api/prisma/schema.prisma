@@ -46,7 +46,6 @@ model User {
   // Patient domain relations
   Patient              Patient?
   Dependents           Dependent[]
-  JournalEntries       TreatmentJournalEntry[]
   Documents            Document[]          @relation("UserDocuments")
   ReviewedDocuments    Document[]          @relation("DocumentReviewer")
   ProfessionalProfile  ProfessionalProfile?
@@ -54,6 +53,8 @@ model User {
   RequestedLinks       PatientAssociationLink[] @relation("LinkRequester")
   ApprovedLinks        PatientAssociationLink[] @relation("LinkApprover")
   Address              Address?
+  DiaryEntries         DiaryEntry[]
+  DiaryFavorites       DiaryFavorite[]
 
   @@index([email])
   @@index([cpf])
@@ -389,27 +390,6 @@ model ProfessionalProfile {
   @@index([userId])
 }
 
-model TreatmentJournalEntry {
-  id                String   @id @default(uuid())
-  userId            String
-  entryDate         DateTime @db.Date
-  mood              Int?
-  symptoms          String[]
-  symptomIntensity  Int?
-  medicationTaken   Boolean  @default(false)
-  dosage            String?
-  sideEffects       String[]
-  notes             String?
-  visibility        String   @default("private") // 'private' | 'shareable'
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  User              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId, entryDate])
-  @@index([userId, createdAt])
-}
-
 // --- Association Domain ---
 
 model Association {
@@ -505,6 +485,8 @@ model Product {
 
   Association     Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
   Variants        ProductVariant[]
+  DiaryEntries    DiaryEntry[]
+  DiaryFavorites  DiaryFavorite[]
 
   @@index([associationId])
   @@index([type])
@@ -522,4 +504,106 @@ model ProductVariant {
   Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@index([productId])
+}
+
+// --- Diary Domain ---
+
+model DiaryEntry {
+  id                   String   @id @default(uuid())
+  userId               String
+  date                 DateTime
+  time                 String
+  productId            String?
+  customProductName    String?
+  administrationMethod String   // oil | flower | vape | edible | topical | capsule | other
+  doseAmount           Decimal  @db.Decimal(10, 2)
+  doseUnit             String   // drops | ml | mg | g | puffs | units
+  notes                String?
+  targetCondition      String?
+  isFavorite           Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  User       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Product    Product?          @relation(fields: [productId], references: [id])
+  Symptoms   DiarySymptomLog[]
+  FollowUps  DiaryFollowUp[]
+
+  @@index([userId, date])
+}
+
+model DiarySymptomLog {
+  id              String  @id @default(uuid())
+  diaryEntryId    String
+  symptomKey      String
+  customSymptomName String?
+  severityBefore  Int     // 0..10 (0 = nenhuma, 10 = pior possível)
+
+  DiaryEntry      DiaryEntry @relation(fields: [diaryEntryId], references: [id], onDelete: Cascade)
+  Reassessments   DiaryFollowUpSymptom[]
+
+  @@index([diaryEntryId])
+}
+
+// Avaliação posterior ao consumo. Uma DiaryEntry pode ter N follow-ups
+// (ex: ao acordar, almoço, fim do dia).
+model DiaryFollowUp {
+  id           String   @id @default(uuid())
+  diaryEntryId String
+  evaluatedAt  DateTime // timestamp de quando o paciente fez essa avaliação
+  notes        String?
+  tags         String[] // marcadores rápidos selecionados (ex: dormi_bem, acordei_varias_vezes)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  DiaryEntry           DiaryEntry              @relation(fields: [diaryEntryId], references: [id], onDelete: Cascade)
+  SymptomAssessments   DiaryFollowUpSymptom[]
+  Effects              DiaryEffectLog[]
+
+  @@index([diaryEntryId, evaluatedAt])
+}
+
+// Severidade pós-uso de um sintoma específico em um follow-up específico.
+model DiaryFollowUpSymptom {
+  id              String @id @default(uuid())
+  followUpId      String
+  symptomLogId    String
+  severityAfter   Int    // 0..10
+
+  FollowUp     DiaryFollowUp    @relation(fields: [followUpId], references: [id], onDelete: Cascade)
+  SymptomLog   DiarySymptomLog  @relation(fields: [symptomLogId], references: [id], onDelete: Cascade)
+
+  @@unique([followUpId, symptomLogId])
+  @@index([followUpId])
+}
+
+// Efeitos passam a ser registrados em um follow-up (faz sentido só após uso).
+model DiaryEffectLog {
+  id               String  @id @default(uuid())
+  followUpId       String
+  effectKey        String
+  isPositive       Boolean
+  customEffectName String?
+
+  FollowUp DiaryFollowUp @relation(fields: [followUpId], references: [id], onDelete: Cascade)
+
+  @@index([followUpId])
+}
+
+model DiaryFavorite {
+  id                   String   @id @default(uuid())
+  userId               String
+  name                 String
+  productId            String?
+  customProductName    String?
+  administrationMethod String
+  doseAmount           Decimal  @db.Decimal(10, 2)
+  doseUnit             String
+  symptomKeys          String[]
+  createdAt            DateTime @default(now())
+
+  User    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Product Product? @relation(fields: [productId], references: [id])
+
+  @@index([userId])
 }

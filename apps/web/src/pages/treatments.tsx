@@ -1,7 +1,13 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Header } from '@/components/layout/header'
 import { useAuthStore } from '@/stores/auth-store'
+
+const VALID_CATEGORY_KEYS = ['all', 'neuro', 'mental', 'pain', 'onco'] as const
+function parseCategory(raw: string | null): 'all' | 'neuro' | 'mental' | 'pain' | 'onco' {
+  return (VALID_CATEGORY_KEYS as readonly string[]).includes(raw ?? '')
+    ? (raw as 'all' | 'neuro' | 'mental' | 'pain' | 'onco')
+    : 'all'
+}
 
 // ─── Types ──────────────────────────────────────────────────
 type CategoryKey = 'all' | 'neuro' | 'mental' | 'pain' | 'onco'
@@ -323,7 +329,7 @@ function FeaturedCard({ card, illusBg, illusBgDark }: { card: ConditionCard; ill
       to={slugToPath(card.slug)}
       className="group col-span-2 max-md:col-span-1 bg-white dark:bg-surface-dark-card border border-brand-cream-dark dark:border-gray-700/40 rounded-[20px] overflow-hidden cursor-pointer transition-all duration-200 hover:border-brand-green-light hover:-translate-y-0.5 hover:shadow-[0_8px_28px_rgba(20,31,20,0.07)] no-underline text-inherit grid grid-cols-2 max-md:grid-cols-1"
     >
-      <div className={`flex items-center justify-center min-h-[220px] max-md:min-h-[160px] overflow-hidden ${card.heroImage ? '' : `p-10 max-md:p-7 ${illusBg} ${illusBgDark}`}`}>
+      <div className={`flex items-center justify-center md:min-h-[220px] aspect-video md:aspect-auto overflow-hidden ${card.heroImage ? '' : `p-10 max-md:p-7 ${illusBg} ${illusBgDark}`}`}>
         {card.heroImage ? (
           <img src={card.heroImage} alt={card.name} className="w-full h-full object-cover" loading="lazy" width={480} height={320} />
         ) : (
@@ -413,7 +419,15 @@ function RowCard({ card, illusBg, illusBgDark }: { card: ConditionCard; illusBg:
 
 export function TreatmentsPage() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
-  const [activeFilter, setActiveFilter] = useState<CategoryKey>('all')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeFilter = parseCategory(searchParams.get('category'))
+
+  function setActiveFilter(key: CategoryKey) {
+    const next = new URLSearchParams(searchParams)
+    if (key === 'all') next.delete('category')
+    else next.set('category', key)
+    setSearchParams(next, { replace: true })
+  }
 
   const visibleCategories = activeFilter === 'all'
     ? categories
@@ -486,17 +500,23 @@ export function TreatmentsPage() {
           {/* Right column: 2x2 category preview cards */}
           <div className="grid grid-cols-2 gap-2.5">
             {heroCats.map((cat) => (
-              <a
+              <button
                 key={cat.key}
-                href={`#cat-${cat.key}`}
-                className="bg-white/[0.06] border border-white/10 rounded-[14px] p-4 cursor-pointer transition-all hover:bg-white/[0.11] hover:border-white/20 block no-underline"
+                type="button"
+                onClick={() => {
+                  setActiveFilter(cat.key as CategoryKey)
+                  setTimeout(() => {
+                    document.getElementById(`cat-${cat.key}`)?.scrollIntoView({ behavior: 'smooth' })
+                  }, 100)
+                }}
+                className="text-left bg-white/[0.06] border border-white/10 rounded-[14px] p-4 cursor-pointer transition-all hover:bg-white/[0.11] hover:border-white/20 block no-underline w-full"
               >
                 <div className="w-8 h-8 rounded-lg bg-white/[0.08] flex items-center justify-center mb-2.5">
                   {heroCatIcons[cat.key]}
                 </div>
                 <div className="text-[13px] font-medium text-white/75 leading-tight mb-0.5">{cat.name}</div>
                 <div className="text-[11px] text-white/30 leading-snug">{cat.count}</div>
-              </a>
+              </button>
             ))}
           </div>
         </div>

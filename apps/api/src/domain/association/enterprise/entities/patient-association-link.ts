@@ -2,15 +2,24 @@ import { Entity } from '@/core/entities/entity';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
 
+// Mirrors @cannahub/shared PatientAssociationStatus. Inlined as literals
+// to avoid runtime import of the shared package's TS enum.
+export type PatientAssociationStatusValue =
+  | 'requested'
+  | 'active'
+  | 'rejected'
+  | 'cancelled';
+export type FeeStatus = 'pending' | 'paid' | 'overdue' | 'exempt';
+
 export interface PatientAssociationLinkProps {
   associationId: UniqueEntityID;
   patientId: UniqueEntityID;
   requestedByUserId: UniqueEntityID;
-  status: string; // PatientAssociationStatus enum
+  status: PatientAssociationStatusValue;
   approvedByUserId?: UniqueEntityID;
   startDate?: Date;
   endDate?: Date;
-  feeStatus?: string; // pending | paid | overdue | exempt
+  feeStatus?: FeeStatus;
   feeExpiresAt?: Date;
   feePaidAt?: Date;
   createdAt: Date;

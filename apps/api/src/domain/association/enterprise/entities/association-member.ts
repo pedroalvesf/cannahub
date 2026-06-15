@@ -2,11 +2,17 @@ import { Entity } from '@/core/entities/entity';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
 
+// Mirrors @cannahub/shared AssociationMemberRole / AssociationMemberStatus.
+// Inlined as literals to avoid runtime import of the shared package's
+// TS enums (Node strip-only mode can't transpile them).
+export type AssociationMemberRoleValue = 'owner' | 'admin' | 'staff';
+export type AssociationMemberStatusValue = 'active' | 'inactive';
+
 export interface AssociationMemberProps {
   associationId: UniqueEntityID;
   userId: UniqueEntityID;
-  role: string; // AssociationMemberRole enum
-  status: string; // AssociationMemberStatus enum
+  role: AssociationMemberRoleValue;
+  status: AssociationMemberStatusValue;
   assignedAt: Date;
 }
 
@@ -35,7 +41,7 @@ export class AssociationMember extends Entity<AssociationMemberProps> {
     this.props.status = 'inactive';
   }
 
-  changeRole(role: string) {
+  changeRole(role: AssociationMemberRoleValue) {
     this.props.role = role;
   }
 

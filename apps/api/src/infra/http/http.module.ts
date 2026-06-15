@@ -34,7 +34,7 @@ import { GetAssociationController } from './controllers/association/get-associat
 import { RequestAssociationLinkController } from './controllers/association/request-link.controller';
 import { ListMyLinksController } from './controllers/association/list-my-links.controller';
 import { GetAssociationProductTypesController } from './controllers/association/get-association-product-types.controller';
-import { GetAssociationProductsPublicController } from './controllers/association/get-association-products-public.controller';
+import { GetAssociationProductsController } from './controllers/association/get-association-products.controller';
 
 // Controllers - Association Panel
 import { AssociationDashboardController } from './controllers/association/association-dashboard.controller';
@@ -51,7 +51,6 @@ import { AssociationUpdateProfileController } from './controllers/association/up
 
 // Controllers - Documents
 import { ListDocumentsController } from './controllers/patient/list-documents.controller';
-import { JournalController } from './controllers/patient/journal.controller';
 
 // Controllers - Admin
 import { AdminListUsersController } from './controllers/admin/list-users.controller';
@@ -60,6 +59,22 @@ import { AdminApproveDocumentController } from './controllers/admin/approve-docu
 import { AdminRejectDocumentController } from './controllers/admin/reject-document.controller';
 import { AdminUpdateUserStatusController } from './controllers/admin/update-user-status.controller';
 import { AdminDeleteUsersController } from './controllers/admin/delete-users.controller';
+
+// Controllers - Diary
+import { CreateDiaryEntryController } from './controllers/diary/create-diary-entry.controller';
+import { ListDiaryEntriesController } from './controllers/diary/list-diary-entries.controller';
+import { GetDiaryEntryController } from './controllers/diary/get-diary-entry.controller';
+import { UpdateDiaryEntryController } from './controllers/diary/update-diary-entry.controller';
+import { DeleteDiaryEntryController } from './controllers/diary/delete-diary-entry.controller';
+import { CreateDiaryFavoriteController } from './controllers/diary/create-diary-favorite.controller';
+import { ListDiaryFavoritesController } from './controllers/diary/list-diary-favorites.controller';
+import { DeleteDiaryFavoriteController } from './controllers/diary/delete-diary-favorite.controller';
+import { LogFromFavoriteController } from './controllers/diary/log-from-favorite.controller';
+import { GetDiarySummaryController } from './controllers/diary/get-diary-summary.controller';
+import { GetSymptomTrendController } from './controllers/diary/get-symptom-trend.controller';
+import { CreateDiaryFollowUpController } from './controllers/diary/create-diary-follow-up.controller';
+import { UpdateDiaryFollowUpController } from './controllers/diary/update-diary-follow-up.controller';
+import { DeleteDiaryFollowUpController } from './controllers/diary/delete-diary-follow-up.controller';
 
 // Controllers - Directory (public)
 import { ListDoctorsController } from './controllers/directory/list-doctors.controller';
@@ -72,6 +87,22 @@ import { CompleteOnboardingController } from './controllers/onboarding/complete-
 import { GetOnboardingSummaryController } from './controllers/onboarding/get-onboarding-summary.controller';
 import { EscalateToHumanController } from './controllers/onboarding/escalate-to-human.controller';
 import { ExtractFromTextController } from './controllers/onboarding/extract-from-text.controller';
+
+// Use Cases - Diary
+import { CreateDiaryEntryUseCase } from '@/domain/diary/application/use-cases/create-diary-entry';
+import { ListDiaryEntriesUseCase } from '@/domain/diary/application/use-cases/list-diary-entries';
+import { GetDiaryEntryUseCase } from '@/domain/diary/application/use-cases/get-diary-entry';
+import { UpdateDiaryEntryUseCase } from '@/domain/diary/application/use-cases/update-diary-entry';
+import { DeleteDiaryEntryUseCase } from '@/domain/diary/application/use-cases/delete-diary-entry';
+import { CreateDiaryFavoriteUseCase } from '@/domain/diary/application/use-cases/create-diary-favorite';
+import { ListDiaryFavoritesUseCase } from '@/domain/diary/application/use-cases/list-diary-favorites';
+import { DeleteDiaryFavoriteUseCase } from '@/domain/diary/application/use-cases/delete-diary-favorite';
+import { CreateEntryFromFavoriteUseCase } from '@/domain/diary/application/use-cases/create-entry-from-favorite';
+import { GetDiarySummaryUseCase } from '@/domain/diary/application/use-cases/get-diary-summary';
+import { GetSymptomTrendUseCase } from '@/domain/diary/application/use-cases/get-symptom-trend';
+import { CreateDiaryFollowUpUseCase } from '@/domain/diary/application/use-cases/create-diary-follow-up';
+import { UpdateDiaryFollowUpUseCase } from '@/domain/diary/application/use-cases/update-diary-follow-up';
+import { DeleteDiaryFollowUpUseCase } from '@/domain/diary/application/use-cases/delete-diary-follow-up';
 
 // Use Cases - Auth
 import { CreateUserUseCase } from '@/domain/auth/application/use-cases/create-user';
@@ -119,12 +150,6 @@ import { ListMyLinksUseCase } from '@/domain/association/application/use-cases/l
 // Use Cases - Documents
 import { ListUserDocumentsUseCase } from '@/domain/patient/application/use-cases/list-user-documents';
 import { GetDocumentByIdUseCase } from '@/domain/patient/application/use-cases/get-document-by-id';
-
-// Use Cases - Journal
-import { CreateJournalEntryUseCase } from '@/domain/patient/application/use-cases/create-journal-entry';
-import { ListJournalEntriesUseCase } from '@/domain/patient/application/use-cases/list-journal-entries';
-import { UpdateJournalEntryUseCase } from '@/domain/patient/application/use-cases/update-journal-entry';
-import { DeleteJournalEntryUseCase } from '@/domain/patient/application/use-cases/delete-journal-entry';
 
 // Use Cases - Admin
 import { ListUsersUseCase } from '@/domain/admin/application/use-cases/list-users';
@@ -178,7 +203,7 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     RequestAssociationLinkController,
     ListMyLinksController,
     GetAssociationProductTypesController,
-    GetAssociationProductsPublicController,
+    GetAssociationProductsController,
 
     // Association Panel Controllers
     AssociationDashboardController,
@@ -203,7 +228,27 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
 
     // Document Controllers
     ListDocumentsController,
-    JournalController,
+
+    // Diary Controllers
+    // IMPORTANT: static/specific routes (favorites, summary, symptoms, entries,
+    // follow-ups) MUST be registered BEFORE the `diary/:id` catch-all routes,
+    // otherwise Express matches `/diary/summary` and `/diary/favorites` as
+    // `/diary/:id` and returns 404.
+    CreateDiaryEntryController,
+    ListDiaryEntriesController,
+    CreateDiaryFavoriteController,
+    ListDiaryFavoritesController,
+    DeleteDiaryFavoriteController,
+    LogFromFavoriteController,
+    GetDiarySummaryController,
+    GetSymptomTrendController,
+    CreateDiaryFollowUpController,
+    UpdateDiaryFollowUpController,
+    DeleteDiaryFollowUpController,
+    // `diary/:id` catch-all routes — keep LAST
+    GetDiaryEntryController,
+    UpdateDiaryEntryController,
+    DeleteDiaryEntryController,
 
     // Directory Controllers (public)
     ListDoctorsController,
@@ -273,11 +318,21 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     ListUserDocumentsUseCase,
     GetDocumentByIdUseCase,
 
-    // Journal Use Cases
-    CreateJournalEntryUseCase,
-    ListJournalEntriesUseCase,
-    UpdateJournalEntryUseCase,
-    DeleteJournalEntryUseCase,
+    // Diary Use Cases
+    CreateDiaryEntryUseCase,
+    ListDiaryEntriesUseCase,
+    GetDiaryEntryUseCase,
+    UpdateDiaryEntryUseCase,
+    DeleteDiaryEntryUseCase,
+    CreateDiaryFavoriteUseCase,
+    ListDiaryFavoritesUseCase,
+    DeleteDiaryFavoriteUseCase,
+    CreateEntryFromFavoriteUseCase,
+    GetDiarySummaryUseCase,
+    GetSymptomTrendUseCase,
+    CreateDiaryFollowUpUseCase,
+    UpdateDiaryFollowUpUseCase,
+    DeleteDiaryFollowUpUseCase,
 
     // Directory Use Cases
     ListDirectoryDoctorsUseCase,

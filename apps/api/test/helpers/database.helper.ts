@@ -27,6 +27,13 @@ export class DatabaseHelper {
 
   async cleanup(): Promise<void> {
     await this.prisma.$transaction([
+      // Diary: delete children before parents (FK order)
+      this.prisma.diaryFollowUpSymptom.deleteMany(),
+      this.prisma.diaryEffectLog.deleteMany(),
+      this.prisma.diaryFollowUp.deleteMany(),
+      this.prisma.diarySymptomLog.deleteMany(),
+      this.prisma.diaryEntry.deleteMany(),
+      this.prisma.diaryFavorite.deleteMany(),
       this.prisma.auditLog.deleteMany(),
       this.prisma.accessToken.deleteMany(),
       this.prisma.loginHistory.deleteMany(),

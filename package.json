@@ -16,14 +16,6 @@
     "pnpm": ">=9"
   },
   "pnpm": {
-    "onlyBuiltDependencies": [
-      "@nestjs/core",
-      "@prisma/engines",
-      "@swc/core",
-      "bcrypt",
-      "esbuild",
-      "prisma",
-      "unrs-resolver"
-    ]
+    "onlyBuiltDependencies": ["@prisma/engines", "prisma", "@swc/core", "esbuild", "@nestjs/core"]
   }
 }

@@ -15,9 +15,12 @@ import { AuthenticateDeviceUseCase } from '@/domain/auth/application/use-cases/a
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Device } from '@/domain/auth/enterprise/entities/device';
 import { Public } from '@/infra/auth/public';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth/user')
 @Public()
+// Abuse protection: max 5 registrations per minute per IP.
+@Throttle({ default: { ttl: 60_000, limit: 5 } })
 export class CreateUserController {
   constructor(
     private createUser: CreateUserUseCase,

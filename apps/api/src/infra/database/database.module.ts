@@ -34,12 +34,18 @@ import { DocumentsRepository } from '@/domain/patient/application/repositories/d
 import { PrismaDocumentsRepository } from './prisma/repositories/prisma-documents-repository';
 import { ProfessionalProfilesRepository } from '@/domain/patient/application/repositories/professional-profiles-repository';
 import { PrismaProfessionalProfilesRepository } from './prisma/repositories/prisma-professional-profiles-repository';
-import { TreatmentJournalEntriesRepository } from '@/domain/patient/application/repositories/treatment-journal-entries-repository';
-import { PrismaTreatmentJournalEntriesRepository } from './prisma/repositories/prisma-treatment-journal-entries-repository';
 
 // Address
 import { AddressesRepository } from '@/domain/auth/application/repositories/addresses-repository';
 import { PrismaAddressesRepository } from './prisma/repositories/prisma-addresses-repository';
+
+// Diary
+import { DiaryEntriesRepository } from '@/domain/diary/application/repositories/diary-entries-repository';
+import { PrismaDiaryEntriesRepository } from './prisma/repositories/prisma-diary-entries-repository';
+import { DiaryFavoritesRepository } from '@/domain/diary/application/repositories/diary-favorites-repository';
+import { PrismaDiaryFavoritesRepository } from './prisma/repositories/prisma-diary-favorites-repository';
+import { DiaryFollowUpsRepository } from '@/domain/diary/application/repositories/diary-follow-ups-repository';
+import { PrismaDiaryFollowUpsRepository } from './prisma/repositories/prisma-diary-follow-ups-repository';
 
 // Association
 import { AssociationsRepository } from '@/domain/association/application/repositories/associations-repository';
@@ -119,10 +125,6 @@ import { PrismaProductVariantsRepository } from './prisma/repositories/prisma-pr
       provide: ProfessionalProfilesRepository,
       useClass: PrismaProfessionalProfilesRepository,
     },
-    {
-      provide: TreatmentJournalEntriesRepository,
-      useClass: PrismaTreatmentJournalEntriesRepository,
-    },
     // Association
     {
       provide: AssociationsRepository,
@@ -143,6 +145,19 @@ import { PrismaProductVariantsRepository } from './prisma/repositories/prisma-pr
     {
       provide: ProductVariantsRepository,
       useClass: PrismaProductVariantsRepository,
+    },
+    // Diary
+    {
+      provide: DiaryEntriesRepository,
+      useClass: PrismaDiaryEntriesRepository,
+    },
+    {
+      provide: DiaryFavoritesRepository,
+      useClass: PrismaDiaryFavoritesRepository,
+    },
+    {
+      provide: DiaryFollowUpsRepository,
+      useClass: PrismaDiaryFollowUpsRepository,
     },
     // Address
     {
@@ -169,13 +184,16 @@ import { PrismaProductVariantsRepository } from './prisma/repositories/prisma-pr
     PatientsRepository,
     DocumentsRepository,
     ProfessionalProfilesRepository,
-    TreatmentJournalEntriesRepository,
     // Association
     AssociationsRepository,
     AssociationMembersRepository,
     PatientAssociationLinksRepository,
     ProductsRepository,
     ProductVariantsRepository,
+    // Diary
+    DiaryEntriesRepository,
+    DiaryFavoritesRepository,
+    DiaryFollowUpsRepository,
     // Address
     AddressesRepository,
   ],

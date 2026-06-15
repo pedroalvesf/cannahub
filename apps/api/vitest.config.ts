@@ -24,6 +24,9 @@ export default defineConfig({
           testTimeout: 30000,
           hookTimeout: 30000,
           sequence: { concurrent: false },
+          // e2e files share a single test DB — run them sequentially to avoid
+          // concurrent `prisma db push` (pg_type race) and cross-file data races.
+          fileParallelism: false,
         },
       },
     ],

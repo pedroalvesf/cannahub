@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/stores/auth-store'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 
@@ -8,43 +8,45 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const isAdmin = user?.roles?.includes('admin')
   const isAssociation = user?.roles?.includes('association')
+  const location = useLocation()
+  const isHome = location.pathname === '/'
 
   function handleLogout() {
     logout()
     window.location.href = '/'
   }
 
-  const navLinkClass = 'text-sm font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline'
+  const navLinkClass = 'text-[13.5px] font-medium text-brand-muted dark:text-gray-400 hover:text-brand-green-deep dark:hover:text-white transition-colors no-underline whitespace-nowrap'
   const mobileNavLinkClass = 'block text-[15px] font-medium text-brand-green-deep dark:text-gray-200 py-2.5 no-underline'
 
   return (
     <nav className="fixed top-0 left-0 w-full bg-brand-white/[0.92] dark:bg-surface-dark/90 backdrop-blur-[12px] border-b border-brand-green-light/10 dark:border-gray-700/40 px-6 py-3.5 z-[100] shadow-nav animate-fade-down">
-      <div className="max-w-[1100px] mx-auto flex items-center justify-between">
+      <div className="max-w-[1100px] mx-auto flex items-center justify-between gap-6">
       {/* Logo */}
-      <Link to="/" className="flex items-center gap-[9px] no-underline">
+      <Link to="/" className="flex items-center gap-[9px] no-underline shrink-0">
         <div className="w-[26px] h-[26px] bg-brand-green-deep rounded-[80%_0_80%_0] rotate-[15deg]" />
         <span className="font-serif text-xl text-brand-green-deep dark:text-white">
           CannHub
         </span>
       </Link>
 
-      {/* Nav links — desktop */}
-      <ul className="hidden md:flex items-center gap-8 list-none">
-        <li>
-          <Link to="/#como-funciona" className={navLinkClass}>
-            Como funciona
-          </Link>
-        </li>
-        <li>
-          <Link to="/#para-quem" className={navLinkClass}>
-            Para quem
-          </Link>
-        </li>
-        <li>
-          <Link to="/#seguranca" className={navLinkClass}>
-            Segurança
-          </Link>
-        </li>
+      {/* Nav links — desktop. Anchors da home só aparecem em / */}
+      <ul className="hidden lg:flex items-center gap-7 list-none">
+        {isHome && (
+          <>
+            <li>
+              <Link to="/#como-funciona" className={navLinkClass}>
+                Como funciona
+              </Link>
+            </li>
+            <li>
+              <Link to="/#para-quem" className={navLinkClass}>
+                Para quem
+              </Link>
+            </li>
+            <li aria-hidden="true" className="h-3.5 w-px bg-brand-cream-dark dark:bg-gray-700/60" />
+          </>
+        )}
         <li>
           <Link to="/tratamentos" className={navLinkClass}>
             Tratamentos
@@ -60,13 +62,11 @@ export function Header() {
             Legislação
           </Link>
         </li>
-        <li>
-          <ThemeToggle />
-        </li>
       </ul>
 
       {/* Actions — desktop */}
-      <div className="hidden md:flex items-center gap-2.5">
+      <div className="hidden lg:flex items-center gap-2.5 shrink-0">
+        <ThemeToggle />
         {isAuthenticated ? (
           <>
             {isAdmin && (
@@ -85,6 +85,12 @@ export function Header() {
                 Associação
               </Link>
             )}
+            <Link
+              to="/diario"
+              className="text-sm font-medium text-brand-green-deep dark:text-brand-green-light px-4 py-2 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors no-underline"
+            >
+              Diario
+            </Link>
             <Link
               to="/painel"
               className="text-sm font-medium text-brand-green-deep dark:text-brand-green-light px-4 py-2 rounded-btn hover:bg-brand-green-pale dark:hover:bg-gray-800 transition-colors no-underline"
@@ -116,8 +122,8 @@ export function Header() {
         )}
       </div>
 
-      {/* Hamburger — mobile */}
-      <div className="flex md:hidden items-center gap-2">
+      {/* Hamburger — mobile + tablet */}
+      <div className="flex lg:hidden items-center gap-2">
         <ThemeToggle />
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
@@ -140,19 +146,21 @@ export function Header() {
       </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile + tablet menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-brand-cream-dark/50 dark:border-gray-700/40 mt-3 pt-4 pb-2 max-w-[1100px] mx-auto">
+        <div className="lg:hidden border-t border-brand-cream-dark/50 dark:border-gray-700/40 mt-3 pt-4 pb-2 max-w-[1100px] mx-auto">
           <div className="space-y-1 mb-4">
-            <Link to="/#como-funciona" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
-              Como funciona
-            </Link>
-            <Link to="/#para-quem" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
-              Para quem
-            </Link>
-            <Link to="/#seguranca" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
-              Segurança
-            </Link>
+            {isHome && (
+              <>
+                <Link to="/#como-funciona" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
+                  Como funciona
+                </Link>
+                <Link to="/#para-quem" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
+                  Para quem
+                </Link>
+                <div className="h-px bg-brand-cream-dark/40 dark:bg-gray-700/40 my-2" />
+              </>
+            )}
             <Link to="/tratamentos" onClick={() => setMobileOpen(false)} className={mobileNavLinkClass}>
               Tratamentos
             </Link>
@@ -185,6 +193,13 @@ export function Header() {
                     Painel Associação
                   </Link>
                 )}
+                <Link
+                  to="/diario"
+                  onClick={() => setMobileOpen(false)}
+                  className="text-[15px] font-medium text-brand-green-deep dark:text-brand-green-light py-2 no-underline"
+                >
+                  Diario
+                </Link>
                 <Link
                   to="/painel"
                   onClick={() => setMobileOpen(false)}

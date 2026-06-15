@@ -23,8 +23,11 @@ async function bootstrap() {
     })
   );
 
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',').map((o) => o.trim()).filter(Boolean);
+
   app.enableCors({
-    origin: '*',
+    origin: isDev ? true : (allowedOrigins && allowedOrigins.length > 0 ? allowedOrigins : false),
+    credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders:
       'Content-Type, Authorization, x-ipaddress, x-operatingsystem, x-browser, x-type',

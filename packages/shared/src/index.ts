@@ -1,5 +1,21 @@
 // CannHub shared types, enums, and schemas
 
+export {
+  AdministrationMethod,
+  DoseUnit,
+  SEVERITY_MIN,
+  SEVERITY_MAX,
+  PREDEFINED_SYMPTOMS,
+  PREDEFINED_EFFECTS_POSITIVE,
+  PREDEFINED_EFFECTS_NEGATIVE,
+} from './diary'
+export type {
+  SymptomSeverityScore,
+  PredefinedSymptom,
+  PredefinedEffectPositive,
+  PredefinedEffectNegative,
+} from './diary'
+
 // --- Enums ---
 
 export enum UserRole {
