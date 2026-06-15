@@ -14,9 +14,12 @@ import { AuthenticateDeviceDto } from '../dto/authenticate-device-dto';
 import { Device } from '@/domain/auth/enterprise/entities/device';
 import { Public } from '@/infra/auth/public';
 import { UsersRepository } from '@/domain/auth/application/repositories/users-repository';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('/login')
 @Public()
+// Brute-force protection: max 5 login attempts per minute per IP.
+@Throttle({ default: { ttl: 60_000, limit: 5 } })
 export class AuthenticateDeviceController {
   constructor(
     private authenticateDeviceUseCase: AuthenticateDeviceUseCase,
