@@ -230,11 +230,12 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     ListDocumentsController,
 
     // Diary Controllers
+    // IMPORTANT: static/specific routes (favorites, summary, symptoms, entries,
+    // follow-ups) MUST be registered BEFORE the `diary/:id` catch-all routes,
+    // otherwise Express matches `/diary/summary` and `/diary/favorites` as
+    // `/diary/:id` and returns 404.
     CreateDiaryEntryController,
     ListDiaryEntriesController,
-    GetDiaryEntryController,
-    UpdateDiaryEntryController,
-    DeleteDiaryEntryController,
     CreateDiaryFavoriteController,
     ListDiaryFavoritesController,
     DeleteDiaryFavoriteController,
@@ -244,6 +245,10 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     CreateDiaryFollowUpController,
     UpdateDiaryFollowUpController,
     DeleteDiaryFollowUpController,
+    // `diary/:id` catch-all routes — keep LAST
+    GetDiaryEntryController,
+    UpdateDiaryEntryController,
+    DeleteDiaryEntryController,
 
     // Directory Controllers (public)
     ListDoctorsController,

@@ -119,13 +119,6 @@ export const DOSE_UNIT_LABELS: Record<string, string> = {
   units: 'unidades',
 }
 
-export const SYMPTOM_SEVERITY_LABELS: Record<string, string> = {
-  none: 'Nenhum',
-  mild: 'Leve',
-  moderate: 'Moderado',
-  severe: 'Severo',
-}
-
 export const SYMPTOM_LABELS: Record<string, string> = {
   pain: 'Dor',
   anxiety: 'Ansiedade',

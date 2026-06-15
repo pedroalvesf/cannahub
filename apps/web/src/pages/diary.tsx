@@ -9,10 +9,13 @@ const NewEntryModal = lazy(() =>
 const FollowUpModal = lazy(() =>
   import('@/components/diary/follow-up-modal').then((m) => ({ default: m.FollowUpModal })),
 )
+// Insights pulls in recharts (~heavy) — only load it when the Insights tab opens
+const DiaryInsights = lazy(() =>
+  import('@/components/diary/diary-insights').then((m) => ({ default: m.DiaryInsights })),
+)
 import { QuickLogBar } from '@/components/diary/quick-log-bar'
 import { useDiaryEntries, useDeleteDiaryEntry, type DiaryEntry, type DiaryFollowUp } from '@/hooks/use-diary'
 import { useOnboardingSummary } from '@/hooks/use-onboarding'
-import { DiaryInsights } from '@/components/diary/diary-insights'
 import { ADMINISTRATION_METHOD_LABELS, SYMPTOM_LABELS, DOSE_UNIT_LABELS, CONDITION_LABELS } from '@/constants/labels'
 
 const PERIOD_OPTIONS = [
@@ -160,7 +163,9 @@ export function DiaryPage() {
           </div>
 
           {tab === 'insights' ? (
-            <DiaryInsights targetCondition={conditionFilter || undefined} />
+            <Suspense fallback={<div className="py-20 text-center text-brand-muted dark:text-gray-400">Carregando insights…</div>}>
+              <DiaryInsights targetCondition={conditionFilter || undefined} />
+            </Suspense>
           ) : (
           <>
           {/* Quick-log bar */}
