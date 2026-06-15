@@ -405,6 +405,9 @@ Backend: 13 use cases, 14 controllers, 12 endpoints, role association + 8 permis
 ### Fase 1.6 — Diário de Tratamento (concluída)
 Backend: módulo `diary` (DDD) — 6 modelos Prisma, 14 use cases, 14 endpoints; modelo **antes + multi follow-up** com severidade 0-10 NRS, favoritos, resumo e tendência. Frontend: rota `/diario` (timeline + aba Insights com Recharts lazy-loaded), 12 componentes, card resumo no `/painel`. Testes: specs unitários de follow-up + e2e completo (46 e2e). Seed: `prisma/seed-diary.ts`.
 
+### Fase 1.7 — Compartilhamento de docs + Dependentes (concluída)
+Backend: consentimento opt-in de documentos por vínculo (`documentsShared`/`documentsSharedAt` no `PatientAssociationLink`; `ToggleDocumentSharingUseCase` + `ListMemberDocumentsUseCase`; permissão `association_documents:read`; resolve `Patient → userId`). Cadastro de dependentes (`CreateDependentUseCase` + `ListGuardianDependentsUseCase`; `POST/GET /onboarding/dependent(s)`). Frontend: toggle de compartilhamento no `/painel` + modal "Ver documentos" no `/associados`; step condicional de dependente no `/acolhimento` (gate guardian/caregiver) com `DependentForm`. Testes: +15 unit (192 total), 46 e2e.
+
 ### Fase 2 — Conteúdo (próxima)
 Blog, diretório médicos/advogados, eventos, SEO, auto-cadastro associações
 
@@ -479,5 +482,16 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] Mensagens de erro em PT-BR
 - [x] Seed: AMME Medicinal (18 produtos) + user admamme@teste.com
 - [x] Endpoints de médicos (GET /doctors, GET /doctors/:slug)
+- [x] Compartilhamento consentido de docs com associação (toggle por vínculo + endpoint de leitura) + permissão `association_documents:read`
+- [x] Cadastro de dependentes (CreateDependent + ListGuardianDependents, POST/GET /onboarding/dependent(s))
 - [ ] Notificações por e-mail (Resend)
 - [ ] Upload S3 com URLs assinadas
+
+### Compartilhamento de docs + Dependentes — follow-ups (próximos passos)
+- [x] Compartilhamento opt-in de documentos com associação (toggle por vínculo, revogável) + visualização no painel da associação
+- [x] Step condicional de dependente no onboarding (guardian/caregiver) + persistência
+- [ ] Gestão de dependentes no `/painel` (listar/editar/remover; hoje só cria no onboarding)
+- [ ] Vincular documentos a um dependente específico (`Document.dependentId` já existe no schema, falta UI/fluxo)
+- [ ] Step de dependente para `veterinarian` (paciente animal) — gate hoje só guardian/caregiver
+- [ ] Granularidade de compartilhamento por tipo de documento + trilha de auditoria (quem viu / quando)
+- [ ] Depende do upload real (S3): hoje a associação só vê os docs que já existirem no banco (mock no `/documentos`)

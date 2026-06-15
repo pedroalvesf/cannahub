@@ -171,10 +171,11 @@ Dor: #F5EDEA             Oncologia: #EEE9F5
 
 ## Onboarding — steps dinâmicos
 
-O frontend usa `getVisibleSteps(answers)` para montar a lista de steps visíveis. Cada step tem `key` e `backendStepNumber` desacoplados:
+O frontend usa `getVisibleSteps(answers, accountType)` para montar a lista de steps visíveis. Cada step tem `key` e `backendStepNumber` desacoplados:
 
 | Frontend order | key | backendStepNumber | Multi-select? | Condicional? |
 |---|---|---|---|---|
+| 0 | dependent | — (custom) | — | Sim (accountType ∈ guardian/caregiver) |
 | 1 | condition | 1 | Sim | Não |
 | 2 | experience | 2 | Não | Não |
 | 3 | currentAccessMethod | 6 | Não | Sim (experience !== 'never') |
@@ -183,6 +184,8 @@ O frontend usa `getVisibleSteps(answers)` para montar a lista de steps visíveis
 | 6 | assistedAccess | 5 | Não | Não |
 
 Steps multi-select armazenam valores como string separada por vírgula (ex: `"anxiety,depression,insomnia"`).
+
+O step `dependent` é **custom** (`StepConfig.custom === 'dependent'`): renderiza `DependentForm` em vez de `OnboardingQuestion` e submete via `POST /onboarding/dependent` (não `/onboarding/step`). Se o dependente já existe, o form mostra "já cadastrado → Continuar" (evita duplicar ao retomar/editar).
 
 ## TypeScript
 
