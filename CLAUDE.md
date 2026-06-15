@@ -89,8 +89,8 @@ docker compose up -d              # Sobe Postgres + Redis
 # API (cd apps/api)
 pnpm dev                          # Dev server (port 3000)
 pnpm build                        # Compile TypeScript
-pnpm test                         # 93 unit tests (Vitest)
-pnpm test:e2e                     # 22 E2E tests (precisa docker-compose.test.yml rodando)
+pnpm test                         # 177 unit tests (Vitest)
+pnpm test:e2e                     # 46 E2E tests (precisa docker-compose.test.yml + apps/api/.env.test)
 pnpm prisma:generate              # Gera Prisma client
 npx prisma db push                # Sync schema com DB
 
@@ -111,7 +111,7 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 * Step condicional: "Como você acessa cannabis atualmente?" — aparece só quando experiência !== 'never'
 ```
 
-## Rotas do frontend (21 páginas)
+## Rotas do frontend (24 páginas)
 
 | Rota | Página | Auth | Guard |
 |------|--------|------|-------|
@@ -121,12 +121,15 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 | `/login` | Login | Não | — |
 | `/acolhimento` | Onboarding (5-6 steps, multi-select, condicional) | Sim | ProtectedRoute |
 | `/documentos` | Upload de documentos | Sim | ProtectedRoute |
-| `/painel` | Dashboard do paciente (associações vinculadas dinâmicas) | Sim | ProtectedRoute |
+| `/painel` | Dashboard do paciente (associações + card resumo do diário) | Sim | ProtectedRoute |
+| `/diario` | Diário de Tratamento (timeline + insights, follow-ups, quick-log) | Sim | ProtectedRoute |
 | `/tratamentos` | Hub de tratamentos v2 (filter chips, grid assimétrico, proof cards) | Não | — |
 | `/tratamentos/categoria/:slug` | Categoria de tratamento (neurológicas, saúde mental, dor, oncologia) | Não | — |
 | `/tratamentos/:slug` | Detalhe por condição (barra nav, hero com stat, sidebar TOC) | Não | — |
 | `/legislacao` | Legislação v2 (timeline editorial, FAQ accordion, sidebar) | Não | — |
 | `/catalogo` | Catálogo unificado (ícones SVG por tipo, sem emojis) | Não | — |
+| `/medicos` | Diretório de médicos (filtros: estado, especialidade, modalidade) | Não | — |
+| `/medicos/:slug` | Perfil do médico | Não | — |
 | `/associacoes` | Associações v2 (search bar, sidebar filtros, cards expandidos) | Não | — |
 | `/associacoes/:slug` | Detalhe da associação (vínculo dinâmico, serviços contextuais, produtos da API) | Não | — |
 | `/associacoes/:slug/catalogo` | Catálogo da associação (preço restrito a aprovados, ícones SVG) | Não | — |
@@ -169,6 +172,25 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 - `GET /onboarding/summary` — resumo (inclui currentAccessMethod)
 - `POST /onboarding/escalate` — escalar pra humano
 - `POST /onboarding/extract` — extrair campos com IA
+
+### Diário de Tratamento (JWT — paciente só acessa o próprio)
+- `POST /diary` — criar entrada (produto, dose, método, sintomas com `severityBefore` 0-10 NRS)
+- `GET /diary` — listar entradas (filtros: dateFrom/dateTo, productId, administrationMethod, symptomKey, targetCondition; paginado)
+- `GET /diary/:id` — detalhe (sintomas + follow-ups aninhados)
+- `PATCH /diary/:id` — atualizar entrada (notes, isFavorite, etc.)
+- `DELETE /diary/:id` — excluir entrada
+- `POST /diary/favorites` · `GET /diary/favorites` · `DELETE /diary/favorites/:id` — templates de quick-log
+- `POST /diary/favorites/:id/log` — criar entrada a partir de um favorito
+- `POST /diary/entries/:id/follow-ups` — re-avaliação pós-uso (`severityAfter`, efeitos, tags) — N follow-ups por entrada
+- `PATCH /diary/follow-ups/:id` · `DELETE /diary/follow-ups/:id` — editar/excluir follow-up
+- `GET /diary/summary` — resumo (sintomas frequentes, produto mais usado, deltas antes→depois, distribuição por método)
+- `GET /diary/symptoms/:key/trend` — tendência de um sintoma ao longo do tempo
+
+> ⚠️ Ordem importa no `http.module.ts`: as rotas estáticas (`/diary/summary`, `/diary/favorites`, `/diary/entries/*`, `/diary/follow-ups/*`) devem ser registradas ANTES do catch-all `/diary/:id`, senão o Express casa `:id="summary"` e retorna 404.
+
+### Diretório de Médicos (público)
+- `GET /doctors` — listar médicos (filtros: state, specialty, modalidade)
+- `GET /doctors/:slug` — perfil do médico
 
 ### Associations & Documents (público)
 - `GET /associations` — listar associações (@Public, filtros: region, state, hasAssistedAccess)
@@ -234,6 +256,7 @@ npx tsx prisma/seed-association-user.ts email assocId  # Promove user existente 
 npx tsx prisma/seed-products.ts                       # Cria 12 produtos da Aliança Medicinal
 npx tsx prisma/seed-amme-products.ts                  # Cria AMME Medicinal + 18 produtos
 npx tsx prisma/seed-amme-user.ts                      # Cria admamme@teste.com + director AMME
+npx tsx prisma/seed-diary.ts                          # Popula diário de paciente@teste.com (senha abc123): 5 entradas + 6 follow-ups + favorito
 ```
 
 ### Tipos de usuário
@@ -260,6 +283,13 @@ AssociationMember → associationId + userId, role (staff/manager/director), sta
 PatientAssociationLink → associationId + patientId, requestedBy/approvedBy, startDate/endDate, status, feeStatus, feeExpiresAt, feePaidAt
 Product → associationId, name, description, type, category, concentration, cbd, thc, dosagePerDrop, inStock, imageUrl
 ProductVariant → productId, volume, price (Decimal 10,2)
+DiaryEntry → userId, date, time, productId?/customProductName, administrationMethod, doseAmount/doseUnit, targetCondition, isFavorite
+DiarySymptomLog → diaryEntryId, symptomKey, severityBefore (0-10 NRS)        ← estado ANTES do uso
+DiaryFollowUp → diaryEntryId, evaluatedAt, notes, tags[]                      ← re-avaliação pós-uso (N por entrada)
+DiaryFollowUpSymptom → followUpId, symptomLogId, severityAfter (0-10)         ← estado DEPOIS (delta de eficácia)
+DiaryEffectLog → followUpId, effectKey, isPositive                            ← efeitos (só fazem sentido pós-uso)
+DiaryFavorite → userId, name, produto/dose, symptomKeys[]                     ← template de quick-log
+Doctor → slug, name, crm, state, city, specialties[], telemedicine, inPerson, bio (diretório público)
 Patient, Dependent, ProfessionalProfile → domínio de pacientes
 Role → name, slug, level, assignableRoles
 Permission → name, slug, resource, action
@@ -339,19 +369,19 @@ Dor: #F5EDEA             Oncologia: #EEE9F5
 
 ## Testes
 
-### Unit tests (123 — Vitest)
+### Unit tests (177 — Vitest)
 ```bash
 cd apps/api && pnpm test
 ```
 Usam in-memory repositories + factories (makeUser, makeDocument, etc.). Sem banco.
 
-### E2E tests (22 — Vitest + Supertest)
+### E2E tests (46 — Vitest + Supertest)
 ```bash
 cd apps/api
 docker compose -f docker-compose.test.yml up -d   # Primeiro: sobe Postgres teste
 pnpm test:e2e
 ```
-Requerem Postgres na porta 8239. `setup-e2e.ts` roda `prisma db push` antes dos testes.
+Requerem Postgres na porta 8239 **e** `apps/api/.env.test` (gitignored — ver seção Variáveis de ambiente). `setup-e2e.ts` roda `prisma db push` antes dos testes. Os 2 arquivos e2e rodam **sequencialmente** (`fileParallelism: false`) por compartilharem o mesmo banco.
 
 ### Frontend
 ```bash
@@ -365,6 +395,9 @@ Auth, cadastro, onboarding, documentos, catálogo por associação, tratamentos 
 
 ### Fase 1.5 — Painel da Associação (concluída)
 Backend: 13 use cases, 14 controllers, 12 endpoints, role association + 8 permissões, Product/ProductVariant no Prisma, anuidade configurável. Frontend: 4 páginas (dashboard, produtos, associados, perfil), guard AssociationRoute, hooks React Query, botão Solicitar Vínculo funcional, dashboard paciente com vínculos, serviços CannHub contextuais. Seed: Aliança Medicinal com 12 produtos.
+
+### Fase 1.6 — Diário de Tratamento (concluída)
+Backend: módulo `diary` (DDD) — 6 modelos Prisma, 14 use cases, 14 endpoints; modelo **antes + multi follow-up** com severidade 0-10 NRS, favoritos, resumo e tendência. Frontend: rota `/diario` (timeline + aba Insights com Recharts lazy-loaded), 12 componentes, card resumo no `/painel`. Testes: specs unitários de follow-up + e2e completo (46 e2e). Seed: `prisma/seed-diary.ts`.
 
 ### Fase 2 — Conteúdo (próxima)
 Blog, diretório médicos/advogados, eventos, SEO, auto-cadastro associações
@@ -413,14 +446,14 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] Ícones SVG no catálogo e quiz (substituiu emojis)
 - [ ] Upload real de documentos (S3)
 - [x] Integrar catálogo com API real (substituiu sample-products.ts → GET /associations/:id/products)
-- [ ] Diretório de médicos (/medicos) + perfil (/medicos/:slug)
+- [x] Diretório de médicos (/medicos) + perfil (/medicos/:slug)
 - [ ] Páginas de detalhe para novas condições (artrite, endometriose, náuseas quimio, dor oncológica)
 
 ### Segurança (próximos passos)
 - [x] Helmet: headers de segurança (HSTS, X-Frame-Options, X-Content-Type-Options, etc.) — CSP desativado em dev
-- [ ] CORS: trocar `origin: '*'` por whitelist de origens (`ALLOWED_ORIGINS` env var) — mantido aberto por ora para facilitar testes
-- [ ] Rate limiting: instalar `@nestjs/throttler` no login (5 tentativas/min) — adiado para não atrapalhar testes
-- [ ] Refresh token rotation: invalidar token antigo ao gerar novo
+- [x] CORS: whitelist via `ALLOWED_ORIGINS` (dev reflete a origem; prod bloqueia se não configurado) — `main.ts`
+- [x] Rate limiting: `@nestjs/throttler` — 100/min global, 5/min no login e registro, `skipIf` em ambiente de teste
+- [x] Refresh token rotation: revoga o token apresentado e emite um novo (jti único) no `/auth/refresh`
 - [ ] Migrar JWT de localStorage para httpOnly cookies (requer ajuste backend + frontend)
 - [ ] CSP headers no frontend (meta tag no index.html)
 - [ ] Account lockout após N tentativas falhadas
@@ -439,6 +472,6 @@ Pagamento com split (iugu), pedidos, inteligência de mercado
 - [x] Seed: Aliança Medicinal (12 produtos) + user associacaoalianca@teste.com
 - [x] Mensagens de erro em PT-BR
 - [x] Seed: AMME Medicinal (18 produtos) + user admamme@teste.com
-- [ ] Endpoints de médicos (GET /doctors, GET /doctors/:id)
+- [x] Endpoints de médicos (GET /doctors, GET /doctors/:slug)
 - [ ] Notificações por e-mail (Resend)
 - [ ] Upload S3 com URLs assinadas
