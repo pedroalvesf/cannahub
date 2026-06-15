@@ -22,6 +22,8 @@ export interface PatientAssociationLinkProps {
   feeStatus?: FeeStatus;
   feeExpiresAt?: Date;
   feePaidAt?: Date;
+  documentsShared: boolean;
+  documentsSharedAt?: Date;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -67,6 +69,14 @@ export class PatientAssociationLink extends Entity<PatientAssociationLinkProps> 
     return this.props.feePaidAt;
   }
 
+  get documentsShared() {
+    return this.props.documentsShared;
+  }
+
+  get documentsSharedAt() {
+    return this.props.documentsSharedAt;
+  }
+
   get createdAt() {
     return this.props.createdAt;
   }
@@ -93,6 +103,18 @@ export class PatientAssociationLink extends Entity<PatientAssociationLinkProps> 
     this.touch();
   }
 
+  shareDocuments() {
+    this.props.documentsShared = true;
+    this.props.documentsSharedAt = new Date();
+    this.touch();
+  }
+
+  unshareDocuments() {
+    this.props.documentsShared = false;
+    this.props.documentsSharedAt = undefined;
+    this.touch();
+  }
+
   private touch() {
     this.props.updatedAt = new Date();
   }
@@ -100,7 +122,7 @@ export class PatientAssociationLink extends Entity<PatientAssociationLinkProps> 
   static create(
     props: Optional<
       PatientAssociationLinkProps,
-      'createdAt' | 'updatedAt' | 'status'
+      'createdAt' | 'updatedAt' | 'status' | 'documentsShared'
     >,
     id?: UniqueEntityID,
   ) {
@@ -108,6 +130,7 @@ export class PatientAssociationLink extends Entity<PatientAssociationLinkProps> 
       {
         ...props,
         status: props.status ?? 'requested',
+        documentsShared: props.documentsShared ?? false,
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },

@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/auth-store'
 import { useOnboardingSummary } from '@/hooks/use-onboarding'
 import { useAddress, useSaveAddress } from '@/hooks/use-address'
 import { useUpdateProfile } from '@/hooks/use-profile'
-import { useMyLinks } from '@/hooks/use-association-link'
+import { useMyLinks, useToggleDocumentSharing, type MyLink } from '@/hooks/use-association-link'
 import { useDiarySummary } from '@/hooks/use-diary'
 import type { AddressData } from '@/hooks/use-address'
 import {
@@ -67,6 +67,45 @@ function SectionCard({ title, children, action, id }: { title: string; children:
       <div className="px-6 py-5">
         {children}
       </div>
+    </div>
+  )
+}
+
+function DocumentSharingToggle({ link }: { link: MyLink }) {
+  const toggle = useToggleDocumentSharing()
+  const shared = link.documentsShared
+
+  return (
+    <div className="mt-3 pt-3 border-t border-brand-cream-dark/40 dark:border-gray-700/40 flex items-center justify-between gap-3">
+      <div className="min-w-0">
+        <div className="text-[12px] font-medium text-brand-text dark:text-gray-200">
+          Compartilhar meus documentos
+        </div>
+        <div className="text-[11px] text-brand-text-xs dark:text-gray-500 mt-0.5">
+          {shared
+            ? 'A associação pode ver seus documentos enviados.'
+            : 'Permita que esta associação veja seus documentos.'}
+        </div>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={shared}
+        aria-label="Compartilhar documentos com esta associação"
+        disabled={toggle.isPending}
+        onClick={() => toggle.mutate({ linkId: link.id, share: !shared })}
+        className={`shrink-0 relative inline-flex h-[22px] w-[40px] items-center rounded-full transition-colors disabled:opacity-50 ${
+          shared
+            ? 'bg-brand-green-deep dark:bg-brand-green-light'
+            : 'bg-brand-cream-darker dark:bg-gray-600'
+        }`}
+      >
+        <span
+          className={`inline-block h-[16px] w-[16px] transform rounded-full bg-white transition-transform ${
+            shared ? 'translate-x-[21px]' : 'translate-x-[3px]'
+          }`}
+        />
+      </button>
     </div>
   )
 }
@@ -668,25 +707,28 @@ export function DashboardPage() {
                 {myLinksData.links.map((link) => (
                   <div
                     key={link.id}
-                    className="flex items-center justify-between gap-3 px-4 py-3 bg-brand-off dark:bg-surface-dark rounded-[12px] border border-brand-cream-dark/50 dark:border-gray-700/50"
+                    className="px-4 py-3 bg-brand-off dark:bg-surface-dark rounded-[12px] border border-brand-cream-dark/50 dark:border-gray-700/50"
                   >
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[14px] font-medium text-brand-text dark:text-white truncate">{link.associationName}</div>
-                      <div className="text-[11px] text-brand-text-xs dark:text-gray-500 mt-0.5">
-                        {link.status === 'active' && `Ativo desde ${new Date(link.startDate ?? link.createdAt).toLocaleDateString('pt-BR')}`}
-                        {link.status === 'requested' && `Solicitado em ${new Date(link.createdAt).toLocaleDateString('pt-BR')}`}
-                        {link.status === 'rejected' && 'Vínculo recusado'}
-                        {link.status === 'cancelled' && 'Vínculo cancelado'}
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[14px] font-medium text-brand-text dark:text-white truncate">{link.associationName}</div>
+                        <div className="text-[11px] text-brand-text-xs dark:text-gray-500 mt-0.5">
+                          {link.status === 'active' && `Ativo desde ${new Date(link.startDate ?? link.createdAt).toLocaleDateString('pt-BR')}`}
+                          {link.status === 'requested' && `Solicitado em ${new Date(link.createdAt).toLocaleDateString('pt-BR')}`}
+                          {link.status === 'rejected' && 'Vínculo recusado'}
+                          {link.status === 'cancelled' && 'Vínculo cancelado'}
+                        </div>
                       </div>
+                      <span className={`shrink-0 px-2.5 py-1 text-[10px] font-semibold rounded-btn ${
+                        link.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                        link.status === 'requested' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
+                        link.status === 'rejected' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' :
+                        'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                      }`}>
+                        {link.status === 'active' ? 'Ativo' : link.status === 'requested' ? 'Pendente' : link.status === 'rejected' ? 'Recusado' : 'Cancelado'}
+                      </span>
                     </div>
-                    <span className={`shrink-0 px-2.5 py-1 text-[10px] font-semibold rounded-btn ${
-                      link.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                      link.status === 'requested' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
-                      link.status === 'rejected' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' :
-                      'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
-                    }`}>
-                      {link.status === 'active' ? 'Ativo' : link.status === 'requested' ? 'Pendente' : link.status === 'rejected' ? 'Recusado' : 'Cancelado'}
-                    </span>
+                    {link.status === 'active' && <DocumentSharingToggle link={link} />}
                   </div>
                 ))}
                 <div className="pt-2 text-center">

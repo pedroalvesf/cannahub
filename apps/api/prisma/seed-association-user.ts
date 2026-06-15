@@ -41,6 +41,7 @@ async function main() {
     { name: 'Association Catalog Delete', slug: 'association_catalog:delete', resource: 'association_catalog', action: 'delete' },
     { name: 'Association Members Read', slug: 'association_members:read', resource: 'association_members', action: 'read' },
     { name: 'Association Members Update', slug: 'association_members:update', resource: 'association_members', action: 'update' },
+    { name: 'Association Documents Read', slug: 'association_documents:read', resource: 'association_documents', action: 'read' },
     { name: 'Association Profile Read', slug: 'association_profile:read', resource: 'association_profile', action: 'read' },
     { name: 'Association Profile Update', slug: 'association_profile:update', resource: 'association_profile', action: 'update' },
   ]

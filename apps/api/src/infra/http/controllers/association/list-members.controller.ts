@@ -42,6 +42,7 @@ export class AssociationListMembersController {
         feeStatus: link.feeStatus,
         feeExpiresAt: link.feeExpiresAt,
         feePaidAt: link.feePaidAt,
+        documentsShared: link.documentsShared,
         createdAt: link.createdAt,
       })),
     };

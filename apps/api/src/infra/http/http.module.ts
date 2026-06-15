@@ -33,6 +33,7 @@ import { ListAssociationsController } from './controllers/association/list-assoc
 import { GetAssociationController } from './controllers/association/get-association.controller';
 import { RequestAssociationLinkController } from './controllers/association/request-link.controller';
 import { ListMyLinksController } from './controllers/association/list-my-links.controller';
+import { ToggleDocumentSharingController } from './controllers/association/toggle-document-sharing.controller';
 import { GetAssociationProductTypesController } from './controllers/association/get-association-product-types.controller';
 import { GetAssociationProductsController } from './controllers/association/get-association-products.controller';
 
@@ -43,6 +44,7 @@ import { AssociationCreateProductController } from './controllers/association/cr
 import { AssociationUpdateProductController } from './controllers/association/update-product.controller';
 import { AssociationDeleteProductController } from './controllers/association/delete-product.controller';
 import { AssociationListMembersController } from './controllers/association/list-members.controller';
+import { AssociationListMemberDocumentsController } from './controllers/association/list-member-documents.controller';
 import { AssociationApproveLinkController } from './controllers/association/approve-link.controller';
 import { AssociationRejectLinkController } from './controllers/association/reject-link.controller';
 import { AssociationRemoveMemberController } from './controllers/association/remove-member.controller';
@@ -87,6 +89,7 @@ import { CompleteOnboardingController } from './controllers/onboarding/complete-
 import { GetOnboardingSummaryController } from './controllers/onboarding/get-onboarding-summary.controller';
 import { EscalateToHumanController } from './controllers/onboarding/escalate-to-human.controller';
 import { ExtractFromTextController } from './controllers/onboarding/extract-from-text.controller';
+import { CreateDependentController } from './controllers/onboarding/create-dependent.controller';
 
 // Use Cases - Diary
 import { CreateDiaryEntryUseCase } from '@/domain/diary/application/use-cases/create-diary-entry';
@@ -146,10 +149,14 @@ import { UpdateAssociationProfileUseCase } from '@/domain/association/applicatio
 import { GetAssociationDashboardUseCase } from '@/domain/association/application/use-cases/get-association-dashboard';
 import { RequestAssociationLinkUseCase } from '@/domain/association/application/use-cases/request-association-link';
 import { ListMyLinksUseCase } from '@/domain/association/application/use-cases/list-my-links';
+import { ToggleDocumentSharingUseCase } from '@/domain/association/application/use-cases/toggle-document-sharing';
+import { ListMemberDocumentsUseCase } from '@/domain/association/application/use-cases/list-member-documents';
 
-// Use Cases - Documents
+// Use Cases - Documents & Patient
 import { ListUserDocumentsUseCase } from '@/domain/patient/application/use-cases/list-user-documents';
 import { GetDocumentByIdUseCase } from '@/domain/patient/application/use-cases/get-document-by-id';
+import { CreateDependentUseCase } from '@/domain/patient/application/use-cases/create-dependent';
+import { ListGuardianDependentsUseCase } from '@/domain/patient/application/use-cases/list-guardian-dependents';
 
 // Use Cases - Admin
 import { ListUsersUseCase } from '@/domain/admin/application/use-cases/list-users';
@@ -202,6 +209,7 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     GetAssociationController,
     RequestAssociationLinkController,
     ListMyLinksController,
+    ToggleDocumentSharingController,
     GetAssociationProductTypesController,
     GetAssociationProductsController,
 
@@ -212,6 +220,7 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     AssociationUpdateProductController,
     AssociationDeleteProductController,
     AssociationListMembersController,
+    AssociationListMemberDocumentsController,
     AssociationApproveLinkController,
     AssociationRejectLinkController,
     AssociationRemoveMemberController,
@@ -261,6 +270,7 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     GetOnboardingSummaryController,
     EscalateToHumanController,
     ExtractFromTextController,
+    CreateDependentController,
   ],
   providers: [
     // Auth Use Cases
@@ -305,6 +315,8 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     GetAssociationDashboardUseCase,
     RequestAssociationLinkUseCase,
     ListMyLinksUseCase,
+    ToggleDocumentSharingUseCase,
+    ListMemberDocumentsUseCase,
 
     // Admin Use Cases
     ListUsersUseCase,
@@ -314,9 +326,11 @@ import { ExtractFromTextUseCase } from '@/domain/onboarding/application/use-case
     UpdateUserStatusUseCase,
     DeleteUsersUseCase,
 
-    // Document Use Cases
+    // Document & Patient Use Cases
     ListUserDocumentsUseCase,
     GetDocumentByIdUseCase,
+    CreateDependentUseCase,
+    ListGuardianDependentsUseCase,
 
     // Diary Use Cases
     CreateDiaryEntryUseCase,

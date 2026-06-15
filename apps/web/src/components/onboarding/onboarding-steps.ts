@@ -15,9 +15,20 @@ export interface StepConfig {
   backendStepNumber: number
   infoBox?: { title: string; text: string }
   multiSelect?: boolean
+  // Custom (non-option-card) steps rendered by a dedicated component instead of
+  // OnboardingQuestion, and submitted to their own endpoint (not /onboarding/step).
+  custom?: 'dependent'
 }
 
 export const BASE_STEPS: StepConfig[] = [
+  {
+    key: 'dependent',
+    backendStepNumber: 0, // submitted via POST /onboarding/dependent, not /onboarding/step
+    custom: 'dependent',
+    question: 'Sobre quem você cuida?',
+    subtitle: 'Cadastre a pessoa que receberá o tratamento. Você poderá ajustar esses dados depois.',
+    options: [],
+  },
   {
     key: 'condition',
     backendStepNumber: 1,
@@ -109,8 +120,15 @@ export const BASE_STEPS: StepConfig[] = [
   },
 ]
 
-export function getVisibleSteps(answers: Record<string, string>): StepConfig[] {
+export function getVisibleSteps(
+  answers: Record<string, string>,
+  accountType?: string,
+): StepConfig[] {
+  const isGuardianFlow = accountType === 'guardian' || accountType === 'caregiver'
   return BASE_STEPS.filter((step) => {
+    if (step.key === 'dependent') {
+      return isGuardianFlow
+    }
     if (step.key === 'currentAccessMethod') {
       return answers.experience !== undefined && answers.experience !== 'never'
     }

@@ -12,6 +12,7 @@ interface MyLink {
   feeStatus?: string;
   feeExpiresAt?: Date;
   startDate?: Date;
+  documentsShared: boolean;
   createdAt: Date;
 }
 
@@ -60,6 +61,7 @@ export class ListMyLinksUseCase {
           feeStatus: link.feeStatus,
           feeExpiresAt: link.feeExpiresAt,
           startDate: link.startDate,
+          documentsShared: link.documentsShared,
           createdAt: link.createdAt,
         };
       }),

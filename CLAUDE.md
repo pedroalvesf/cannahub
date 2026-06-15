@@ -89,7 +89,7 @@ docker compose up -d              # Sobe Postgres + Redis
 # API (cd apps/api)
 pnpm dev                          # Dev server (port 3000)
 pnpm build                        # Compile TypeScript
-pnpm test                         # 177 unit tests (Vitest)
+pnpm test                         # 192 unit tests (Vitest)
 pnpm test:e2e                     # 46 E2E tests (precisa docker-compose.test.yml + apps/api/.env.test)
 pnpm prisma:generate              # Gera Prisma client
 npx prisma db push                # Sync schema com DB
@@ -119,7 +119,7 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 | `/quiz` | Triagem (4 perfis com ícones SVG) | Não | — |
 | `/cadastro` | Registro (2 steps: tipo + dados) | Não | — |
 | `/login` | Login | Não | — |
-| `/acolhimento` | Onboarding (5-6 steps, multi-select, condicional) | Sim | ProtectedRoute |
+| `/acolhimento` | Onboarding (5-7 steps, multi-select, step condicional de dependente p/ guardian/caregiver) | Sim | ProtectedRoute |
 | `/documentos` | Upload de documentos | Sim | ProtectedRoute |
 | `/painel` | Dashboard do paciente (associações + card resumo do diário) | Sim | ProtectedRoute |
 | `/diario` | Diário de Tratamento (timeline + insights, follow-ups, quick-log) | Sim | ProtectedRoute |
@@ -172,6 +172,8 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 - `GET /onboarding/summary` — resumo (inclui currentAccessMethod)
 - `POST /onboarding/escalate` — escalar pra humano
 - `POST /onboarding/extract` — extrair campos com IA
+- `POST /onboarding/dependent` — cadastrar dependente (JWT, guardian/caregiver; nome, nascimento, documento, relationshipType)
+- `GET /onboarding/dependents` — listar dependentes do responsável logado (JWT)
 
 ### Diário de Tratamento (JWT — paciente só acessa o próprio)
 - `POST /diary` — criar entrada (produto, dose, método, sintomas com `severityBefore` 0-10 NRS)
@@ -198,7 +200,8 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 - `GET /associations/:id/products` — produtos com variantes da associação (@Public)
 - `GET /associations/:id/product-types` — tipos de produto da associação (@Public)
 - `POST /associations/:id/link` — paciente solicita vínculo (JWT, cria Patient se não existir)
-- `GET /my-links` — vínculos do paciente logado com nome da associação (JWT)
+- `GET /my-links` — vínculos do paciente logado com nome da associação + `documentsShared` (JWT)
+- `PATCH /my-links/:id/share-documents` — paciente liga/desliga compartilhamento de docs com a associação (JWT, body `{ share }`, só vínculo ativo)
 - `GET /documents` — listar documentos do user (JWT)
 
 ### Painel da Associação (requer role association + permissões)
@@ -207,7 +210,8 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 - `POST /association/products` — criar produto + variantes — `association_catalog:create`
 - `PATCH /association/products/:id` — atualizar produto + substituir variantes — `association_catalog:update`
 - `DELETE /association/products/:id` — excluir produto — `association_catalog:delete`
-- `GET /association/members` — listar vínculos (filtro por status) — `association_members:read`
+- `GET /association/members` — listar vínculos (filtro por status, inclui `documentsShared`) — `association_members:read`
+- `GET /association/members/:id/documents` — documentos compartilhados pelo paciente (nome + docs); só se `documentsShared` e vínculo ativo — `association_documents:read`
 - `PATCH /association/members/:id/approve` — aprovar vínculo — `association_members:update`
 - `PATCH /association/members/:id/reject` — rejeitar vínculo — `association_members:update`
 - `DELETE /association/members/:id` — cancelar membro ativo — `association_members:update`
@@ -243,6 +247,7 @@ Cadastro (/cadastro)  →  Acolhimento (/acolhimento)  →  Documentos (/documen
 | `association_catalog:delete` | association_catalog | delete |
 | `association_members:read` | association_members | read |
 | `association_members:update` | association_members | update |
+| `association_documents:read` | association_documents | read |
 | `association_profile:read` | association_profile | read |
 | `association_profile:update` | association_profile | update |
 
@@ -280,7 +285,7 @@ OnboardingSession → perfil clínico (condition, experience, currentAccessMetho
 Document → tipo, URL S3, status (pending/approved/rejected), motivo rejeição, reviewedBy
 Association → name, cnpj, status, description, region, state, city, profileTypes[], hasAssistedAccess, contact, logoUrl, membershipFee, membershipPeriod, membershipDescription
 AssociationMember → associationId + userId, role (staff/manager/director), status
-PatientAssociationLink → associationId + patientId, requestedBy/approvedBy, startDate/endDate, status, feeStatus, feeExpiresAt, feePaidAt
+PatientAssociationLink → associationId + patientId, requestedBy/approvedBy, startDate/endDate, status, feeStatus, feeExpiresAt, feePaidAt, documentsShared/documentsSharedAt (consentimento do paciente p/ associação ver docs)
 Product → associationId, name, description, type, category, concentration, cbd, thc, dosagePerDrop, inStock, imageUrl
 ProductVariant → productId, volume, price (Decimal 10,2)
 DiaryEntry → userId, date, time, productId?/customProductName, administrationMethod, doseAmount/doseUnit, targetCondition, isFavorite
@@ -361,7 +366,8 @@ Dor: #F5EDEA             Oncologia: #EEE9F5
 - **accountType vive só no User** — coletado no cadastro, NÃO duplicado na OnboardingSession
 - **Preços no catálogo**: visíveis apenas para `accountStatus === 'approved'`
 - **Vínculo com associação**: opcional — algumas associações não exigem vínculo/taxa, basta conta aprovada
-- **Documentos**: associação nunca vê — só admin
+- **Documentos**: admin sempre vê; associação só vê se o paciente **consentir** (toggle `documentsShared` no vínculo ativo, via `PATCH /my-links/:id/share-documents`) — opt-in revogável a qualquer momento
+- **Dependentes**: coletados em step condicional do onboarding (`/acolhimento`), exibido só quando `accountType ∈ {guardian, caregiver}`; persistidos em `Dependent` via `POST /onboarding/dependent` (gate é frontend-only, igual ao step `currentAccessMethod`)
 - **Onboarding multi-select**: condições e formas de uso aceitam múltiplas seleções (armazenadas como string separada por vírgula)
 - **JwtAuthGuard NÃO é global** — cada controller precisa `@UseGuards(JwtAuthGuard)` ou `@Public()`
 - **Sync de status**: StartOnboarding → onboardingStatus='in_progress', CompleteOnboarding → onboardingStatus='completed'
@@ -369,7 +375,7 @@ Dor: #F5EDEA             Oncologia: #EEE9F5
 
 ## Testes
 
-### Unit tests (177 — Vitest)
+### Unit tests (192 — Vitest)
 ```bash
 cd apps/api && pnpm test
 ```

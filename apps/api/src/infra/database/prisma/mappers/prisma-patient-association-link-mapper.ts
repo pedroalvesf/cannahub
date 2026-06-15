@@ -25,6 +25,8 @@ export class PrismaPatientAssociationLinkMapper {
         feeStatus: (raw.feeStatus ?? undefined) as FeeStatus | undefined,
         feeExpiresAt: raw.feeExpiresAt ?? undefined,
         feePaidAt: raw.feePaidAt ?? undefined,
+        documentsShared: raw.documentsShared,
+        documentsSharedAt: raw.documentsSharedAt ?? undefined,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -47,6 +49,8 @@ export class PrismaPatientAssociationLinkMapper {
       feeStatus: link.feeStatus,
       feeExpiresAt: link.feeExpiresAt,
       feePaidAt: link.feePaidAt,
+      documentsShared: link.documentsShared,
+      documentsSharedAt: link.documentsSharedAt,
       createdAt: link.createdAt,
       updatedAt: link.updatedAt,
     };
@@ -63,6 +67,8 @@ export class PrismaPatientAssociationLinkMapper {
       feeStatus: link.feeStatus,
       feeExpiresAt: link.feeExpiresAt,
       feePaidAt: link.feePaidAt,
+      documentsShared: link.documentsShared,
+      documentsSharedAt: link.documentsSharedAt,
       updatedAt: link.updatedAt,
     };
   }

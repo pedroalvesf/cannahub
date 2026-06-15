@@ -452,6 +452,8 @@ model PatientAssociationLink {
   feeStatus         String?   // pending | paid | overdue | exempt
   feeExpiresAt      DateTime?
   feePaidAt         DateTime?
+  documentsShared   Boolean   @default(false) // paciente consentiu compartilhar docs com a associação
+  documentsSharedAt DateTime?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

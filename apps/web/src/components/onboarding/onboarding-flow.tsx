@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { StepProgress } from './step-progress'
 import { OnboardingQuestion } from './onboarding-question'
 import { OnboardingSummary } from './onboarding-summary'
+import { DependentForm } from './dependent-form'
 import { getVisibleSteps } from './onboarding-steps'
+import { useAuthStore } from '@/stores/auth-store'
 import {
   useOnboardingSummary,
   useStartOnboarding,
   useSubmitStep,
   useCompleteOnboarding,
+  useGuardianDependents,
 } from '@/hooks/use-onboarding'
 
 interface OnboardingFlowProps {
@@ -32,14 +35,26 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
   const [isLoading, setIsLoading] = useState(true)
   const initialized = useRef(false)
 
+  const accountType = useAuthStore((s) => s.user?.accountType)
+  const isGuardianFlow = accountType === 'guardian' || accountType === 'caregiver'
+
   const { data: existingSession, isLoading: summaryLoading } = useOnboardingSummary()
+  const { data: dependentsData, isLoading: dependentsLoading } =
+    useGuardianDependents(isGuardianFlow)
   const startOnboarding = useStartOnboarding()
   const submitStep = useSubmitStep()
   const completeOnboarding = useCompleteOnboarding()
 
+  const computeVisible = useCallback(
+    (a: Record<string, string>) => getVisibleSteps(a, accountType),
+    [accountType],
+  )
+
   useEffect(() => {
     if (initialized.current) return
+    if (accountType === undefined) return
     if (summaryLoading) return
+    if (isGuardianFlow && dependentsLoading) return
 
     initialized.current = true
 
@@ -53,6 +68,9 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
 
     if (existingSession && existingSession.status === 'in_progress') {
       const restored: Record<string, string> = {}
+      if (isGuardianFlow && dependentsData?.dependents?.[0]) {
+        restored.dependent = dependentsData.dependents[0].name
+      }
       if (existingSession.condition) restored.condition = existingSession.condition
       if (existingSession.experience) restored.experience = existingSession.experience
       if (existingSession.currentAccessMethod) restored.currentAccessMethod = existingSession.currentAccessMethod
@@ -65,7 +83,7 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
       }
       setAnswers(restored)
 
-      const restoredVisibleSteps = getVisibleSteps(restored)
+      const restoredVisibleSteps = computeVisible(restored)
       const firstUnansweredIndex = restoredVisibleSteps.findIndex((s) => !restored[s.key])
       const resumeStep = firstUnansweredIndex === -1 ? restoredVisibleSteps.length : firstUnansweredIndex
       setCurrentStep(resumeStep)
@@ -85,9 +103,9 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
         setIsLoading(false)
       },
     })
-  }, [existingSession, summaryLoading]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [existingSession, summaryLoading, accountType, isGuardianFlow, dependentsLoading, dependentsData]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const visibleSteps = getVisibleSteps(answers)
+  const visibleSteps = computeVisible(answers)
   const step = visibleSteps[currentStep]
   const isSummary = currentStep >= visibleSteps.length
 
@@ -121,7 +139,7 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
 
   const advanceOrSummarize = useCallback(
     (nextAnswers: Record<string, string>) => {
-      const nextVisibleSteps = getVisibleSteps(nextAnswers)
+      const nextVisibleSteps = computeVisible(nextAnswers)
       const isNowLastStep = currentStep === nextVisibleSteps.length - 1
       if (isNowLastStep) {
         setAnswers(nextAnswers)
@@ -130,7 +148,7 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
         transitionTo(currentStep + 1)
       }
     },
-    [currentStep, transitionTo],
+    [currentStep, transitionTo, computeVisible],
   )
 
   const handleSelectOption = useCallback(
@@ -178,6 +196,15 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
       advanceOrSummarize(newAnswers)
     },
     [step, freeText, answers, submitStepToApi, advanceOrSummarize],
+  )
+
+  const handleDependentCompleted = useCallback(
+    (label: string) => {
+      const newAnswers = { ...answers, dependent: label }
+      setAnswers(newAnswers)
+      advanceOrSummarize(newAnswers)
+    },
+    [answers, advanceOrSummarize],
   )
 
   const handleBack = useCallback(() => {
@@ -247,21 +274,29 @@ export function OnboardingFlow({ onComplete, onEscalate }: OnboardingFlowProps) 
           isTransitioning ? 'opacity-0' : 'opacity-100'
         }`}
       >
-        <OnboardingQuestion
-          step={step}
-          answer={answers[step.key]}
-          freeText={freeText}
-          apiError={apiError}
-          isSubmitting={isSubmitting}
-          isFirstStep={currentStep === 0}
-          onSelectOption={handleSelectOption}
-          onToggleMultiOption={handleToggleMultiOption}
-          onConfirmMultiSelect={handleConfirmMultiSelect}
-          onFreeTextChange={setFreeText}
-          onFreeTextSubmit={handleFreeTextSubmit}
-          onBack={handleBack}
-          onEscalate={handleEscalateFromQuestion}
-        />
+        {step.custom === 'dependent' ? (
+          <DependentForm
+            isFirstStep={currentStep === 0}
+            onBack={handleBack}
+            onCompleted={handleDependentCompleted}
+          />
+        ) : (
+          <OnboardingQuestion
+            step={step}
+            answer={answers[step.key]}
+            freeText={freeText}
+            apiError={apiError}
+            isSubmitting={isSubmitting}
+            isFirstStep={currentStep === 0}
+            onSelectOption={handleSelectOption}
+            onToggleMultiOption={handleToggleMultiOption}
+            onConfirmMultiSelect={handleConfirmMultiSelect}
+            onFreeTextChange={setFreeText}
+            onFreeTextSubmit={handleFreeTextSubmit}
+            onBack={handleBack}
+            onEscalate={handleEscalateFromQuestion}
+          />
+        )}
       </div>
     </div>
   )

@@ -5,7 +5,7 @@
 ```bash
 pnpm dev                # Dev server (port 3000)
 pnpm build              # Compile TypeScript (nest build --tsc)
-pnpm test               # Unit tests — 93 passando (vitest run --project unit)
+pnpm test               # Unit tests — 192 passando (vitest run --project unit)
 pnpm test:watch         # Watch mode
 pnpm test:e2e           # E2E (precisa Postgres na porta 8239)
 pnpm lint               # ESLint fix
@@ -138,6 +138,8 @@ Rastreia mutações em coleções (ex: RoleList do User). Persiste apenas diffs.
 
 `accountType` **NÃO** está no OnboardingSession — vive só no User (coletado no registro).
 
+Step extra de **dependente** (frontend, condicional a `accountType ∈ {guardian, caregiver}`): não usa `/onboarding/step` (DTO de string única), e sim `POST /onboarding/dependent` + `GET /onboarding/dependents` → entidade `Dependent`. O gate é frontend-only.
+
 ## Entidades Prisma relevantes
 
 ```
@@ -146,8 +148,8 @@ OnboardingSession → condition, experience, currentAccessMethod, preferredForm,
 SupportTicket     → escalação de onboarding para humano
 Document          → tipo, URL S3, status (pending/approved/rejected), motivo rejeição
 Association       → perfil, região, produtos
-Patient/Dependent → domínio de pacientes
-PatientAssociationLink → vínculo paciente-associação
+Patient/Dependent → domínio de pacientes (Dependent: guardianUserId, name, birthDate, documentNumber, relationshipType)
+PatientAssociationLink → vínculo paciente-associação (+ documentsShared/documentsSharedAt: consentimento p/ associação ver docs)
 ```
 
 ## Testes

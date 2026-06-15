@@ -48,6 +48,13 @@ export const DOCUMENT_STATUS_LABELS: Record<string, string> = {
   rejected: 'Rejeitado',
 }
 
+export const RELATIONSHIP_TYPE_LABELS: Record<string, string> = {
+  parent: 'Filho(a) / dependente',
+  legal_guardian: 'Tutelado(a) (responsável legal)',
+  caregiver: 'Pessoa sob meus cuidados',
+  spouse: 'Cônjuge / companheiro(a)',
+}
+
 export const CONDITION_LABELS: Record<string, string> = {
   chronic_pain: 'Dor Crônica',
   anxiety: 'Ansiedade',

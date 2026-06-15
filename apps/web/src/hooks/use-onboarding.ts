@@ -84,3 +84,38 @@ export function useEscalate() {
     },
   })
 }
+
+export interface Dependent {
+  id: string
+  name: string
+  birthDate?: string
+  documentNumber?: string
+  relationshipType: string
+}
+
+export function useGuardianDependents(enabled = true) {
+  return useQuery<{ dependents: Dependent[] }>({
+    queryKey: ['guardian-dependents'],
+    queryFn: async () => {
+      const { data } = await api.get('/onboarding/dependents')
+      return data
+    },
+    enabled,
+    retry: false,
+  })
+}
+
+export function useCreateDependent() {
+  const queryClient = useQueryClient()
+  return useMutation<
+    Dependent,
+    Error,
+    { name: string; birthDate?: string; documentNumber?: string; relationshipType: string }
+  >({
+    mutationFn: async (payload) => {
+      const { data } = await api.post('/onboarding/dependent', payload)
+      return data
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['guardian-dependents'] }),
+  })
+}

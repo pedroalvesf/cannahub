@@ -10,6 +10,7 @@ export interface MyLink {
   feeStatus?: string
   feeExpiresAt?: string
   startDate?: string
+  documentsShared: boolean
   createdAt: string
 }
 
@@ -22,6 +23,21 @@ export function useMyLinks() {
       return data
     },
     enabled: isAuthenticated,
+  })
+}
+
+export function useToggleDocumentSharing() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ linkId, share }: { linkId: string; share: boolean }) => {
+      const { data } = await api.patch(`/my-links/${linkId}/share-documents`, {
+        share,
+      })
+      return data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-links'] })
+    },
   })
 }
 

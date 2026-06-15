@@ -43,6 +43,15 @@ export interface AssociationLink {
   feeStatus?: string
   feeExpiresAt?: string
   feePaidAt?: string
+  documentsShared: boolean
+  createdAt: string
+}
+
+export interface MemberDocument {
+  id: string
+  type: string
+  url: string
+  status: string
   createdAt: string
 }
 
@@ -164,6 +173,17 @@ export function useAssociationMembers(status?: string) {
       const { data } = await api.get(`/association/members${params}`)
       return data
     },
+  })
+}
+
+export function useMemberDocuments(linkId: string | null) {
+  return useQuery<{ patientName: string | null; documents: MemberDocument[] }>({
+    queryKey: ['member-documents', linkId],
+    queryFn: async () => {
+      const { data } = await api.get(`/association/members/${linkId}/documents`)
+      return data
+    },
+    enabled: !!linkId,
   })
 }
 
